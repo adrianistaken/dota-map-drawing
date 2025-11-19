@@ -38,6 +38,8 @@ const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
   justify-content: center;
   overflow: auto;
   background-color: #2a2a2a;
+  padding: 1.5rem;
+  box-sizing: border-box;
 }
 
 .sidebar {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useEditorStore, type Stroke, type Icon } from '../stores/useEditorStore'
 import type { KonvaEventObject } from 'konva/lib/Node'
 import type { Node } from 'konva/lib/Node'
@@ -12,6 +12,13 @@ const stageWidth = ref(800)
 const stageHeight = ref(600)
 const mapLoaded = ref(false)
 
+// Preserve the original map dimensions so we can scale it responsibly
+const originalMapSize = ref({ width: 0, height: 0 })
+
+const SIDEBAR_WIDTH = 300
+const MAP_PADDING = 80
+const COMFORTABLE_SCALE = 0.9
+
 // Icon images - preload hero icon
 const heroIconImage = ref<HTMLImageElement | null>(null)
 
@@ -23,6 +30,26 @@ const currentStrokeId = ref<string | null>(null)
 // Stage ref for accessing Konva stage instance
 const stageRef = ref<any>(null)
 
+const updateStageSize = () => {
+    if (!originalMapSize.value.width || !originalMapSize.value.height) return
+
+    const availableWidth = Math.max(300, window.innerWidth - SIDEBAR_WIDTH - MAP_PADDING)
+    const availableHeight = Math.max(300, window.innerHeight - MAP_PADDING)
+
+    const widthRatio = availableWidth / originalMapSize.value.width
+    const heightRatio = availableHeight / originalMapSize.value.height
+
+    const baseScale = Math.min(widthRatio, heightRatio, 1)
+    const scaleFactor = Math.min(COMFORTABLE_SCALE, baseScale)
+
+    stageWidth.value = Math.round(originalMapSize.value.width * scaleFactor)
+    stageHeight.value = Math.round(originalMapSize.value.height * scaleFactor)
+}
+
+const handleResize = () => {
+    updateStageSize()
+}
+
 // Load map image and hero icon
 onMounted(() => {
     // Load map image
@@ -30,9 +57,8 @@ onMounted(() => {
     mapImg.src = '/images/Gamemap_7.39_minimap_dota2_gameasset.png'
     mapImg.onload = () => {
         mapImage.value = mapImg
-        // Set stage size to match image
-        stageWidth.value = mapImg.width
-        stageHeight.value = mapImg.height
+        originalMapSize.value = { width: mapImg.width, height: mapImg.height }
+        updateStageSize()
         mapLoaded.value = true
     }
 
@@ -42,6 +68,11 @@ onMounted(() => {
     heroImg.onload = () => {
         heroIconImage.value = heroImg
     }
+    window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleResize)
 })
 
 // Get stage instance from vue-konva
