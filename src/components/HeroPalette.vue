@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { useEditorStore } from '../stores/useEditorStore'
+import { useEditorStore, type HeroSelection } from '../stores/useEditorStore'
 
 const store = useEditorStore()
 
-// Number of hero icons to display (using same icon repeated)
+// Placeholder hero data (using the same icon repeated for now)
 const heroCount = 20
+const heroOptions: HeroSelection[] = Array.from({ length: heroCount }, (_, index) => ({
+  id: `abaddon-${index + 1}`,
+  name: `Abaddon ${index + 1}`,
+  image: '/images/Abaddon_minimap_icon.webp'
+}))
 
-// Select hero icon - sets tool to icon placement mode
-const selectHero = () => {
-  store.setTool('icon')
+// Select hero icon - also switches to icon placement mode
+const selectHero = (hero: HeroSelection) => {
+  store.selectHero(hero)
 }
 </script>
 
@@ -17,25 +22,26 @@ const selectHero = () => {
     <h2 class="text-white text-lg font-semibold mb-4">Hero Icons</h2>
     <div class="grid grid-cols-5 gap-2">
       <button
-        v-for="i in heroCount"
-        :key="i"
-        @click="selectHero"
+        v-for="hero in heroOptions"
+        :key="hero.id"
+        @click="selectHero(hero)"
+        :aria-label="`Select ${hero.name}`"
         :class="[
-          'w-12 h-12 p-1 rounded transition-all hover:scale-110',
-          store.currentTool === 'icon'
-            ? 'bg-blue-600 ring-2 ring-blue-400'
-            : 'bg-gray-700 hover:bg-gray-600'
+          'w-12 h-12 p-1 rounded border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800',
+          store.selectedHero?.id === hero.id
+            ? 'bg-blue-700/60 border-blue-300 ring-2 ring-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.65)] scale-105'
+            : 'bg-gray-700 border-transparent hover:bg-gray-600'
         ]"
       >
         <img
-          src="/images/Abaddon_minimap_icon.webp"
-          alt="Hero Icon"
+          :src="hero.image"
+          :alt="`${hero.name} icon`"
           class="w-full h-full object-contain"
         />
       </button>
     </div>
     <p class="text-gray-400 text-xs mt-4 text-center">
-      Click an icon to place it on the map
+      Click an icon to select it, then click anywhere on the map to place it.
     </p>
   </div>
 </template>

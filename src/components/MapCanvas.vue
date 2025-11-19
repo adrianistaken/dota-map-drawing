@@ -18,9 +18,10 @@ const originalMapSize = ref({ width: 0, height: 0 })
 const SIDEBAR_WIDTH = 300
 const MAP_PADDING = 80
 const COMFORTABLE_SCALE = 0.9
+const ICON_BASE_SIZE = 32
 
-// Icon images - preload hero icon
-const heroIconImage = ref<HTMLImageElement | null>(null)
+const currentScale = ref(1)
+const iconImageCache = ref<Record<string, HTMLImageElement>>({})
 
 // Current drawing state
 const isDrawing = ref(false)
@@ -44,6 +45,7 @@ const updateStageSize = () => {
 
     stageWidth.value = Math.round(originalMapSize.value.width * scaleFactor)
     stageHeight.value = Math.round(originalMapSize.value.height * scaleFactor)
+    currentScale.value = scaleFactor
 }
 
 const handleResize = () => {
@@ -62,12 +64,6 @@ onMounted(() => {
         mapLoaded.value = true
     }
 
-    // Load hero icon
-    const heroImg = new Image()
-    heroImg.src = '/images/Abaddon_minimap_icon.webp'
-    heroImg.onload = () => {
-        heroIconImage.value = heroImg
-    }
     window.addEventListener('resize', handleResize)
 })
 
@@ -124,12 +120,14 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         // If clicking on an existing icon, let the drag handler take over
         const isStageOrLayer = targetClass === 'Stage' || targetClass === 'Layer'
         if (!isIconNode && (isStageOrLayer || isMapImage)) {
+            if (!store.selectedHero) return
             const iconId = `icon-${Date.now()}-${Math.random()}`
             const newIcon: Icon = {
                 id: iconId,
-                x: pos.x - 16, // Center the icon (assuming 32x32 icon)
-                y: pos.y - 16,
-                image: '/images/Abaddon_minimap_icon.webp'
+                x: pos.x / currentScale.value - ICON_BASE_SIZE / 2,
+                y: pos.y / currentScale.value - ICON_BASE_SIZE / 2,
+                image: store.selectedHero.image,
+                size: ICON_BASE_SIZE
             }
             store.addIcon(newIcon)
         }
@@ -158,11 +156,12 @@ const handleStageMouseMove = (e: KonvaEventObject<MouseEvent>) => {
 const handleStageMouseUp = () => {
     if (isDrawing.value && currentLine.value.length >= 4) {
         // Need at least 2 points (4 numbers: x1, y1, x2, y2)
+        const mapPoints = currentLine.value.map(point => point / currentScale.value)
         const stroke: Stroke = {
             id: currentStrokeId.value!,
-            points: [...currentLine.value],
+            points: mapPoints,
             color: store.brushColor,
-            strokeWidth: store.brushSize
+            strokeWidth: store.brushSize / currentScale.value
         }
         store.addStroke(stroke)
     }
@@ -189,8 +188,11 @@ const handleErase = (x: number, y: number) => {
         isErasing.value = true
     }
 
-    const eraserRadius = store.brushSize
+    const eraserRadius = store.brushSize / currentScale.value
     const strokesToRemove: string[] = []
+    const iconsToRemove: string[] = []
+    const mapX = x / currentScale.value
+    const mapY = y / currentScale.value
 
     // Check each stroke for intersection with eraser circle
     store.strokes.forEach(stroke => {
@@ -198,7 +200,7 @@ const handleErase = (x: number, y: number) => {
         for (let i = 0; i < stroke.points.length; i += 2) {
             const px = stroke.points[i]
             const py = stroke.points[i + 1]
-            const distance = Math.sqrt((px - x) ** 2 + (py - y) ** 2)
+            const distance = Math.sqrt((px - mapX) ** 2 + (py - mapY) ** 2)
             if (distance <= eraserRadius) {
                 strokesToRemove.push(stroke.id)
                 break
@@ -213,6 +215,22 @@ const handleErase = (x: number, y: number) => {
             store.strokes.splice(index, 1)
         }
     })
+
+    store.icons.forEach(icon => {
+        const centerX = icon.x + icon.size / 2
+        const centerY = icon.y + icon.size / 2
+        const distance = Math.sqrt((centerX - mapX) ** 2 + (centerY - mapY) ** 2)
+        if (distance <= icon.size / 2 + eraserRadius) {
+            iconsToRemove.push(icon.id)
+        }
+    })
+
+    iconsToRemove.forEach(id => {
+        const index = store.icons.findIndex(icon => icon.id === id)
+        if (index !== -1) {
+            store.icons.splice(index, 1)
+        }
+    })
 }
 
 // Handle icon drag start - save initial position
@@ -224,7 +242,9 @@ const handleIconDragStart = () => {
 // Handle icon drag move - update position
 const handleIconDragMove = (iconId: string, e: KonvaEventObject<MouseEvent>) => {
     const node = e.target as Node
-    store.updateIconPosition(iconId, node.x(), node.y())
+    const mapX = node.x() / currentScale.value
+    const mapY = node.y() / currentScale.value
+    store.updateIconPosition(iconId, mapX, mapY)
 }
 
 // Wrapper for drag move event handler
@@ -269,6 +289,17 @@ const mapImageConfig = computed(() => ({
     height: stageHeight.value
 }))
 
+const scalePoints = (points: number[]) => points.map(point => point * currentScale.value)
+
+const getIconImage = (imagePath: string) => {
+    if (!iconImageCache.value[imagePath]) {
+        const img = new Image()
+        img.src = imagePath
+        iconImageCache.value[imagePath] = img
+    }
+    return iconImageCache.value[imagePath]
+}
+
 // Expose stage ref for parent components (for export functionality)
 defineExpose({
     getStage
@@ -286,9 +317,9 @@ defineExpose({
 
                 <!-- Render all saved strokes -->
                 <v-line v-for="stroke in store.strokes" :key="stroke.id" :config="{
-                    points: stroke.points,
+                    points: scalePoints(stroke.points),
                     stroke: stroke.color,
-                    strokeWidth: stroke.strokeWidth,
+                    strokeWidth: stroke.strokeWidth * currentScale,
                     lineCap: 'round',
                     lineJoin: 'round',
                     tension: 0.5,
@@ -301,11 +332,11 @@ defineExpose({
 
                 <!-- Render all icons with drag functionality -->
                 <v-image v-for="icon in store.icons" :key="icon.id" :config="{
-                    image: heroIconImage,
-                    x: icon.x,
-                    y: icon.y,
-                    width: 32,
-                    height: 32,
+                    image: getIconImage(icon.image),
+                    x: icon.x * currentScale,
+                    y: icon.y * currentScale,
+                    width: icon.size * currentScale,
+                    height: icon.size * currentScale,
                     draggable: true,
                     listening: true,
                     name: 'hero-icon'

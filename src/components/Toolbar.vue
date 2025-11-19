@@ -104,6 +104,13 @@ const setTool = (tool: Tool) => {
   store.setTool(tool)
 }
 
+const toolButtonClasses = (tool: Tool) => [
+  'px-4 py-2 rounded border-2 transition-all flex items-center justify-between gap-3',
+  store.currentTool === tool
+    ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.6)] scale-[1.01]'
+    : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
+]
+
 // Brush controls
 const handleColorChange = (e: Event) => {
   const target = e.target as HTMLInputElement
@@ -124,38 +131,31 @@ const handleSizeChange = (e: Event) => {
     <div class="space-y-2">
       <h3 class="text-gray-300 text-sm font-medium">Select Tool</h3>
       <div class="flex flex-col gap-2">
-        <button
-          @click="setTool('draw')"
-          :class="[
-            'px-4 py-2 rounded transition-colors',
-            store.currentTool === 'draw'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-          ]"
-        >
-          Draw
+        <button @click="setTool('draw')" :class="toolButtonClasses('draw')">
+          <span class="flex items-center gap-2 font-semibold">
+            <span
+              class="w-2.5 h-2.5 rounded-full"
+              :class="store.currentTool === 'draw'
+                ? 'bg-white animate-pulse shadow-[0_0_6px_rgba(255,255,255,0.8)]'
+                : 'bg-gray-500'
+              "
+            ></span>
+            Draw
+          </span>
+          <span v-if="store.currentTool === 'draw'" class="text-xs uppercase tracking-widest">Active</span>
         </button>
-        <button
-          @click="setTool('erase')"
-          :class="[
-            'px-4 py-2 rounded transition-colors',
-            store.currentTool === 'erase'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-          ]"
-        >
-          Erase
-        </button>
-        <button
-          @click="setTool('icon')"
-          :class="[
-            'px-4 py-2 rounded transition-colors',
-            store.currentTool === 'icon'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-          ]"
-        >
-          Place Icon
+        <button @click="setTool('erase')" :class="toolButtonClasses('erase')">
+          <span class="flex items-center gap-2 font-semibold">
+            <span
+              class="w-2.5 h-2.5 rounded-full"
+              :class="store.currentTool === 'erase'
+                ? 'bg-white animate-pulse shadow-[0_0_6px_rgba(255,255,255,0.8)]'
+                : 'bg-gray-500'
+              "
+            ></span>
+            Erase
+          </span>
+          <span v-if="store.currentTool === 'erase'" class="text-xs uppercase tracking-widest">Active</span>
         </button>
       </div>
     </div>
