@@ -95,17 +95,26 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
 
     // Get the target node - if it's an icon (Image node), don't place a new icon
     // Let the icon's drag handler take over instead
-    const target = e.target
-    const targetType = target.getType()
+    const target = e.target as Node
+    const getClassName = (node: Node | null) => {
+        if (!node) return ''
+        if (typeof (node as any).getClassName === 'function') {
+            return (node as any).getClassName()
+        }
+        if (typeof (node as any).getType === 'function') {
+            return (node as any).getType()
+        }
+        return ''
+    }
+    const targetClass = getClassName(target)
 
-    // Check if clicking directly on an existing icon
-    // Icons are draggable Image nodes, while the map background is not draggable
-    // So we check if it's a draggable Image node
-    const isClickingIcon = targetType === 'Image' && (target as any).draggable() === true
+    // Check if clicking directly on an existing icon by using the Konva node name
+    const isIconNode = typeof (target as any).hasName === 'function' && (target as any).hasName('hero-icon')
+    const isMapImage = targetClass === 'Image' && !isIconNode
 
     if (store.currentTool === 'draw') {
         // Only start drawing if not clicking on an icon or stroke
-        if (targetType !== 'Image' && targetType !== 'Line') {
+        if (!isIconNode && targetClass !== 'Line') {
             isDrawing.value = true
             currentLine.value = [pos.x, pos.y]
             currentStrokeId.value = `stroke-${Date.now()}-${Math.random()}`
@@ -113,7 +122,8 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     } else if (store.currentTool === 'icon') {
         // Only place new icon if clicking on empty space (stage or layer)
         // If clicking on an existing icon, let the drag handler take over
-        if (!isClickingIcon && (targetType === 'Stage' || targetType === 'Layer')) {
+        const isStageOrLayer = targetClass === 'Stage' || targetClass === 'Layer'
+        if (!isIconNode && (isStageOrLayer || isMapImage)) {
             const iconId = `icon-${Date.now()}-${Math.random()}`
             const newIcon: Icon = {
                 id: iconId,
@@ -297,7 +307,8 @@ defineExpose({
                     width: 32,
                     height: 32,
                     draggable: true,
-                    listening: true
+                    listening: true,
+                    name: 'hero-icon'
                 }" @dragstart="handleIconDragStart" @dragmove="createDragMoveHandler(icon.id)"
                     @dragend="handleIconDragEnd" />
             </v-layer>
