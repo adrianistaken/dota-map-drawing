@@ -3,6 +3,12 @@ import { ref } from 'vue'
 
 export type Tool = 'draw' | 'erase' | 'icon'
 
+export interface HeroSelection {
+  id: string
+  name: string
+  image: string
+}
+
 export interface Stroke {
   id: string
   points: number[]
@@ -15,6 +21,7 @@ export interface Icon {
   x: number
   y: number
   image: string
+  size: number
 }
 
 interface StateSnapshot {
@@ -27,6 +34,7 @@ export const useEditorStore = defineStore('editor', () => {
   const currentTool = ref<Tool>('draw')
   const brushColor = ref<string>('#000000')
   const brushSize = ref<number>(5)
+  const selectedHero = ref<HeroSelection | null>(null)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -39,6 +47,11 @@ export const useEditorStore = defineStore('editor', () => {
   // Tool actions
   const setTool = (tool: Tool) => {
     currentTool.value = tool
+  }
+
+  const selectHero = (hero: HeroSelection) => {
+    selectedHero.value = hero
+    currentTool.value = 'icon'
   }
 
   const setBrushColor = (color: string) => {
@@ -156,12 +169,14 @@ export const useEditorStore = defineStore('editor', () => {
     currentTool,
     brushColor,
     brushSize,
+    selectedHero,
     strokes,
     icons,
     undoStack,
     redoStack,
     // Actions
     setTool,
+    selectHero,
     setBrushColor,
     setBrushSize,
     addStroke,
