@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, computed } from 'vue'
 import { useEditorStore, type Tool } from '../stores/useEditorStore'
-import type MapCanvas from './MapCanvas.vue'
 
 const props = defineProps<{
-  mapCanvasRef?: InstanceType<typeof MapCanvas> | null
+  mapCanvasRef?: { getStage: () => any } | null
 }>()
 
 const store = useEditorStore()
@@ -51,9 +50,9 @@ const downloadPNG = () => {
     mimeType: 'image/png',
     quality: 1
   })
-  
+
   // Create download link
-  const link = document.createElement('a')
+  const link = documt.createElement('a')
   link.download = 'dota-map-drawing.png'
   link.href = dataURL
   link.click()
@@ -111,48 +110,48 @@ const toolButtonClasses = (tool: Tool) => [
     : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
 ]
 
-// Brush controls
-const handleColorChange = (e: Event) => {
-  const target = e.target as HTMLInputElement
-  store.setBrushColor(target.value)
+const currentBrushColor = computed(() => store.brushColor.toUpperCase())
+
+// Convert hex color to rgba for shadow
+const getShadowColor = (hex: string) => {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r}, ${g}, ${b}, 0.7)`
 }
 
-const handleSizeChange = (e: Event) => {
-  const target = e.target as HTMLInputElement
-  store.setBrushSize(Number(target.value))
+const brushColorShadow = computed(() => getShadowColor(store.brushColor))
+
+const handleToggleBrushColor = () => {
+  store.toggleBrushColor()
 }
+
 </script>
 
 <template>
   <div class="toolbar bg-gray-800 p-4 rounded-lg space-y-4">
     <h2 class="text-white text-lg font-semibold mb-4">Tools</h2>
-    
+
     <!-- Tool Selection -->
     <div class="space-y-2">
       <h3 class="text-gray-300 text-sm font-medium">Select Tool</h3>
       <div class="flex flex-col gap-2">
         <button @click="setTool('draw')" :class="toolButtonClasses('draw')">
           <span class="flex items-center gap-2 font-semibold">
-            <span
-              class="w-2.5 h-2.5 rounded-full"
-              :class="store.currentTool === 'draw'
-                ? 'bg-white animate-pulse shadow-[0_0_6px_rgba(255,255,255,0.8)]'
-                : 'bg-gray-500'
-              "
-            ></span>
+            <span class="w-2.5 h-2.5 rounded-full" :class="store.currentTool === 'draw'
+              ? 'bg-white animate-pulse shadow-[0_0_6px_rgba(255,255,255,0.8)]'
+              : 'bg-gray-500'
+              "></span>
             Draw
           </span>
           <span v-if="store.currentTool === 'draw'" class="text-xs uppercase tracking-widest">Active</span>
         </button>
         <button @click="setTool('erase')" :class="toolButtonClasses('erase')">
           <span class="flex items-center gap-2 font-semibold">
-            <span
-              class="w-2.5 h-2.5 rounded-full"
-              :class="store.currentTool === 'erase'
-                ? 'bg-white animate-pulse shadow-[0_0_6px_rgba(255,255,255,0.8)]'
-                : 'bg-gray-500'
-              "
-            ></span>
+            <span class="w-2.5 h-2.5 rounded-full" :class="store.currentTool === 'erase'
+              ? 'bg-white animate-pulse shadow-[0_0_6px_rgba(255,255,255,0.8)]'
+              : 'bg-gray-500'
+              "></span>
             Erase
           </span>
           <span v-if="store.currentTool === 'erase'" class="text-xs uppercase tracking-widest">Active</span>
@@ -160,92 +159,52 @@ const handleSizeChange = (e: Event) => {
       </div>
     </div>
 
-    <!-- Brush Controls (only show when drawing or erasing) -->
-    <div v-if="store.currentTool === 'draw' || store.currentTool === 'erase'" class="space-y-2">
-      <h3 class="text-gray-300 text-sm font-medium">Brush Settings</h3>
-      
-      <!-- Color Picker (only for draw tool) -->
-      <div v-if="store.currentTool === 'draw'" class="space-y-1">
-        <label class="text-gray-400 text-xs">Color</label>
-        <div class="flex items-center gap-2">
-          <input
-            type="color"
-            :value="store.brushColor"
-            @input="handleColorChange"
-            class="w-12 h-8 rounded cursor-pointer"
-          />
-          <input
-            type="text"
-            :value="store.brushColor"
-            @input="handleColorChange"
-            class="flex-1 px-2 py-1 bg-gray-700 text-white rounded text-sm"
-            placeholder="#000000"
-          />
-        </div>
-      </div>
+    <!-- Brush / Eraser Controls -->
+    <div class="space-y-3">
+      <button @click="handleToggleBrushColor"
+        class="w-full px-4 py-2 rounded border-2 border-transparent bg-gray-700 text-gray-200 hover:bg-gray-600 transition-colors flex items-center justify-between">
+        <span class="font-semibold">Toggle Brush</span>
+        <span class="flex items-center gap-2">
+          <span class="w-4 h-4 rounded-full" :style="{
+            backgroundColor: store.brushColor,
+            boxShadow: `0 0 10px ${brushColorShadow}`
+          }"></span>
+          <span class="text-sm font-mono">{{ currentBrushColor }}</span>
+        </span>
+      </button>
 
-      <!-- Brush Size -->
-      <div class="space-y-1">
-        <label class="text-gray-400 text-xs">
-          Size: {{ store.brushSize }}px
-        </label>
-        <input
-          type="range"
-          :value="store.brushSize"
-          @input="handleSizeChange"
-          min="1"
-          max="50"
-          class="w-full"
-        />
-      </div>
     </div>
 
     <!-- Actions -->
     <div class="space-y-2 pt-4 border-t border-gray-700">
       <h3 class="text-gray-300 text-sm font-medium">Actions</h3>
       <div class="flex flex-col gap-2">
-        <button
-          @click="store.undo()"
-          :disabled="store.undoStack.length === 0"
-          class="px-4 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
+        <button @click="store.undo()" :disabled="store.undoStack.length === 0"
+          class="px-4 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
           Undo (Ctrl+Z)
         </button>
-        <button
-          @click="store.redo()"
-          :disabled="store.redoStack.length === 0"
-          class="px-4 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
+        <button @click="store.redo()" :disabled="store.redoStack.length === 0"
+          class="px-4 py-2 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
           Redo (Ctrl+Shift+Z)
         </button>
-        <button
-          @click="store.clearMap()"
-          class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-600 transition-colors"
-        >
+        <button @click="store.clearMap()"
+          class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-600 transition-colors">
           Clear Map
         </button>
-        <button
-          @click="store.removeDrawings()"
-          class="px-4 py-2 bg-orange-700 text-white rounded hover:bg-orange-600 transition-colors"
-        >
+        <button @click="store.removeDrawings()"
+          class="px-4 py-2 bg-orange-700 text-white rounded hover:bg-orange-600 transition-colors">
           Remove Drawings
         </button>
-        <button
-          @click="store.removeIcons()"
-          class="px-4 py-2 bg-orange-700 text-white rounded hover:bg-orange-600 transition-colors"
-        >
+        <button @click="store.removeIcons()"
+          class="px-4 py-2 bg-orange-700 text-white rounded hover:bg-orange-600 transition-colors">
           Remove Icons
         </button>
-        <button
-          @click="downloadPNG"
-          class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600 transition-colors"
-        >
+        <button @click="downloadPNG"
+          class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600 transition-colors">
           Download PNG
         </button>
-        <button
-          @click="copyToClipboard"
-          class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600 transition-colors"
-        >
+        <button @click="copyToClipboard"
+          class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600 transition-colors">
           Copy to Clipboard
         </button>
       </div>
@@ -256,4 +215,3 @@ const handleSizeChange = (e: Event) => {
 <style scoped>
 /* Additional custom styles if needed */
 </style>
-

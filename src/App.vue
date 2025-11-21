@@ -27,7 +27,11 @@ const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
   display: flex;
   width: 100vw;
   height: 100vh;
-  background-color: #1a1a1a;
+  background-image: url('/images/dota2websitebackground.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow: hidden;
 }
 
@@ -37,9 +41,10 @@ const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
   align-items: center;
   justify-content: center;
   overflow: auto;
-  background-color: #2a2a2a;
   padding: 1.5rem;
   box-sizing: border-box;
+  /* Semi-transparent overlay to make map more visible */
+  background-color: rgba(26, 26, 26, 0.3);
 }
 
 .sidebar {
@@ -48,7 +53,8 @@ const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  background-color: #1a1a1a;
+  /* Semi-transparent overlay to make sidebar readable */
+  background-color: rgba(26, 26, 26, 0.85);
   overflow-y: auto;
 }
 </style>

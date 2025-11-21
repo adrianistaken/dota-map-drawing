@@ -32,7 +32,9 @@ interface StateSnapshot {
 export const useEditorStore = defineStore('editor', () => {
   // Tool state
   const currentTool = ref<Tool>('draw')
-  const brushColor = ref<string>('#000000')
+  const brushColorOptions = ['#ff2929', '#51ff45'] as const
+  const brushColorIndex = ref(0)
+  const brushColor = ref<string>(brushColorOptions[brushColorIndex.value])
   const brushSize = ref<number>(5)
   const selectedHero = ref<HeroSelection | null>(null)
 
@@ -55,7 +57,16 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   const setBrushColor = (color: string) => {
-    brushColor.value = color
+    const index = brushColorOptions.findIndex(option => option.toLowerCase() === color.toLowerCase())
+    if (index !== -1) {
+      brushColorIndex.value = index
+      brushColor.value = brushColorOptions[index]
+    }
+  }
+
+  const toggleBrushColor = () => {
+    brushColorIndex.value = (brushColorIndex.value + 1) % brushColorOptions.length
+    brushColor.value = brushColorOptions[brushColorIndex.value]
   }
 
   const setBrushSize = (size: number) => {
@@ -178,6 +189,7 @@ export const useEditorStore = defineStore('editor', () => {
     setTool,
     selectHero,
     setBrushColor,
+    toggleBrushColor,
     setBrushSize,
     addStroke,
     removeStroke,

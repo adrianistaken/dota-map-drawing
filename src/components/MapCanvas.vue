@@ -18,7 +18,7 @@ const originalMapSize = ref({ width: 0, height: 0 })
 const SIDEBAR_WIDTH = 300
 const MAP_PADDING = 80
 const COMFORTABLE_SCALE = 0.9
-const ICON_BASE_SIZE = 32
+const ICON_BASE_SIZE = 64
 
 const currentScale = ref(1)
 const iconImageCache = ref<Record<string, HTMLImageElement>>({})
@@ -137,19 +137,21 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     }
 }
 
-// Handle stage mouse move - continue drawing
+// Handle stage mouse move - continue drawing or erasing
 const handleStageMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if (!isDrawing.value || store.currentTool !== 'draw') return
-
     const stage = e.target.getStage()
     if (!stage) return
 
     const pos = stage.getPointerPosition()
     if (!pos) return
 
-    // Create a new array reference to ensure vue-konva detects the change
-    // This is important for real-time drawing updates
-    currentLine.value = [...currentLine.value, pos.x, pos.y]
+    if (store.currentTool === 'draw' && isDrawing.value) {
+        // Create a new array reference to ensure vue-konva detects the change
+        // This is important for real-time drawing updates
+        currentLine.value = [...currentLine.value, pos.x, pos.y]
+    } else if (store.currentTool === 'erase' && isErasing.value) {
+        handleErase(pos.x, pos.y)
+    }
 }
 
 // Handle stage mouse up - finish drawing
