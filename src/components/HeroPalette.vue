@@ -29,7 +29,7 @@ const heroOptions: HeroSelection[] = heroList.map(heroName => {
   const filename = `${heroName}_mapicon_dota2_gameasset.png`
   // Convert filename format to display name (replace underscores with spaces, handle special cases)
   const displayName = heroName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-  const imagePath = `/images/icons/${encodeURIComponent(filename)}`
+  const imagePath = `/images/icons/heroes/${encodeURIComponent(filename)}`
 
   return {
     id: heroName.toLowerCase().replace(/_/g, '-'),
