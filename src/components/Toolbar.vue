@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed } from 'vue'
-import { useEditorStore, type Tool } from '../stores/useEditorStore'
+import { onMounted, onUnmounted, computed, ref } from 'vue'
+import { useEditorStore, type Tool, type BrushType } from '../stores/useEditorStore'
 
 const props = defineProps<{
   mapCanvasRef?: { getStage: () => any } | null
@@ -117,35 +117,110 @@ const handleToggleBrushColor = () => {
   store.toggleBrushColor()
 }
 
+// Brush popout state
+const showBrushPopout = ref(false)
+const brushButtonRef = ref<HTMLElement | null>(null)
+
+// Toggle brush popout
+const toggleBrushPopout = () => {
+  showBrushPopout.value = !showBrushPopout.value
+}
+
+// Handle brush type selection
+const selectBrushType = (type: BrushType) => {
+  store.setBrushType(type)
+  store.setTool('draw')
+  showBrushPopout.value = false
+}
+
+// Close popout when clicking outside
+const handleClickOutside = (e: MouseEvent) => {
+  if (brushButtonRef.value && !brushButtonRef.value.contains(e.target as Node)) {
+    showBrushPopout.value = false
+  }
+}
+
+// Watch for clicks outside when popout is open
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 </script>
 
 <template>
   <div class="toolbar p-2 rounded-lg space-y-2 flex flex-col">
     <!-- Tool Selection with Brush Color Toggle -->
-    <div class="flex gap-1">
-      <button @click="setTool('draw')" :class="[
-        'flex-1 px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
-        store.currentTool === 'draw'
-          ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
-          : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
-      ]" :title="'Draw'">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
-          stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush w-4 h-4">
-          <path d="m11 10 3 3"/>
-          <path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/>
-          <path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/>
-        </svg>
-      </button>
+    <div class="flex gap-1 relative">
+      <div class="flex-1 relative" ref="brushButtonRef">
+        <button @click="toggleBrushPopout" :class="[
+          'w-full px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
+          store.currentTool === 'draw'
+            ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
+            : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
+        ]" :title="'Draw'">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush w-4 h-4">
+            <path d="m11 10 3 3" />
+            <path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z" />
+            <path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031" />
+          </svg>
+        </button>
+        <!-- Brush Type Popout -->
+        <Transition name="popout">
+          <div v-if="showBrushPopout" class="brush-popout" @click.stop>
+            <button @click="selectBrushType('standard')" :class="[
+              'brush-type-btn',
+              store.brushType === 'standard' ? 'active' : ''
+            ]" title="Standard Brush">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                style="width: 20px; height: 20px; display: block;" class="absolute">
+                <line x1="3" y1="12" x2="21" y2="12" />
+              </svg>
+            </button>
+            <button @click="selectBrushType('dotted')" :class="[
+              'brush-type-btn',
+              store.brushType === 'dotted' ? 'active' : ''
+            ]" title="Dotted Brush">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                style="width: 20px; height: 20px; display: block;" class="absolute">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="19" cy="12" r="1" />
+                <circle cx="5" cy="12" r="1" />
+              </svg>
+            </button>
+            <button @click="selectBrushType('arrow')" :class="[
+              'brush-type-btn',
+              store.brushType === 'arrow' ? 'active' : ''
+            ]" title="Arrow Brush">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                style="width: 20px; height: 20px; display: block;"
+                class="absolute rotate-180">
+                <line x1="4" y1="12" x2="16" y2="12" />
+                <line x1="12" y1="6" x2="20" y2="12" />
+                <line x1="12" y1="18" x2="20" y2="12" />
+              </svg>
+            </button>
+          </div>
+        </Transition>
+      </div>
       <button @click="handleToggleBrushColor"
         class="flex-1 px-2 py-1.5 rounded border-2 border-transparent transition-all duration-300 flex items-center justify-center"
         :style="{ backgroundColor: brushColorBg }" :title="`Brush Color: ${store.brushColor}`">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette-icon lucide-palette w-4 h-4">
-          <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/>
-          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
-          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
-          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
-          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+          <path
+            d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
         </svg>
       </button>
       <button @click="setTool('erase')" :class="[
@@ -154,7 +229,12 @@ const handleToggleBrushColor = () => {
           ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
           : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
       ]" :title="'Erase'">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser w-4 h-4"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser w-4 h-4">
+          <path
+            d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21" />
+          <path d="m5.082 11.09 8.828 8.828" />
+        </svg>
       </button>
     </div>
 
@@ -261,5 +341,81 @@ const handleToggleBrushColor = () => {
 .toolbar {
   background-color: rgba(30, 58, 138, 0.3);
   backdrop-filter: blur(4px);
+}
+
+.brush-popout {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  display: flex;
+  gap: 4px;
+  background-color: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  margin-bottom: 4px;
+}
+
+.popout-enter-active,
+.popout-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.popout-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.popout-enter-to {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.popout-leave-from {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.popout-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.brush-type-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(55, 65, 81, 0.8);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  border-radius: 4px;
+  color: rgba(229, 231, 235, 1);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.brush-type-btn svg {
+  color: inherit;
+  stroke: currentColor !important;
+  fill: none !important;
+  pointer-events: none;
+}
+
+.brush-type-btn:hover {
+  background-color: rgba(75, 85, 99, 0.9);
+  border-color: rgba(150, 150, 150, 0.5);
+  transform: scale(1.05);
+}
+
+.brush-type-btn.active {
+  background-color: rgba(59, 130, 246, 0.8);
+  border-color: rgba(147, 197, 253, 0.6);
+  color: white;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
 }
 </style>

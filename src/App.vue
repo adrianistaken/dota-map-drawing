@@ -4,6 +4,9 @@ import MapCanvas from './components/MapCanvas.vue'
 import Toolbar from './components/Toolbar.vue'
 import HeroPalette from './components/HeroPalette.vue'
 import MapIconsPalette from './components/MapIconsPalette.vue'
+import { useEditorStore } from './stores/useEditorStore'
+
+const store = useEditorStore()
 
 const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
 const sidebarHeight = ref<number | null>(null)
@@ -26,6 +29,9 @@ watch(mapCanvasRef, () => {
 
 // Also update on window resize
 onMounted(() => {
+  // Load persisted state from localStorage
+  store.loadState()
+
   window.addEventListener('resize', () => {
     setTimeout(updateSidebarHeight, 100)
   })

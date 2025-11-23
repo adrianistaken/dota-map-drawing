@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { saveStateToStorage, loadStateFromStorage, debounce, type PersistedState, STORAGE_VERSION } from '../utils/persistence'
 
 export type Tool = 'draw' | 'erase' | 'icon'
+export type BrushType = 'standard' | 'dotted' | 'arrow'
 
 export interface HeroSelection {
   id: string
@@ -20,6 +22,8 @@ export interface Stroke {
   points: number[]
   color: string
   strokeWidth: number
+  brushType?: BrushType
+  arrowAngle?: number
 }
 
 export interface Icon {
@@ -42,6 +46,7 @@ export const useEditorStore = defineStore('editor', () => {
   const brushColorIndex = ref(0)
   const brushColor = ref<string>(brushColorOptions[brushColorIndex.value])
   const brushSize = ref<number>(5)
+  const brushType = ref<BrushType>('standard')
   const selectedHero = ref<HeroSelection | null>(null)
   const selectedMapIcon = ref<MapIconSelection | null>(null)
 
@@ -55,6 +60,45 @@ export const useEditorStore = defineStore('editor', () => {
 
   // Map state
   const useSimpleMap = ref(false)
+
+  // Persistence: debounced save function
+  const debouncedSave = debounce(() => {
+    const state: PersistedState = {
+      strokes: JSON.parse(JSON.stringify(strokes.value)),
+      icons: JSON.parse(JSON.stringify(icons.value)),
+      preferences: {
+        brushColor: brushColor.value,
+        brushSize: brushSize.value,
+        brushType: brushType.value,
+        useSimpleMap: useSimpleMap.value
+      },
+      version: STORAGE_VERSION
+    }
+    saveStateToStorage(state)
+  }, 500)
+
+  // Persistence: save current state to storage
+  const persistState = () => {
+    debouncedSave()
+  }
+
+  // Persistence: load state from storage
+  const loadState = () => {
+    const savedState = loadStateFromStorage()
+    if (savedState) {
+      // Restore strokes and icons
+      strokes.value = savedState.strokes
+      icons.value = savedState.icons
+
+      // Restore preferences
+      if (savedState.preferences) {
+        brushColor.value = savedState.preferences.brushColor
+        brushSize.value = savedState.preferences.brushSize
+        brushType.value = savedState.preferences.brushType
+        useSimpleMap.value = savedState.preferences.useSimpleMap
+      }
+    }
+  }
 
   // Tool actions
   const setTool = (tool: Tool) => {
@@ -78,16 +122,24 @@ export const useEditorStore = defineStore('editor', () => {
     if (index !== -1) {
       brushColorIndex.value = index
       brushColor.value = brushColorOptions[index]
+      persistState()
     }
   }
 
   const toggleBrushColor = () => {
     brushColorIndex.value = (brushColorIndex.value + 1) % brushColorOptions.length
     brushColor.value = brushColorOptions[brushColorIndex.value]
+    persistState()
   }
 
   const setBrushSize = (size: number) => {
     brushSize.value = size
+    persistState()
+  }
+
+  const setBrushType = (type: BrushType) => {
+    brushType.value = type
+    persistState()
   }
 
   // Stroke actions
@@ -96,12 +148,14 @@ export const useEditorStore = defineStore('editor', () => {
     strokes.value.push(stroke)
     // Clear redo stack when new action is performed
     redoStack.value = []
+    persistState()
   }
 
   const removeStroke = (id: string) => {
     saveState()
     strokes.value = strokes.value.filter(s => s.id !== id)
     redoStack.value = []
+    persistState()
   }
 
   // Icon actions
@@ -109,6 +163,7 @@ export const useEditorStore = defineStore('editor', () => {
     saveState()
     icons.value.push(icon)
     redoStack.value = []
+    persistState()
   }
 
   const updateIconPosition = (id: string, x: number, y: number) => {
@@ -118,6 +173,7 @@ export const useEditorStore = defineStore('editor', () => {
       // We'll handle this in the component to avoid saving on every mousemove
       icon.x = x
       icon.y = y
+      // Note: persistState is called after drag ends in MapCanvas component
     }
   }
 
@@ -125,6 +181,7 @@ export const useEditorStore = defineStore('editor', () => {
     saveState()
     icons.value = icons.value.filter(i => i.id !== id)
     redoStack.value = []
+    persistState()
   }
 
   // Undo/Redo actions
@@ -154,6 +211,7 @@ export const useEditorStore = defineStore('editor', () => {
     const previousSnapshot = undoStack.value.pop()!
     strokes.value = previousSnapshot.strokes
     icons.value = previousSnapshot.icons
+    persistState()
   }
 
   const redo = () => {
@@ -170,6 +228,7 @@ export const useEditorStore = defineStore('editor', () => {
     const nextSnapshot = redoStack.value.pop()!
     strokes.value = nextSnapshot.strokes
     icons.value = nextSnapshot.icons
+    persistState()
   }
 
   // Clear actions
@@ -178,22 +237,26 @@ export const useEditorStore = defineStore('editor', () => {
     strokes.value = []
     icons.value = []
     redoStack.value = []
+    persistState()
   }
 
   const removeDrawings = () => {
     saveState()
     strokes.value = []
     redoStack.value = []
+    persistState()
   }
 
   const removeIcons = () => {
     saveState()
     icons.value = []
     redoStack.value = []
+    persistState()
   }
 
   const toggleMap = () => {
     useSimpleMap.value = !useSimpleMap.value
+    persistState()
   }
 
   return {
@@ -201,6 +264,7 @@ export const useEditorStore = defineStore('editor', () => {
     currentTool,
     brushColor,
     brushSize,
+    brushType,
     selectedHero,
     selectedMapIcon,
     strokes,
@@ -215,6 +279,7 @@ export const useEditorStore = defineStore('editor', () => {
     setBrushColor,
     toggleBrushColor,
     setBrushSize,
+    setBrushType,
     addStroke,
     removeStroke,
     addIcon,
@@ -226,7 +291,9 @@ export const useEditorStore = defineStore('editor', () => {
     clearMap,
     removeDrawings,
     removeIcons,
-    toggleMap
+    toggleMap,
+    loadState,
+    persistState
   }
 })
 

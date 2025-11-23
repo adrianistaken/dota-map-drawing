@@ -28,6 +28,48 @@ const iconImageCache = ref<Record<string, HTMLImageElement>>({})
 const isDrawing = ref(false)
 const currentLine = ref<number[]>([])
 const currentStrokeId = ref<string | null>(null)
+const currentArrowAngle = ref<number | null>(null)
+const currentMousePos = ref<{ x: number; y: number } | null>(null)
+
+// Helper function to calculate smoothed angle from a window of points
+// Uses a fixed number of points for consistent behavior regardless of line length
+// lookbackPoints: fixed number of points to look back (e.g., 25 points)
+// ignoreEndPoints: fixed number of points to ignore at the end (e.g., 3 points)
+const calculateSmoothedAngle = (points: number[], lookbackPoints: number, ignoreEndPoints: number = 3): number | null => {
+    if (points.length < 4) return null // Need at least 2 points
+
+    const totalPoints = points.length / 2 // Each point is x, y
+
+    // Use fixed lookback, but ensure we have enough points
+    const actualLookback = Math.min(lookbackPoints, totalPoints - ignoreEndPoints - 1)
+    const actualIgnore = Math.min(ignoreEndPoints, Math.floor(totalPoints / 4)) // Cap ignore at 25% of total
+
+    // Calculate effective end point (before ignored points)
+    const effectiveEndPoint = totalPoints - actualIgnore
+
+    // Get the start and end indices for the lookback window
+    // Start from earlier in the line, end before the very last points (to ignore sharp turns)
+    const startIdx = Math.max(0, (effectiveEndPoint - actualLookback) * 2)
+    const endIdx = Math.max(startIdx + 2, (effectiveEndPoint - 1) * 2)
+
+    // Get the first and last points in the window
+    const x1 = points[startIdx]
+    const y1 = points[startIdx + 1]
+    const x2 = points[endIdx]
+    const y2 = points[endIdx + 1]
+
+    // Calculate angle from start to end of the window
+    return Math.atan2(y2 - y1, x2 - x1)
+}
+
+// Helper to normalize angle difference (handles wrap-around)
+const angleDifference = (angle1: number, angle2: number): number => {
+    let diff = angle2 - angle1
+    // Normalize to [-PI, PI]
+    while (diff > Math.PI) diff -= 2 * Math.PI
+    while (diff < -Math.PI) diff += 2 * Math.PI
+    return Math.abs(diff)
+}
 
 // Stage ref for accessing Konva stage instance
 const stageRef = ref<any>(null)
@@ -128,6 +170,8 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
             isDrawing.value = true
             currentLine.value = [pos.x, pos.y]
             currentStrokeId.value = `stroke-${Date.now()}-${Math.random()}`
+            currentArrowAngle.value = null
+            currentMousePos.value = { x: pos.x, y: pos.y }
         }
     } else if (store.currentTool === 'icon') {
         // Only place new icon if clicking on empty space (stage or layer)
@@ -162,9 +206,38 @@ const handleStageMouseMove = (e: KonvaEventObject<MouseEvent>) => {
     if (!pos) return
 
     if (store.currentTool === 'draw' && isDrawing.value) {
+        // Update current mouse position for arrow tracking
+        currentMousePos.value = { x: pos.x, y: pos.y }
+
         // Create a new array reference to ensure vue-konva detects the change
         // This is important for real-time drawing updates
         currentLine.value = [...currentLine.value, pos.x, pos.y]
+
+        // Calculate arrow angle for arrow brush type with smoothing
+        if (store.brushType === 'arrow') {
+            if (currentLine.value.length >= 4) {
+                // Use smoothed angle calculation with a fixed lookback window
+                // Look back at last 25 points, ignoring the last 3 points to avoid jitter
+                // This makes it responsive to recent direction changes regardless of line length
+                const newAngle = calculateSmoothedAngle(currentLine.value, 25, 3)
+
+                if (newAngle !== null) {
+                    // Use a smaller threshold (~3 degrees = 0.052 radians) for more responsive updates
+                    const threshold = 0.052
+                    if (currentArrowAngle.value === null ||
+                        angleDifference(currentArrowAngle.value, newAngle) > threshold) {
+                        currentArrowAngle.value = newAngle
+                    }
+                }
+            } else if (currentLine.value.length === 2) {
+                // Only start point exists, calculate from start to current mouse position
+                const x1 = currentLine.value[0]
+                const y1 = currentLine.value[1]
+                const x2 = pos.x
+                const y2 = pos.y
+                currentArrowAngle.value = Math.atan2(y2 - y1, x2 - x1)
+            }
+        }
     } else if (store.currentTool === 'erase' && isErasing.value) {
         handleErase(pos.x, pos.y)
     }
@@ -175,23 +248,59 @@ const handleStageMouseUp = () => {
     if (isDrawing.value && currentLine.value.length >= 4) {
         // Need at least 2 points (4 numbers: x1, y1, x2, y2)
         const mapPoints = currentLine.value.map(point => point / currentScale.value)
+
+        // Calculate final arrow angle if needed
+        let arrowAngle: number | undefined = undefined
+        if (store.brushType === 'arrow') {
+            // Use a fixed lookback window (30 points) and ignore last 5 points to avoid sharp turns
+            // This uses the recent direction of travel, just before the end, regardless of line length
+            const finalAngle = calculateSmoothedAngle(currentLine.value, 30, 5)
+            if (finalAngle !== null) {
+                arrowAngle = finalAngle
+            } else if (currentArrowAngle.value !== null) {
+                // Fallback to current angle if calculation fails
+                arrowAngle = currentArrowAngle.value
+            } else if (currentLine.value.length >= 4) {
+                // Last resort: calculate from last two points
+                const len = currentLine.value.length
+                const x1 = currentLine.value[len - 4]
+                const y1 = currentLine.value[len - 3]
+                const x2 = currentLine.value[len - 2]
+                const y2 = currentLine.value[len - 1]
+                arrowAngle = Math.atan2(y2 - y1, x2 - x1)
+            } else if (currentLine.value.length === 2) {
+                // For very short lines (just start and end), use the angle from start to end
+                const x1 = currentLine.value[0]
+                const y1 = currentLine.value[1]
+                const x2 = currentLine.value[2]
+                const y2 = currentLine.value[3]
+                arrowAngle = Math.atan2(y2 - y1, x2 - x1)
+            }
+        }
+
         const stroke: Stroke = {
             id: currentStrokeId.value!,
             points: mapPoints,
             color: store.brushColor,
-            strokeWidth: store.brushSize / currentScale.value
+            strokeWidth: store.brushSize / currentScale.value,
+            brushType: store.brushType,
+            arrowAngle: arrowAngle
         }
         store.addStroke(stroke)
     }
     isDrawing.value = false
     currentLine.value = []
     currentStrokeId.value = null
+    currentArrowAngle.value = null
+    currentMousePos.value = null
 
     // Reset erasing state when mouse is released
     if (isErasing.value) {
         isErasing.value = false
         // Clear redo stack after erasing is complete
         store.redoStack.length = 0
+        // Persist state after erasing is complete
+        store.persistState()
     }
 }
 
@@ -272,9 +381,10 @@ const createDragMoveHandler = (iconId: string) => {
     }
 }
 
-// Handle icon drag end - clear tracking
+// Handle icon drag end - persist state after drag completes
 const handleIconDragEnd = () => {
-    // State already saved on drag start, no need to save again
+    // Persist state after icon position is updated
+    store.persistState()
 }
 
 // Computed property for current drawing line config (if actively drawing)
@@ -282,7 +392,7 @@ const handleIconDragEnd = () => {
 const currentDrawingLine = computed(() => {
     if (!isDrawing.value || currentLine.value.length < 4) return null
     // Create a new array copy to ensure reactivity
-    return {
+    const config: any = {
         points: [...currentLine.value],
         stroke: store.brushColor,
         strokeWidth: store.brushSize,
@@ -290,6 +400,65 @@ const currentDrawingLine = computed(() => {
         lineJoin: 'round' as const,
         tension: 0.5
     }
+
+    // Apply dash for dotted brush - more spacing between dots
+    if (store.brushType === 'dotted') {
+        config.dash = [3, 10]
+    }
+
+    return config
+})
+
+// Helper function to create arrow config - draws a ">" shape (two lines forming V)
+const createArrowConfig = (x: number, y: number, angle: number, color: string, strokeWidth: number, scale: number = 1) => {
+    // Make arrow bigger - increased multiplier from 1.5 to 2.5
+    const arrowSize = strokeWidth * scale * 2.5
+    const arrowLength = arrowSize
+    // Angle for the arrow lines (about 30 degrees from the main direction)
+    const arrowAngleOffset = Math.PI / 6 // 30 degrees
+
+    const tipX = x
+    const tipY = y
+
+    // Calculate the two lines of the ">" shape
+    // Left line: goes back and to the left
+    const leftX = tipX - arrowLength * Math.cos(angle - arrowAngleOffset)
+    const leftY = tipY - arrowLength * Math.sin(angle - arrowAngleOffset)
+
+    // Right line: goes back and to the right
+    const rightX = tipX - arrowLength * Math.cos(angle + arrowAngleOffset)
+    const rightY = tipY - arrowLength * Math.sin(angle + arrowAngleOffset)
+
+    return {
+        sceneFunc: (ctx: CanvasRenderingContext2D) => {
+            ctx.strokeStyle = color
+            ctx.lineWidth = strokeWidth * scale * 1.2
+            ctx.lineCap = 'round'
+            ctx.lineJoin = 'round'
+
+            // Draw left line
+            ctx.beginPath()
+            ctx.moveTo(tipX, tipY)
+            ctx.lineTo(leftX, leftY)
+            ctx.stroke()
+
+            // Draw right line
+            ctx.beginPath()
+            ctx.moveTo(tipX, tipY)
+            ctx.lineTo(rightX, rightY)
+            ctx.stroke()
+        }
+    }
+}
+
+// Computed property for current arrow (if actively drawing with arrow brush)
+const currentArrow = computed(() => {
+    if (!isDrawing.value || store.brushType !== 'arrow' || currentArrowAngle.value === null || !currentMousePos.value) {
+        return null
+    }
+
+    // Always use current mouse position for arrow location
+    return createArrowConfig(currentMousePos.value.x, currentMousePos.value.y, currentArrowAngle.value, store.brushColor, store.brushSize, 1)
 })
 
 // Stage config for vue-konva
@@ -335,19 +504,36 @@ defineExpose({
                 <v-image v-if="mapImage" :config="mapImageConfig" />
 
                 <!-- Render all saved strokes -->
-                <v-line v-for="stroke in store.strokes" :key="stroke.id" :config="{
-                    points: scalePoints(stroke.points),
-                    stroke: stroke.color,
-                    strokeWidth: stroke.strokeWidth * currentScale,
-                    lineCap: 'round',
-                    lineJoin: 'round',
-                    tension: 0.5,
-                    globalCompositeOperation: 'source-over'
-                }" />
+                <template v-for="stroke in store.strokes" :key="stroke.id">
+                    <v-line :config="{
+                        points: scalePoints(stroke.points),
+                        stroke: stroke.color,
+                        strokeWidth: stroke.strokeWidth * currentScale,
+                        lineCap: 'round',
+                        lineJoin: 'round',
+                        tension: 0.5,
+                        globalCompositeOperation: 'source-over',
+                        dash: stroke.brushType === 'dotted' ? [3, 10] : undefined
+                    }" />
+                    <!-- Render arrowhead for arrow strokes -->
+                    <v-shape
+                        v-if="stroke.brushType === 'arrow' && stroke.arrowAngle !== undefined && stroke.points.length >= 4"
+                        :config="createArrowConfig(
+                            stroke.points[stroke.points.length - 2] * currentScale,
+                            stroke.points[stroke.points.length - 1] * currentScale,
+                            stroke.arrowAngle || 0,
+                            stroke.color,
+                            stroke.strokeWidth,
+                            currentScale
+                        )" />
+                </template>
 
                 <!-- Render current drawing line (if actively drawing) -->
                 <!-- Using computed config ensures vue-konva detects changes in real-time -->
                 <v-line v-if="currentDrawingLine" :config="currentDrawingLine" />
+
+                <!-- Render current arrow during drawing -->
+                <v-shape v-if="currentArrow" :config="currentArrow" />
 
                 <!-- Render all icons with drag functionality -->
                 <v-image v-for="icon in store.icons" :key="icon.id" :config="{
