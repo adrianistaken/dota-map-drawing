@@ -45,25 +45,31 @@ const selectHero = (hero: HeroSelection) => {
 </script>
 
 <template>
-  <div class="hero-palette bg-gray-800 p-4 rounded-lg flex flex-col">
-    <h2 class="text-white text-lg font-semibold mb-4">Hero Icons</h2>
-    <div class="grid grid-cols-5 gap-2 overflow-y-auto flex-1 min-h-0" style="max-height: 400px;">
+  <div class="hero-palette p-2 rounded-lg flex flex-col" style="height: 100%;">
+    <div class="grid grid-cols-5 gap-1 overflow-y-auto flex-1 min-h-0">
       <button v-for="hero in heroOptions" :key="hero.id" @click="selectHero(hero)" :aria-label="`Select ${hero.name}`"
         :class="[
-          'w-10 h-10 relative p-1 rounded border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800 flex items-center justify-center',
+          'w-8 h-8 relative transition-all cursor-pointer focus-visible:outline-none flex items-center justify-center',
           store.selectedHero?.id === hero.id
-            ? 'bg-blue-700/60 border-blue-300 ring-2 ring-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.65)] scale-105'
-            : 'bg-gray-700 border-transparent hover:bg-gray-600'
+            ? 'ring-2 ring-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.65)] scale-110'
+            : 'hover:opacity-80 hover:scale-105'
         ]">
-        <img :src="hero.image" :alt="`${hero.name} icon`" class="w-5 absolute object-contain scale-125" />
+        <img :src="hero.image" :alt="`${hero.name} icon`" class="w-7 absolute object-contain" />
       </button>
     </div>
-    <p class="text-gray-400 text-xs mt-4 text-center">
-      Click an icon to select it, then click anywhere on the map to place it.
-    </p>
   </div>
 </template>
 
 <style scoped>
-/* Additional custom styles if needed */
+.hero-palette {
+  background-color: rgba(30, 58, 138, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+.hero-palette button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
 </style>

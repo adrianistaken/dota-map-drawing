@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useEditorStore, type Stroke, type Icon } from '../stores/useEditorStore'
 import type { KonvaEventObject } from 'konva/lib/Node'
 import type { Node } from 'konva/lib/Node'
@@ -15,9 +15,10 @@ const mapLoaded = ref(false)
 // Preserve the original map dimensions so we can scale it responsibly
 const originalMapSize = ref({ width: 0, height: 0 })
 
-const SIDEBAR_WIDTH = 300
-const MAP_PADDING = 80
-const COMFORTABLE_SCALE = 0.9
+const SIDEBAR_WIDTH = 450
+// Account for app container padding (1.5rem = 24px on each side) + gap (1.5rem = 24px) + extra margin
+const MAP_PADDING = 150
+const COMFORTABLE_SCALE = 0.7
 const ICON_BASE_SIZE = 64
 
 const currentScale = ref(1)
@@ -52,18 +53,31 @@ const handleResize = () => {
     updateStageSize()
 }
 
-// Load map image and hero icon
-onMounted(() => {
-    // Load map image
+// Load map image based on toggle state
+const loadMapImage = () => {
+    const mapPath = store.useSimpleMap
+        ? '/images/Gamemap_7.39_simplemap_dota2_gameasset.png'
+        : '/images/Gamemap_7.39_minimap_dota2_gameasset.png'
+
+    mapLoaded.value = false
     const mapImg = new Image()
-    mapImg.src = '/images/Gamemap_7.39_minimap_dota2_gameasset.png'
+    mapImg.src = mapPath
     mapImg.onload = () => {
         mapImage.value = mapImg
         originalMapSize.value = { width: mapImg.width, height: mapImg.height }
         updateStageSize()
         mapLoaded.value = true
     }
+}
 
+// Watch for map toggle changes
+watch(() => store.useSimpleMap, () => {
+    loadMapImage()
+})
+
+// Load map image and hero icon
+onMounted(() => {
+    loadMapImage()
     window.addEventListener('resize', handleResize)
 })
 
@@ -120,13 +134,15 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         // If clicking on an existing icon, let the drag handler take over
         const isStageOrLayer = targetClass === 'Stage' || targetClass === 'Layer'
         if (!isIconNode && (isStageOrLayer || isMapImage)) {
-            if (!store.selectedHero) return
+            // Check for either hero or map icon selection
+            const selectedIcon = store.selectedHero || store.selectedMapIcon
+            if (!selectedIcon) return
             const iconId = `icon-${Date.now()}-${Math.random()}`
             const newIcon: Icon = {
                 id: iconId,
                 x: pos.x / currentScale.value - ICON_BASE_SIZE / 2,
                 y: pos.y / currentScale.value - ICON_BASE_SIZE / 2,
-                image: store.selectedHero.image,
+                image: selectedIcon.image,
                 size: ICON_BASE_SIZE
             }
             store.addIcon(newIcon)

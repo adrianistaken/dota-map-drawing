@@ -9,6 +9,12 @@ export interface HeroSelection {
   image: string
 }
 
+export interface MapIconSelection {
+  id: string
+  name: string
+  image: string
+}
+
 export interface Stroke {
   id: string
   points: number[]
@@ -37,6 +43,7 @@ export const useEditorStore = defineStore('editor', () => {
   const brushColor = ref<string>(brushColorOptions[brushColorIndex.value])
   const brushSize = ref<number>(5)
   const selectedHero = ref<HeroSelection | null>(null)
+  const selectedMapIcon = ref<MapIconSelection | null>(null)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -46,6 +53,9 @@ export const useEditorStore = defineStore('editor', () => {
   const undoStack = ref<StateSnapshot[]>([])
   const redoStack = ref<StateSnapshot[]>([])
 
+  // Map state
+  const useSimpleMap = ref(false)
+
   // Tool actions
   const setTool = (tool: Tool) => {
     currentTool.value = tool
@@ -53,6 +63,13 @@ export const useEditorStore = defineStore('editor', () => {
 
   const selectHero = (hero: HeroSelection) => {
     selectedHero.value = hero
+    selectedMapIcon.value = null
+    currentTool.value = 'icon'
+  }
+
+  const selectMapIcon = (mapIcon: MapIconSelection) => {
+    selectedMapIcon.value = mapIcon
+    selectedHero.value = null
     currentTool.value = 'icon'
   }
 
@@ -175,19 +192,26 @@ export const useEditorStore = defineStore('editor', () => {
     redoStack.value = []
   }
 
+  const toggleMap = () => {
+    useSimpleMap.value = !useSimpleMap.value
+  }
+
   return {
     // State
     currentTool,
     brushColor,
     brushSize,
     selectedHero,
+    selectedMapIcon,
     strokes,
     icons,
     undoStack,
     redoStack,
+    useSimpleMap,
     // Actions
     setTool,
     selectHero,
+    selectMapIcon,
     setBrushColor,
     toggleBrushColor,
     setBrushSize,
@@ -201,7 +225,8 @@ export const useEditorStore = defineStore('editor', () => {
     redo,
     clearMap,
     removeDrawings,
-    removeIcons
+    removeIcons,
+    toggleMap
   }
 })
 
