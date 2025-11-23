@@ -120,51 +120,41 @@ const handleToggleBrushColor = () => {
 </script>
 
 <template>
-  <div class="toolbar p-2 rounded-lg space-y-2 shrink-0">
-    <!-- Tool Selection -->
-    <div class="space-y-1">
-      <div class="flex gap-1">
-        <button @click="setTool('draw')" :class="[
-          'flex-1 px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
-          store.currentTool === 'draw'
-            ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
-            : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
-        ]" :title="'Draw'">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-            <path d="M12 19l7-7 3 3-7 7-3-3z" />
-            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
-            <path d="M2 2l7.586 7.586" />
-            <circle cx="11" cy="11" r="2" />
-          </svg>
-        </button>
-        <button @click="setTool('erase')" :class="[
-          'flex-1 px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
-          store.currentTool === 'erase'
-            ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
-            : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
-        ]" :title="'Erase'">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
-            <path d="M18 8l-6 6" />
-            <path d="M12 8l6 6" />
-            <rect x="2" y="4" width="5" height="16" rx="0.5" fill="currentColor" opacity="0.4" />
-            <rect x="2" y="4" width="5" height="16" rx="0.5" />
-            <line x1="2" y1="8" x2="7" y2="8" />
-            <line x1="2" y1="12" x2="7" y2="12" />
-            <line x1="2" y1="16" x2="7" y2="16" />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Brush / Eraser Controls -->
-    <div class="space-y-2">
+  <div class="toolbar p-2 rounded-lg space-y-2 flex flex-col">
+    <!-- Tool Selection with Brush Color Toggle -->
+    <div class="flex gap-1">
+      <button @click="setTool('draw')" :class="[
+        'flex-1 px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
+        store.currentTool === 'draw'
+          ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
+          : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
+      ]" :title="'Draw'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+          stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush w-4 h-4">
+          <path d="m11 10 3 3"/>
+          <path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/>
+          <path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/>
+        </svg>
+      </button>
       <button @click="handleToggleBrushColor"
-        class="w-full px-2 py-1.5 rounded border-2 border-transparent text-gray-200 hover:opacity-80 transition-all duration-300 flex items-center justify-center text-sm font-semibold"
-        :style="{ backgroundColor: brushColorBg }">
-        Toggle Brush
+        class="flex-1 px-2 py-1.5 rounded border-2 border-transparent transition-all duration-300 flex items-center justify-center"
+        :style="{ backgroundColor: brushColorBg }" :title="`Brush Color: ${store.brushColor}`">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+          stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette-icon lucide-palette w-4 h-4">
+          <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/>
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+        </svg>
+      </button>
+      <button @click="setTool('erase')" :class="[
+        'flex-1 px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
+        store.currentTool === 'erase'
+          ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
+          : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'
+      ]" :title="'Erase'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser-icon lucide-eraser w-4 h-4"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></svg>
       </button>
     </div>
 

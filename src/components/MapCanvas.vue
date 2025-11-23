@@ -318,9 +318,10 @@ const getIconImage = (imagePath: string) => {
     return iconImageCache.value[imagePath]
 }
 
-// Expose stage ref for parent components (for export functionality)
+// Expose stage ref and height for parent components (for export functionality)
 defineExpose({
-    getStage
+    getStage,
+    getStageHeight: () => stageHeight.value
 })
 </script>
 

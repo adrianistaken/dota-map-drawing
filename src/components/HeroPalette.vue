@@ -45,8 +45,8 @@ const selectHero = (hero: HeroSelection) => {
 </script>
 
 <template>
-  <div class="hero-palette p-2 rounded-lg flex flex-col" style="height: 100%;">
-    <div class="grid grid-cols-5 gap-1 overflow-y-auto flex-1 min-h-0">
+  <div class="hero-palette p-2 rounded-lg flex flex-col" style="height: 100%; max-height: 100%;">
+    <div class="grid grid-cols-10 gap-1 overflow-y-auto" style="max-height: 100%;">
       <button v-for="hero in heroOptions" :key="hero.id" @click="selectHero(hero)" :aria-label="`Select ${hero.name}`"
         :class="[
           'w-8 h-8 relative transition-all cursor-pointer focus-visible:outline-none flex items-center justify-center',

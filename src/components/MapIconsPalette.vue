@@ -64,8 +64,8 @@ const selectMapIcon = (mapIcon: MapIconSelection) => {
 </script>
 
 <template>
-    <div class="map-icons-palette flex flex-col flex-1 min-h-0">
-        <div class="grid grid-cols-5 gap-1 overflow-y-auto flex-1 min-h-0">
+    <div class="map-icons-palette flex flex-col">
+        <div class="grid grid-cols-5 gap-1 overflow-y-auto" style="max-height: 400px;">
             <button v-for="icon in mapIconOptions" :key="icon.id" @click="selectMapIcon(icon)"
                 :aria-label="`Select ${icon.name}`" :class="[
                     'w-8 h-8 relative transition-all cursor-pointer focus-visible:outline-none flex items-center justify-center',
@@ -73,7 +73,7 @@ const selectMapIcon = (mapIcon: MapIconSelection) => {
                         ? 'ring-2 ring-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.65)] scale-110'
                         : 'hover:opacity-80 hover:scale-105'
                 ]">
-                <img :src="icon.image" :alt="`${icon.name} icon`" class="w-4 absolute object-contain scale-125" />
+                <img :src="icon.image" :alt="`${icon.name} icon`" class="w-7 absolute object-contain" />
             </button>
         </div>
     </div>
