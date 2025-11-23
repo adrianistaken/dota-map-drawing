@@ -4,6 +4,7 @@ import MapCanvas from './components/MapCanvas.vue'
 import Toolbar from './components/Toolbar.vue'
 import HeroPalette from './components/HeroPalette.vue'
 import MapIconsPalette from './components/MapIconsPalette.vue'
+import SocialLinks from './components/SocialLinks.vue'
 import { useEditorStore } from './stores/useEditorStore'
 
 const store = useEditorStore()
@@ -58,6 +59,7 @@ onMounted(() => {
         <Toolbar :map-canvas-ref="mapCanvasRef" />
       </div>
     </div>
+    <SocialLinks />
   </div>
 </template>
 
