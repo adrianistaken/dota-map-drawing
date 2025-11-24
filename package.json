@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "konva": "^10.0.9",
     "pinia": "^3.0.4",
     "vue": "^3.5.24",
