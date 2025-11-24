@@ -366,23 +366,12 @@ const handleIconDragStart = () => {
     store.saveState()
 }
 
-// Handle icon drag move - update position
-const handleIconDragMove = (iconId: string, e: KonvaEventObject<MouseEvent>) => {
+// Create a wrapper to pass icon ID to dragend handler
+const createDragEndHandler = (iconId: string, e: KonvaEventObject<MouseEvent>) => {
     const node = e.target as Node
     const mapX = node.x() / currentScale.value
     const mapY = node.y() / currentScale.value
     store.updateIconPosition(iconId, mapX, mapY)
-}
-
-// Wrapper for drag move event handler
-const createDragMoveHandler = (iconId: string) => {
-    return (e: KonvaEventObject<MouseEvent>) => {
-        handleIconDragMove(iconId, e)
-    }
-}
-
-// Handle icon drag end - persist state after drag completes
-const handleIconDragEnd = () => {
     // Persist state after icon position is updated
     store.persistState()
 }
@@ -545,8 +534,7 @@ defineExpose({
                     draggable: true,
                     listening: true,
                     name: 'hero-icon'
-                }" @dragstart="handleIconDragStart" @dragmove="createDragMoveHandler(icon.id)"
-                    @dragend="handleIconDragEnd" />
+                }" @dragstart="handleIconDragStart" @dragend="createDragEndHandler(icon.id, $event)" />
             </v-layer>
         </v-stage>
         <div v-else class="loading">Loading map...</div>
