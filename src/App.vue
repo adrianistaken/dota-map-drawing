@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import MapCanvas from './components/MapCanvas.vue'
 import Toolbar from './components/Toolbar.vue'
 import HeroPalette from './components/HeroPalette.vue'
@@ -11,14 +11,26 @@ const store = useEditorStore()
 
 const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
 const sidebarHeight = ref<number | null>(null)
+const isMobileLayout = ref(false)
+
+const updateLayoutMode = () => {
+  isMobileLayout.value = window.innerWidth <= 900
+}
+
+const handleResize = () => {
+  updateLayoutMode()
+  setTimeout(updateSidebarHeight, 100)
+}
 
 // Watch for map height changes and update sidebar height
 const updateSidebarHeight = () => {
-  if (mapCanvasRef.value) {
+  if (mapCanvasRef.value && !isMobileLayout.value) {
     const height = mapCanvasRef.value.getStageHeight?.()
     if (height) {
       sidebarHeight.value = height - 90
     }
+  } else {
+    sidebarHeight.value = null
   }
 }
 
@@ -33,12 +45,15 @@ onMounted(() => {
   // Load persisted state from localStorage
   store.loadState()
 
-  window.addEventListener('resize', () => {
-    setTimeout(updateSidebarHeight, 100)
-  })
+  handleResize()
+  window.addEventListener('resize', handleResize)
 
   // Initial update after a short delay to ensure map is loaded
   setTimeout(updateSidebarHeight, 500)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -66,18 +81,17 @@ onMounted(() => {
 <style scoped>
 .app-container {
   display: flex;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   background-image: url('/images/dota2websitebackground.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  overflow: hidden;
   padding: 1.5rem;
   box-sizing: border-box;
   gap: 1.5rem;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -87,9 +101,7 @@ onMounted(() => {
   justify-content: center;
   overflow: visible;
   box-sizing: border-box;
-  /* Semi-transparent overlay to make map more visible */
-  /* background-color: rgba(26, 26, 26, 0.3); */
-  flex-shrink: 0;
+  flex: 1 1 auto;
 }
 
 .sidebar {
@@ -131,5 +143,32 @@ onMounted(() => {
   flex: 1;
   min-width: 0;
   height: fit-content;
+}
+
+@media (max-width: 900px) {
+  .app-container {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .map-section {
+    width: 100%;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto !important;
+  }
+
+  .sidebar-bottom {
+    flex-direction: column;
+  }
+
+  .sidebar-bottom>* {
+    width: 100%;
+  }
 }
 </style>
