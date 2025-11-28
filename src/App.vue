@@ -91,7 +91,7 @@ onBeforeUnmount(() => {
   padding: 1.5rem;
   box-sizing: border-box;
   gap: 1.5rem;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 }
 
@@ -169,6 +169,11 @@ onBeforeUnmount(() => {
 
   .sidebar-bottom>* {
     width: 100%;
+  }
+
+  .sidebar-top {
+    max-height: 16rem;
+    flex: initial;
   }
 }
 </style>
