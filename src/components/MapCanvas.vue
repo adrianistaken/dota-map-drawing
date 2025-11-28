@@ -18,7 +18,10 @@ const originalMapSize = ref({ width: 0, height: 0 })
 const SIDEBAR_WIDTH = 450
 // Account for app container padding (1.5rem = 24px on each side) + gap (1.5rem = 24px) + extra margin
 const MAP_PADDING = 150
+const MOBILE_PADDING = 80
 const COMFORTABLE_SCALE = 0.7
+const MOBILE_COMFORTABLE_SCALE = 0.95
+const MOBILE_BREAKPOINT = 900
 const ICON_BASE_SIZE = 64
 
 const currentScale = ref(1)
@@ -77,14 +80,20 @@ const stageRef = ref<any>(null)
 const updateStageSize = () => {
     if (!originalMapSize.value.width || !originalMapSize.value.height) return
 
-    const availableWidth = Math.max(300, window.innerWidth - SIDEBAR_WIDTH - MAP_PADDING)
-    const availableHeight = Math.max(300, window.innerHeight - MAP_PADDING)
+    const isMobile = window.innerWidth <= MOBILE_BREAKPOINT
+    const horizontalPadding = isMobile ? MOBILE_PADDING : MAP_PADDING
+    const verticalPadding = isMobile ? MOBILE_PADDING : MAP_PADDING
+    const sidebarOffset = isMobile ? 0 : SIDEBAR_WIDTH
+
+    const availableWidth = Math.max(300, window.innerWidth - sidebarOffset - horizontalPadding)
+    const availableHeight = Math.max(300, window.innerHeight - verticalPadding)
 
     const widthRatio = availableWidth / originalMapSize.value.width
     const heightRatio = availableHeight / originalMapSize.value.height
 
     const baseScale = Math.min(widthRatio, heightRatio, 1)
-    const scaleFactor = Math.min(COMFORTABLE_SCALE, baseScale)
+    const scaleLimit = isMobile ? MOBILE_COMFORTABLE_SCALE : COMFORTABLE_SCALE
+    const scaleFactor = Math.min(scaleLimit, baseScale)
 
     stageWidth.value = Math.round(originalMapSize.value.width * scaleFactor)
     stageHeight.value = Math.round(originalMapSize.value.height * scaleFactor)
@@ -135,8 +144,8 @@ const getStage = () => {
     return null
 }
 
-// Handle stage mouse down - start drawing or place icon
-const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+// Handle stage pointer down - start drawing or place icon
+const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | PointerEvent>) => {
     // Konva coordinates are relative to the stage
     // e.evt is the native browser event, e.target is the Konva node
     const stage = e.target.getStage()
@@ -197,8 +206,8 @@ const handleStageMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     }
 }
 
-// Handle stage mouse move - continue drawing or erasing
-const handleStageMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+// Handle stage pointer move - continue drawing or erasing
+const handleStagePointerMove = (e: KonvaEventObject<MouseEvent | TouchEvent | PointerEvent>) => {
     const stage = e.target.getStage()
     if (!stage) return
 
@@ -243,8 +252,8 @@ const handleStageMouseMove = (e: KonvaEventObject<MouseEvent>) => {
     }
 }
 
-// Handle stage mouse up - finish drawing
-const handleStageMouseUp = () => {
+// Handle stage pointer up - finish drawing
+const handleStagePointerUp = () => {
     if (isDrawing.value && currentLine.value.length >= 4) {
         // Need at least 2 points (4 numbers: x1, y1, x2, y2)
         const mapPoints = currentLine.value.map(point => point / currentScale.value)
@@ -485,8 +494,9 @@ defineExpose({
 
 <template>
     <div class="map-canvas-container">
-        <v-stage v-if="mapLoaded" ref="stageRef" :config="stageConfig" @mousedown="handleStageMouseDown"
-            @mousemove="handleStageMouseMove" @mouseup="handleStageMouseUp" @mouseleave="handleStageMouseUp">
+        <v-stage v-if="mapLoaded" ref="stageRef" :config="stageConfig" @pointerdown="handleStagePointerDown"
+            @pointermove="handleStagePointerMove" @pointerup="handleStagePointerUp" @pointerleave="handleStagePointerUp"
+            @pointercancel="handleStagePointerUp">
             <v-layer>
                 <!-- Map background image -->
                 <!-- Konva Image component requires the image element, not just a path -->
@@ -544,6 +554,7 @@ defineExpose({
 <style scoped>
 .map-canvas-container {
     width: 100%;
+    max-width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
