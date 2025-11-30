@@ -27,7 +27,7 @@ const updateSidebarHeight = () => {
   if (mapCanvasRef.value && !isMobileLayout.value) {
     const height = mapCanvasRef.value.getStageHeight?.()
     if (height) {
-      sidebarHeight.value = height - 90
+      sidebarHeight.value = height
     }
   } else {
     sidebarHeight.value = null
@@ -59,19 +59,21 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-container">
-    <!-- Map Canvas on the left -->
-    <div class="map-section">
-      <MapCanvas ref="mapCanvasRef" />
-    </div>
-
-    <!-- Right sidebar with three-box layout -->
-    <div class="sidebar" :style="sidebarHeight ? { height: `${sidebarHeight}px` } : {}">
-      <div class="sidebar-top">
-        <HeroPalette />
+    <div class="main-content">
+      <!-- Map Canvas on the left -->
+      <div class="map-section">
+        <MapCanvas ref="mapCanvasRef" />
       </div>
-      <div class="sidebar-bottom">
-        <MapIconsPalette />
-        <Toolbar :map-canvas-ref="mapCanvasRef" />
+
+      <!-- Right sidebar with three-box layout -->
+      <div class="sidebar" :style="sidebarHeight ? { height: `${sidebarHeight}px` } : {}">
+        <div class="sidebar-top">
+          <HeroPalette />
+        </div>
+        <div class="sidebar-bottom">
+          <MapIconsPalette />
+          <Toolbar :map-canvas-ref="mapCanvasRef" />
+        </div>
       </div>
     </div>
     <SocialLinks />
@@ -81,6 +83,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .app-container {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 100vh;
   background-image: url('/images/dota2websitebackground.jpg');
@@ -88,11 +93,17 @@ onBeforeUnmount(() => {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  gap: 1.5rem;
+}
+
+.main-content {
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  width: min(100%, 1400px);
+  margin: 0 auto;
 }
 
 .map-section {
@@ -101,7 +112,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   overflow: visible;
   box-sizing: border-box;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
 }
 
 .sidebar {
@@ -147,6 +158,10 @@ onBeforeUnmount(() => {
 
 @media (max-width: 900px) {
   .app-container {
+    justify-content: flex-start;
+  }
+
+  .main-content {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
@@ -155,6 +170,7 @@ onBeforeUnmount(() => {
   }
 
   .map-section {
+    flex: 1 1 auto;
     width: 100%;
   }
 

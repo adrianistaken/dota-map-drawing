@@ -318,7 +318,7 @@ onUnmounted(() => {
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
             </svg>
           </button>
-          <button @click="store.toggleMap()"
+          <!-- <button @click="store.toggleMap()"
             class="px-2 py-1.5 bg-purple-700 text-white rounded hover:bg-purple-600 transition-colors flex items-center justify-center"
             :title="'Toggle Map View'">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -330,7 +330,7 @@ onUnmounted(() => {
               <path d="M9 3v6" />
               <path d="M9 15v6" />
             </svg>
-          </button>
+          </button> -->
         </div>
       </div>
     </div>

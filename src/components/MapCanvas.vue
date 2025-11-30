@@ -108,7 +108,7 @@ const handleResize = () => {
 const loadMapImage = () => {
     const mapPath = store.useSimpleMap
         ? '/images/Gamemap_7.39_simplemap_dota2_gameasset.png'
-        : '/images/Gamemap_7.39_minimap_dota2_gameasset.png'
+        : '/images/Gamemap_7.39_minimap_dota2_gameasset copy.png'
 
     mapLoaded.value = false
     const mapImg = new Image()
