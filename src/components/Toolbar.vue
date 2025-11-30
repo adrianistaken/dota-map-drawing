@@ -122,7 +122,9 @@ const showBrushPopout = ref(false)
 const brushButtonRef = ref<HTMLElement | null>(null)
 
 // Toggle brush popout
-const toggleBrushPopout = () => {
+const handleBrushButtonClick = () => {
+  // Immediately switch to drawing with the last-used brush type
+  store.setTool('draw')
   showBrushPopout.value = !showBrushPopout.value
 }
 
@@ -156,7 +158,7 @@ onUnmounted(() => {
     <!-- Tool Selection with Brush Color Toggle -->
     <div class="flex gap-1 relative">
       <div class="flex-1 relative" ref="brushButtonRef">
-        <button @click="toggleBrushPopout" :class="[
+        <button @click="handleBrushButtonClick" :class="[
           'w-full px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
           store.currentTool === 'draw'
             ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
