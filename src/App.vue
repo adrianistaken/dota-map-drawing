@@ -12,6 +12,8 @@ const store = useEditorStore()
 const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
 const sidebarHeight = ref<number | null>(null)
 const isMobileLayout = ref(false)
+const toolsWrapperRef = ref<HTMLElement | null>(null)
+const toolsHeight = ref<number | null>(null)
 
 const updateLayoutMode = () => {
   isMobileLayout.value = window.innerWidth <= 900
@@ -19,7 +21,18 @@ const updateLayoutMode = () => {
 
 const handleResize = () => {
   updateLayoutMode()
-  setTimeout(updateSidebarHeight, 100)
+  setTimeout(() => {
+    updateSidebarHeight()
+    updateToolsHeight()
+  }, 100)
+}
+
+const updateToolsHeight = () => {
+  if (toolsWrapperRef.value) {
+    toolsHeight.value = toolsWrapperRef.value.offsetHeight
+  } else {
+    toolsHeight.value = null
+  }
 }
 
 // Watch for map height changes and update sidebar height
@@ -40,6 +53,10 @@ watch(mapCanvasRef, () => {
   setTimeout(updateSidebarHeight, 100)
 }, { immediate: true })
 
+watch(toolsWrapperRef, () => {
+  setTimeout(updateToolsHeight, 50)
+})
+
 // Also update on window resize
 onMounted(() => {
   // Load persisted state from localStorage
@@ -49,7 +66,10 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 
   // Initial update after a short delay to ensure map is loaded
-  setTimeout(updateSidebarHeight, 500)
+  setTimeout(() => {
+    updateSidebarHeight()
+    updateToolsHeight()
+  }, 500)
 })
 
 onBeforeUnmount(() => {
@@ -71,8 +91,10 @@ onBeforeUnmount(() => {
           <HeroPalette />
         </div>
         <div class="sidebar-bottom">
-          <MapIconsPalette />
-          <Toolbar :map-canvas-ref="mapCanvasRef" />
+          <MapIconsPalette :max-height="toolsHeight" />
+          <div ref="toolsWrapperRef">
+            <Toolbar :map-canvas-ref="mapCanvasRef" />
+          </div>
         </div>
       </div>
     </div>
@@ -142,18 +164,18 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-bottom {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   flex-shrink: 0;
   height: fit-content;
   overflow: visible;
+  align-items: stretch;
 }
 
 .sidebar-bottom>* {
-  flex: 1;
   min-width: 0;
-  height: fit-content;
+  height: 100%;
 }
 
 @media (max-width: 900px) {

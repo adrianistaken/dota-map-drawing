@@ -15,6 +15,9 @@ export interface MapIconSelection {
   id: string
   name: string
   image: string
+  size?: number
+  width?: number
+  height?: number
 }
 
 export interface Stroke {
@@ -31,7 +34,9 @@ export interface Icon {
   x: number
   y: number
   image: string
-  size: number
+  size?: number
+  width?: number
+  height?: number
 }
 
 interface StateSnapshot {
@@ -296,4 +301,3 @@ export const useEditorStore = defineStore('editor', () => {
     persistState
   }
 })
-

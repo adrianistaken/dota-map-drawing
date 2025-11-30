@@ -191,12 +191,16 @@ const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
             const selectedIcon = store.selectedHero || store.selectedMapIcon
             if (!selectedIcon) return
             const iconId = `icon-${Date.now()}-${Math.random()}`
+            const iconWidth = (selectedIcon as any).width ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
+            const iconHeight = (selectedIcon as any).height ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
             const newIcon: Icon = {
                 id: iconId,
-                x: pos.x / currentScale.value - ICON_BASE_SIZE / 2,
-                y: pos.y / currentScale.value - ICON_BASE_SIZE / 2,
+                x: pos.x / currentScale.value - iconWidth / 2,
+                y: pos.y / currentScale.value - iconHeight / 2,
                 image: selectedIcon.image,
-                size: ICON_BASE_SIZE
+                size: iconWidth === iconHeight ? iconWidth : undefined,
+                width: iconWidth,
+                height: iconHeight
             }
             store.addIcon(newIcon)
         }
@@ -353,10 +357,13 @@ const handleErase = (x: number, y: number) => {
     })
 
     store.icons.forEach(icon => {
-        const centerX = icon.x + icon.size / 2
-        const centerY = icon.y + icon.size / 2
+        const iconWidth = icon.width ?? icon.size ?? ICON_BASE_SIZE
+        const iconHeight = icon.height ?? icon.size ?? ICON_BASE_SIZE
+        const centerX = icon.x + iconWidth / 2
+        const centerY = icon.y + iconHeight / 2
+        const radius = Math.max(iconWidth, iconHeight) / 2
         const distance = Math.sqrt((centerX - mapX) ** 2 + (centerY - mapY) ** 2)
-        if (distance <= icon.size / 2 + eraserRadius) {
+        if (distance <= radius + eraserRadius) {
             iconsToRemove.push(icon.id)
         }
     })
@@ -539,8 +546,8 @@ defineExpose({
                     image: getIconImage(icon.image),
                     x: icon.x * currentScale,
                     y: icon.y * currentScale,
-                    width: icon.size * currentScale,
-                    height: icon.size * currentScale,
+                    width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
                     draggable: true,
                     listening: true,
                     name: 'hero-icon'
