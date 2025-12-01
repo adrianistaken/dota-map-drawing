@@ -5,6 +5,7 @@ import Toolbar from './components/Toolbar.vue'
 import HeroPalette from './components/HeroPalette.vue'
 import MapIconsPalette from './components/MapIconsPalette.vue'
 import SocialLinks from './components/SocialLinks.vue'
+import LastUpdatedBadge from './components/LastUpdatedBadge.vue'
 import { useEditorStore } from './stores/useEditorStore'
 
 const store = useEditorStore()
@@ -98,6 +99,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+    <LastUpdatedBadge />
     <SocialLinks />
   </div>
 </template>
@@ -188,6 +190,7 @@ onBeforeUnmount(() => {
     align-items: stretch;
     justify-content: flex-start;
     padding: 1rem;
+    padding-top: 4.5rem; /* leave room for fixed badges on small screens */
     gap: 1rem;
   }
 
