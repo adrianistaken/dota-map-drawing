@@ -334,6 +334,18 @@ onUnmounted(() => {
             </svg>
           </button> -->
         </div>
+        <div class="pt-2">
+          <button @click="store.toggleAutoPlaceIcons()" class="w-full px-2 py-1.5 rounded border-2 transition-all flex items-center justify-between"
+            :class="store.autoPlaceIcons
+              ? 'bg-indigo-700 text-white border-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.6)]'
+              : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'">
+            <span class="text-sm font-medium">Auto-place map icons</span>
+            <span class="text-xs px-2 py-0.5 rounded-full"
+              :class="store.autoPlaceIcons ? 'bg-indigo-900 text-indigo-100' : 'bg-gray-800 text-gray-200'">
+              {{ store.autoPlaceIcons ? 'On' : 'Off' }}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
