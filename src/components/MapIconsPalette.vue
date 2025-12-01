@@ -1,71 +1,55 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useEditorStore, type MapIconSelection } from '../stores/useEditorStore'
+import { mapIconFiles, mapIconPath } from '../data/mapIcons'
 
 const store = useEditorStore()
 
-// Map icons from /images/icons (excluding heroes subdirectory)
-const mapIconFiles = [
-    '36px-Main_Shop_mapicon_dota2_gameasset.png',
-    '36px-Secret_Shop_mapicon_dota2_gameasset.png',
-    '36px-Side_Lane_Shop_mapicon_dota2_gameasset.png',
-    '60px-Ancient_mapicon_dota2_gameasset.png',
-    'Roshan_symbol_dota2_gameasset.png',
-
-
-    'Amplify_Damage_Rune_mapicon_dota2_gameasset.png',
-    'Haste_Rune_mapicon_dota2_gameasset.png',
-    'Illusion_Rune_mapicon_dota2_gameasset.png',
-    'Invisibility_Rune_mapicon_dota2_gameasset.png',
-    'Shield_Rune_mapicon_dota2_gameasset.png',
-
-    'Water_Rune_mapicon_dota2_gameasset.png',
-    'Wisdom_Rune_mapicon_dota2_gameasset.png',
-    'Regeneration_Rune_mapicon_dota2_gameasset.png',
-    'Arcane_Rune_mapicon_dota2_gameasset.png',
-    'Bounty_Rune_mapicon_dota2_gameasset.png',
-
-    'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png',
-    'Neutral_Camp_(large)_mapicon_dota2_gameasset.png',
-    'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png',
-    'Neutral_Camp_(small)_mapicon_dota2_gameasset.png',
-    'Scan_abilityicon_dota2_gameasset.png',
-
-    'Animal_Courier_(Radiant)_mapicon_dota2_gameasset.png',
-    'Flying_Courier_(Radiant)_mapicon_dota2_gameasset.png',
-    'Observer_Ward_mapicon_dota2_gameasset.png',
-    'Sentry_Ward_mapicon_dota2_gameasset.png',
-
-]
+const props = defineProps<{
+    maxHeight?: number | null
+}>()
 
 // Generate map icon options
-const mapIconOptions: MapIconSelection[] = mapIconFiles.map(filename => {
+const mapIconOptions: MapIconSelection[] = mapIconFiles
+    .filter(icon => icon.showInPalette !== false)
+    .map(({ folder, filename, size, width, height }) => {
     // Convert filename to display name
     let displayName = filename
-        .replace(/_mapicon_dota2_gameasset\.png$/, '')
+        .replace(/_mapicon_dota2_gameasset.*\.png$/i, '')
         .replace(/^\d+px-/, '')
         .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
         .replace(/\b\w/g, l => l.toUpperCase())
         .replace(/\(Radiant\)/gi, '(Radiant)')
 
-    const imagePath = `/images/icons/${encodeURIComponent(filename)}`
-    const id = filename.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
+    const imagePath = mapIconPath(folder, filename)
+    const id = `${folder}-${filename.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`
 
-    return {
-        id,
-        name: displayName,
-        image: imagePath
-    }
-})
+        return {
+            id,
+            name: displayName,
+            image: imagePath,
+            size,
+            width,
+            height
+        }
+    })
 
 // Select map icon - also switches to icon placement mode
 const selectMapIcon = (mapIcon: MapIconSelection) => {
     store.selectMapIcon(mapIcon)
 }
+
+const containerStyle = computed(() => props.maxHeight ? {
+    height: `${props.maxHeight}px`,
+    maxHeight: `${props.maxHeight}px`
+} : {})
 </script>
 
 <template>
-    <div class="map-icons-palette flex flex-col">
-        <div class="grid grid-cols-5 gap-1 overflow-y-auto" style="max-height: 400px;">
+    <div class="map-icons-palette flex flex-col" :style="containerStyle">
+        <div class="grid grid-cols-5 gap-1 overflow-y-auto" :style="containerStyle">
             <button v-for="icon in mapIconOptions" :key="icon.id" @click="selectMapIcon(icon)"
                 :aria-label="`Select ${icon.name}`" :class="[
                     'w-8 h-8 relative transition-all cursor-pointer focus-visible:outline-none flex items-center justify-center',

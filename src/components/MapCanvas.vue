@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useEditorStore, type Stroke, type Icon } from '../stores/useEditorStore'
 import type { KonvaEventObject } from 'konva/lib/Node'
 import type { Node } from 'konva/lib/Node'
+import { mapIconFiles, mapIconPath } from '../data/mapIcons'
 
 const store = useEditorStore()
 
@@ -108,7 +109,7 @@ const handleResize = () => {
 const loadMapImage = () => {
     const mapPath = store.useSimpleMap
         ? '/images/Gamemap_7.39_simplemap_dota2_gameasset.png'
-        : '/images/Gamemap_7.39_minimap_dota2_gameasset.png'
+        : '/images/Gamemap_7.39_minimap_dota2_gameasset copy.png'
 
     mapLoaded.value = false
     const mapImg = new Image()
@@ -129,6 +130,9 @@ watch(() => store.useSimpleMap, () => {
 // Load map image and hero icon
 onMounted(() => {
     loadMapImage()
+    if (store.autoPlaceIcons) {
+        store.ensureAutoPlacedIcons()
+    }
     window.addEventListener('resize', handleResize)
 })
 
@@ -142,6 +146,66 @@ const getStage = () => {
         return stageRef.value.getStage()
     }
     return null
+}
+
+const logIconPlacement = (icon: Icon, stageX: number, stageY: number) => {
+    const iconWidth = icon.width ?? icon.size ?? ICON_BASE_SIZE
+    const iconHeight = icon.height ?? icon.size ?? ICON_BASE_SIZE
+    console.log('Icon placed', {
+        id: icon.id,
+        map: {
+            x: icon.x,
+            y: icon.y
+        },
+        center: {
+            x: icon.x + iconWidth / 2,
+            y: icon.y + iconHeight / 2
+        },
+        stage: {
+            x: stageX,
+            y: stageY
+        },
+        scale: currentScale.value
+    })
+}
+
+const humanizeIconName = (filename: string) => {
+    return filename
+        .replace(/_mapicon_dota2_gameasset.*\.png$/i, '')
+        .replace(/^\d+px-/, '')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, l => l.toUpperCase())
+        .replace(/\(Radiant\)/gi, '(Radiant)')
+}
+
+const iconNameLookup: Record<string, string> = (() => {
+    const map: Record<string, string> = {}
+    mapIconFiles.forEach(({ folder, filename }) => {
+        const path = mapIconPath(folder, filename)
+        map[path] = humanizeIconName(filename)
+    })
+    return map
+})()
+
+const getIconDisplayName = (icon: Icon) => {
+    if (iconNameLookup[icon.image]) return iconNameLookup[icon.image]
+    const parts = icon.image.split('/')
+    const filename = decodeURIComponent(parts[parts.length - 1] || icon.image)
+    return humanizeIconName(filename) || icon.image
+}
+
+const logAllIconPositions = () => {
+    if (!store.icons.length) {
+        console.log('Icon positions: (none)')
+        return
+    }
+    const lines = store.icons.map(icon => {
+        const name = getIconDisplayName(icon)
+        return `${name}: x: ${icon.x.toFixed(2)}, y: ${icon.y.toFixed(2)}`
+    })
+    console.log('Icon positions:\n' + lines.join('\n'))
 }
 
 // Handle stage pointer down - start drawing or place icon
@@ -191,14 +255,20 @@ const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
             const selectedIcon = store.selectedHero || store.selectedMapIcon
             if (!selectedIcon) return
             const iconId = `icon-${Date.now()}-${Math.random()}`
+            const iconWidth = (selectedIcon as any).width ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
+            const iconHeight = (selectedIcon as any).height ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
             const newIcon: Icon = {
                 id: iconId,
-                x: pos.x / currentScale.value - ICON_BASE_SIZE / 2,
-                y: pos.y / currentScale.value - ICON_BASE_SIZE / 2,
+                x: pos.x / currentScale.value - iconWidth / 2,
+                y: pos.y / currentScale.value - iconHeight / 2,
                 image: selectedIcon.image,
-                size: ICON_BASE_SIZE
+                size: iconWidth === iconHeight ? iconWidth : undefined,
+                width: iconWidth,
+                height: iconHeight
             }
             store.addIcon(newIcon)
+            logIconPlacement(newIcon, pos.x, pos.y)
+            logAllIconPositions()
         }
     } else if (store.currentTool === 'erase') {
         // Erase strokes near click position
@@ -353,10 +423,13 @@ const handleErase = (x: number, y: number) => {
     })
 
     store.icons.forEach(icon => {
-        const centerX = icon.x + icon.size / 2
-        const centerY = icon.y + icon.size / 2
+        const iconWidth = icon.width ?? icon.size ?? ICON_BASE_SIZE
+        const iconHeight = icon.height ?? icon.size ?? ICON_BASE_SIZE
+        const centerX = icon.x + iconWidth / 2
+        const centerY = icon.y + iconHeight / 2
+        const radius = Math.max(iconWidth, iconHeight) / 2
         const distance = Math.sqrt((centerX - mapX) ** 2 + (centerY - mapY) ** 2)
-        if (distance <= icon.size / 2 + eraserRadius) {
+        if (distance <= radius + eraserRadius) {
             iconsToRemove.push(icon.id)
         }
     })
@@ -383,6 +456,8 @@ const createDragEndHandler = (iconId: string, e: KonvaEventObject<MouseEvent>) =
     store.updateIconPosition(iconId, mapX, mapY)
     // Persist state after icon position is updated
     store.persistState()
+    console.log('Icon moved (map coords)', { x: mapX, y: mapY })
+    logAllIconPositions()
 }
 
 // Computed property for current drawing line config (if actively drawing)
@@ -539,8 +614,8 @@ defineExpose({
                     image: getIconImage(icon.image),
                     x: icon.x * currentScale,
                     y: icon.y * currentScale,
-                    width: icon.size * currentScale,
-                    height: icon.size * currentScale,
+                    width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
                     draggable: true,
                     listening: true,
                     name: 'hero-icon'

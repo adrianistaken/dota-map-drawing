@@ -122,7 +122,9 @@ const showBrushPopout = ref(false)
 const brushButtonRef = ref<HTMLElement | null>(null)
 
 // Toggle brush popout
-const toggleBrushPopout = () => {
+const handleBrushButtonClick = () => {
+  // Immediately switch to drawing with the last-used brush type
+  store.setTool('draw')
   showBrushPopout.value = !showBrushPopout.value
 }
 
@@ -156,7 +158,7 @@ onUnmounted(() => {
     <!-- Tool Selection with Brush Color Toggle -->
     <div class="flex gap-1 relative">
       <div class="flex-1 relative" ref="brushButtonRef">
-        <button @click="toggleBrushPopout" :class="[
+        <button @click="handleBrushButtonClick" :class="[
           'w-full px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
           store.currentTool === 'draw'
             ? 'bg-blue-600 text-white border-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
@@ -318,7 +320,7 @@ onUnmounted(() => {
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
             </svg>
           </button>
-          <button @click="store.toggleMap()"
+          <!-- <button @click="store.toggleMap()"
             class="px-2 py-1.5 bg-purple-700 text-white rounded hover:bg-purple-600 transition-colors flex items-center justify-center"
             :title="'Toggle Map View'">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -330,6 +332,18 @@ onUnmounted(() => {
               <path d="M9 3v6" />
               <path d="M9 15v6" />
             </svg>
+          </button> -->
+        </div>
+        <div class="pt-2">
+          <button @click="store.toggleAutoPlaceIcons()" class="w-full px-2 py-1.5 rounded border-2 transition-all flex items-center justify-between"
+            :class="store.autoPlaceIcons
+              ? 'bg-indigo-700 text-white border-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.6)]'
+              : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'">
+            <span class="text-sm font-medium">Auto-place map icons</span>
+            <span class="text-xs px-2 py-0.5 rounded-full"
+              :class="store.autoPlaceIcons ? 'bg-indigo-900 text-indigo-100' : 'bg-gray-800 text-gray-200'">
+              {{ store.autoPlaceIcons ? 'On' : 'Off' }}
+            </span>
           </button>
         </div>
       </div>

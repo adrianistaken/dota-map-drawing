@@ -15,13 +15,16 @@ export interface PersistedState {
         x: number
         y: number
         image: string
-        size: number
+        size?: number
+        width?: number
+        height?: number
     }>
     preferences: {
         brushColor: string
         brushSize: number
         brushType: 'standard' | 'dotted' | 'arrow'
         useSimpleMap: boolean
+        autoPlaceIcons?: boolean
     }
     version: string
 }
@@ -142,4 +145,3 @@ export function debounce<T extends (...args: any[]) => void>(
 }
 
 export { STORAGE_KEY, STORAGE_VERSION }
-

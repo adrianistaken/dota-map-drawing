@@ -12,6 +12,8 @@ const store = useEditorStore()
 const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
 const sidebarHeight = ref<number | null>(null)
 const isMobileLayout = ref(false)
+const toolsWrapperRef = ref<HTMLElement | null>(null)
+const toolsHeight = ref<number | null>(null)
 
 const updateLayoutMode = () => {
   isMobileLayout.value = window.innerWidth <= 900
@@ -19,7 +21,18 @@ const updateLayoutMode = () => {
 
 const handleResize = () => {
   updateLayoutMode()
-  setTimeout(updateSidebarHeight, 100)
+  setTimeout(() => {
+    updateSidebarHeight()
+    updateToolsHeight()
+  }, 100)
+}
+
+const updateToolsHeight = () => {
+  if (toolsWrapperRef.value) {
+    toolsHeight.value = toolsWrapperRef.value.offsetHeight
+  } else {
+    toolsHeight.value = null
+  }
 }
 
 // Watch for map height changes and update sidebar height
@@ -27,7 +40,7 @@ const updateSidebarHeight = () => {
   if (mapCanvasRef.value && !isMobileLayout.value) {
     const height = mapCanvasRef.value.getStageHeight?.()
     if (height) {
-      sidebarHeight.value = height - 90
+      sidebarHeight.value = height
     }
   } else {
     sidebarHeight.value = null
@@ -40,6 +53,10 @@ watch(mapCanvasRef, () => {
   setTimeout(updateSidebarHeight, 100)
 }, { immediate: true })
 
+watch(toolsWrapperRef, () => {
+  setTimeout(updateToolsHeight, 50)
+})
+
 // Also update on window resize
 onMounted(() => {
   // Load persisted state from localStorage
@@ -49,7 +66,10 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 
   // Initial update after a short delay to ensure map is loaded
-  setTimeout(updateSidebarHeight, 500)
+  setTimeout(() => {
+    updateSidebarHeight()
+    updateToolsHeight()
+  }, 500)
 })
 
 onBeforeUnmount(() => {
@@ -59,19 +79,23 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-container">
-    <!-- Map Canvas on the left -->
-    <div class="map-section">
-      <MapCanvas ref="mapCanvasRef" />
-    </div>
-
-    <!-- Right sidebar with three-box layout -->
-    <div class="sidebar" :style="sidebarHeight ? { height: `${sidebarHeight}px` } : {}">
-      <div class="sidebar-top">
-        <HeroPalette />
+    <div class="main-content">
+      <!-- Map Canvas on the left -->
+      <div class="map-section">
+        <MapCanvas ref="mapCanvasRef" />
       </div>
-      <div class="sidebar-bottom">
-        <MapIconsPalette />
-        <Toolbar :map-canvas-ref="mapCanvasRef" />
+
+      <!-- Right sidebar with three-box layout -->
+      <div class="sidebar" :style="sidebarHeight ? { height: `${sidebarHeight}px` } : {}">
+        <div class="sidebar-top">
+          <HeroPalette />
+        </div>
+        <div class="sidebar-bottom">
+          <MapIconsPalette :max-height="toolsHeight" />
+          <div ref="toolsWrapperRef">
+            <Toolbar :map-canvas-ref="mapCanvasRef" />
+          </div>
+        </div>
       </div>
     </div>
     <SocialLinks />
@@ -81,6 +105,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .app-container {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   min-height: 100vh;
   background-image: url('/images/dota2websitebackground.jpg');
@@ -88,11 +115,17 @@ onBeforeUnmount(() => {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  padding: 1.5rem;
-  box-sizing: border-box;
-  gap: 1.5rem;
+}
+
+.main-content {
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  width: min(100%, 1400px);
+  margin: 0 auto;
 }
 
 .map-section {
@@ -101,7 +134,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   overflow: visible;
   box-sizing: border-box;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
 }
 
 .sidebar {
@@ -131,22 +164,26 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-bottom {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   flex-shrink: 0;
   height: fit-content;
   overflow: visible;
+  align-items: stretch;
 }
 
 .sidebar-bottom>* {
-  flex: 1;
   min-width: 0;
-  height: fit-content;
+  height: 100%;
 }
 
 @media (max-width: 900px) {
   .app-container {
+    justify-content: flex-start;
+  }
+
+  .main-content {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
@@ -155,6 +192,7 @@ onBeforeUnmount(() => {
   }
 
   .map-section {
+    flex: 1 1 auto;
     width: 100%;
   }
 
