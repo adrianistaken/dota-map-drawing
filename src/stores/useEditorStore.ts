@@ -22,178 +22,185 @@ const buildAutoIcon = (folder: MapIconFolder, filename: string, preset: { id: st
   }
 }
 
-const AUTO_ICON_PRESETS: Icon[] = [
-  // Dire ancients/towers
-  buildAutoIcon('runes', '60px-Ancient_mapicon_dota2_gameasset red.png', {
-    id: 'auto-ancient-dire',
-    x: 715,
-    y: 170
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
-    id: 'auto-tower-dire-t4-left',
-    x: 678,
-    y: 195
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
-    id: 'auto-tower-dire-t4-right',
-    x: 705,
-    y: 212
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
-    id: 'auto-tower-dire-t3-mid',
-    x: 557,
-    y: 315
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
-    id: 'auto-tower-dire-t2-mid',
-    x: 646,
-    y: 234
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
-    id: 'auto-tower-dire-t1-mid',
-    x: 458,
-    y: 389
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
-    id: 'auto-tower90-dire-1',
-    x: 615,
-    y: 149
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
-    id: 'auto-tower90-dire-2',
-    x: 430,
-    y: 126
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
-    id: 'auto-tower90-dire-3',
-    x: 173,
-    y: 138
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
-    id: 'auto-tower90-dire-4',
-    x: 750,
-    y: 275
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
-    id: 'auto-tower90-dire-5',
-    x: 747,
-    y: 404
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
-    id: 'auto-tower90-dire-6',
-    x: 745,
-    y: 528
-  }),
-  // Radiant ancients/towers
-  buildAutoIcon('runes', '60px-Ancient_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-ancient-radiant',
-    x: 145.45,
-    y: 689.15
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
-    id: 'auto-tower-radiant-t4-left',
-    x: 149.62,
-    y: 657.89
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
-    id: 'auto-tower-radiant-t4-right',
-    x: 173.15,
-    y: 679.36
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
-    id: 'auto-tower-radiant-t3-mid',
-    x: 202.30,
-    y: 623.45
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
-    id: 'auto-tower-radiant-t2-mid',
-    x: 283.02,
-    y: 552.73
-  }),
-  buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
-    id: 'auto-tower-radiant-t1-mid',
-    x: 357.72,
-    y: 490.90
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-tower90-radiant-1',
-    x: 114.14,
-    y: 589.54
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-tower90-radiant-2',
-    x: 115.40,
-    y: 467.91
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-tower90-radiant-3',
-    x: 123.93,
-    y: 333.34
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-tower90-radiant-4',
-    x: 240.35,
-    y: 718.21
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-tower90-radiant-5',
-    x: 415.28,
-    y: 728.08
-  }),
-  buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
-    id: 'auto-tower90-radiant-6',
-    x: 680.12,
-    y: 720.50
-  }),
-  // Watchers
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-1', x: 569.20, y: 640.56 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-2', x: 755.06, y: 723.41 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-3', x: 819.41, y: 478.20 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-4', x: 602.33, y: 800.25 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-5', x: 464.74, y: 787.92 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-6', x: 434.92, y: 548.48 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-7', x: 262.12, y: 425.43 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-8', x: 61.63, y: 396.18 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-9', x: 575.23, y: 451.36 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-10', x: 392.81, y: 310.86 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-11', x: 280.29, y: 217.29 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-12', x: 398.41, y: 82.37 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-13', x: 256.37, y: 46.70 }),
-  buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-14', x: 94.79, y: 130.14 }),
-  // Lotus pools
-  buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
-    id: 'auto-lotus-1',
-    x: 805.86,
-    y: 648.66
-  }),
-  buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
-    id: 'auto-lotus-2',
-    x: 52.90,
-    y: 196.23
-  }),
-  // Warp gates
-  buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
-    id: 'auto-warp-1',
-    x: 66.85,
-    y: 86.18
-  }),
-  buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
-    id: 'auto-warp-2',
-    x: 794.43,
-    y: 736.50
-  }),
-  // Tormentors
-  buildAutoIcon('map', 'tormentor minimap icon.png', {
-    id: 'auto-tormentor-1',
-    x: 797.72,
-    y: 794.39
-  }),
-  buildAutoIcon('map', 'tormentor minimap icon.png', {
-    id: 'auto-tormentor-2',
-    x: 75.93,
-    y: 32.66
-  })
-]
+type AutoIconCategory = 'buildings' | 'watchers' | 'structures'
+
+const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
+  buildings: [
+    // Dire ancients/towers
+    buildAutoIcon('runes', '60px-Ancient_mapicon_dota2_gameasset red.png', {
+      id: 'auto-ancient-dire',
+      x: 715,
+      y: 170
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
+      id: 'auto-tower-dire-t4-left',
+      x: 678,
+      y: 195
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
+      id: 'auto-tower-dire-t4-right',
+      x: 705,
+      y: 212
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
+      id: 'auto-tower-dire-t3-mid',
+      x: 557,
+      y: 315
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
+      id: 'auto-tower-dire-t2-mid',
+      x: 646,
+      y: 234
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasse redt.png', {
+      id: 'auto-tower-dire-t1-mid',
+      x: 458,
+      y: 389
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
+      id: 'auto-tower90-dire-1',
+      x: 615,
+      y: 149
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
+      id: 'auto-tower90-dire-2',
+      x: 430,
+      y: 126
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
+      id: 'auto-tower90-dire-3',
+      x: 173,
+      y: 138
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
+      id: 'auto-tower90-dire-4',
+      x: 750,
+      y: 275
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
+      id: 'auto-tower90-dire-5',
+      x: 747,
+      y: 404
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasset red.png', {
+      id: 'auto-tower90-dire-6',
+      x: 745,
+      y: 528
+    }),
+    // Radiant ancients/towers
+    buildAutoIcon('runes', '60px-Ancient_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-ancient-radiant',
+      x: 145.45,
+      y: 689.15
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
+      id: 'auto-tower-radiant-t4-left',
+      x: 149.62,
+      y: 657.89
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
+      id: 'auto-tower-radiant-t4-right',
+      x: 173.15,
+      y: 679.36
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
+      id: 'auto-tower-radiant-t3-mid',
+      x: 202.30,
+      y: 623.45
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
+      id: 'auto-tower-radiant-t2-mid',
+      x: 283.02,
+      y: 552.73
+    }),
+    buildAutoIcon('map', 'Tower_45_mapicon_dota2_gameasset green.png', {
+      id: 'auto-tower-radiant-t1-mid',
+      x: 357.72,
+      y: 490.90
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-tower90-radiant-1',
+      x: 114.14,
+      y: 589.54
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-tower90-radiant-2',
+      x: 115.40,
+      y: 467.91
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-tower90-radiant-3',
+      x: 123.93,
+      y: 333.34
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-tower90-radiant-4',
+      x: 240.35,
+      y: 718.21
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-tower90-radiant-5',
+      x: 415.28,
+      y: 728.08
+    }),
+    buildAutoIcon('map', 'Tower_90_mapicon_dota2_gameasse greent.png', {
+      id: 'auto-tower90-radiant-6',
+      x: 680.12,
+      y: 720.50
+    })
+  ],
+  watchers: [
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-1', x: 569.20, y: 640.56 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-2', x: 755.06, y: 723.41 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-3', x: 819.41, y: 478.20 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-4', x: 602.33, y: 800.25 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-5', x: 464.74, y: 787.92 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-6', x: 434.92, y: 548.48 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-7', x: 262.12, y: 425.43 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-8', x: 61.63, y: 396.18 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-9', x: 575.23, y: 451.36 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-10', x: 392.81, y: 310.86 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-11', x: 280.29, y: 217.29 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-12', x: 398.41, y: 82.37 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-13', x: 256.37, y: 46.70 }),
+    buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-14', x: 94.79, y: 130.14 })
+  ],
+  structures: [
+    // Lotus pools
+    buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
+      id: 'auto-lotus-1',
+      x: 805.86,
+      y: 648.66
+    }),
+    buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
+      id: 'auto-lotus-2',
+      x: 52.90,
+      y: 196.23
+    }),
+    // Warp gates
+    buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
+      id: 'auto-warp-1',
+      x: 66.85,
+      y: 86.18
+    }),
+    buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
+      id: 'auto-warp-2',
+      x: 794.43,
+      y: 736.50
+    }),
+    // Tormentors
+    buildAutoIcon('map', 'tormentor minimap icon.png', {
+      id: 'auto-tormentor-1',
+      x: 797.72,
+      y: 794.39
+    }),
+    buildAutoIcon('map', 'tormentor minimap icon.png', {
+      id: 'auto-tormentor-2',
+      x: 75.93,
+      y: 32.66
+    })
+  ]
+}
 
 export interface HeroSelection {
   id: string
@@ -244,7 +251,9 @@ export const useEditorStore = defineStore('editor', () => {
   const brushType = ref<BrushType>('standard')
   const selectedHero = ref<HeroSelection | null>(null)
   const selectedMapIcon = ref<MapIconSelection | null>(null)
-  const autoPlaceIcons = ref(false)
+  const autoPlaceBuildings = ref(false)
+  const autoPlaceWatchers = ref(false)
+  const autoPlaceStructures = ref(false)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -267,7 +276,10 @@ export const useEditorStore = defineStore('editor', () => {
         brushSize: brushSize.value,
         brushType: brushType.value,
         useSimpleMap: useSimpleMap.value,
-        autoPlaceIcons: autoPlaceIcons.value
+        autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || undefined,
+        autoPlaceBuildings: autoPlaceBuildings.value,
+        autoPlaceWatchers: autoPlaceWatchers.value,
+        autoPlaceStructures: autoPlaceStructures.value
       },
       version: STORAGE_VERSION
     }
@@ -293,7 +305,10 @@ export const useEditorStore = defineStore('editor', () => {
         brushSize.value = savedState.preferences.brushSize
         brushType.value = savedState.preferences.brushType
         useSimpleMap.value = savedState.preferences.useSimpleMap
-        autoPlaceIcons.value = savedState.preferences.autoPlaceIcons ?? false
+        const legacyAutoPlace = savedState.preferences.autoPlaceIcons ?? false
+        autoPlaceBuildings.value = savedState.preferences.autoPlaceBuildings ?? legacyAutoPlace
+        autoPlaceWatchers.value = savedState.preferences.autoPlaceWatchers ?? legacyAutoPlace
+        autoPlaceStructures.value = savedState.preferences.autoPlaceStructures ?? legacyAutoPlace
       }
     }
   }
@@ -382,10 +397,10 @@ export const useEditorStore = defineStore('editor', () => {
     persistState()
   }
 
-  const ensureAutoPlacedIcons = () => {
-    if (!autoPlaceIcons.value) return
+  const addAutoIconsForCategory = (category: AutoIconCategory) => {
+    const presets = AUTO_ICON_PRESETS[category]
     const existingIds = new Set(icons.value.map(icon => icon.id))
-    const missingIcons = AUTO_ICON_PRESETS.filter(icon => !existingIds.has(icon.id))
+    const missingIcons = presets.filter(icon => !existingIds.has(icon.id))
     if (missingIcons.length === 0) return
 
     saveState()
@@ -394,11 +409,50 @@ export const useEditorStore = defineStore('editor', () => {
     persistState()
   }
 
-  const removeAutoPlacedIcons = () => {
-    if (!icons.value.some(icon => AUTO_ICON_PRESETS.some(autoIcon => autoIcon.id === icon.id))) return
+  const removeAutoIconsForCategory = (category: AutoIconCategory) => {
+    const presetIds = new Set(AUTO_ICON_PRESETS[category].map(icon => icon.id))
+    const hasIcons = icons.value.some(icon => presetIds.has(icon.id))
+    if (!hasIcons) return
+
     saveState()
-    icons.value = icons.value.filter(icon => !AUTO_ICON_PRESETS.some(autoIcon => autoIcon.id === icon.id))
+    icons.value = icons.value.filter(icon => !presetIds.has(icon.id))
     redoStack.value = []
+    persistState()
+  }
+
+  const ensureAutoPlacedIcons = () => {
+    if (autoPlaceBuildings.value) addAutoIconsForCategory('buildings')
+    if (autoPlaceWatchers.value) addAutoIconsForCategory('watchers')
+    if (autoPlaceStructures.value) addAutoIconsForCategory('structures')
+  }
+
+  const toggleAutoPlaceBuildings = () => {
+    autoPlaceBuildings.value = !autoPlaceBuildings.value
+    if (autoPlaceBuildings.value) {
+      addAutoIconsForCategory('buildings')
+    } else {
+      removeAutoIconsForCategory('buildings')
+    }
+    persistState()
+  }
+
+  const toggleAutoPlaceWatchers = () => {
+    autoPlaceWatchers.value = !autoPlaceWatchers.value
+    if (autoPlaceWatchers.value) {
+      addAutoIconsForCategory('watchers')
+    } else {
+      removeAutoIconsForCategory('watchers')
+    }
+    persistState()
+  }
+
+  const toggleAutoPlaceStructures = () => {
+    autoPlaceStructures.value = !autoPlaceStructures.value
+    if (autoPlaceStructures.value) {
+      addAutoIconsForCategory('structures')
+    } else {
+      removeAutoIconsForCategory('structures')
+    }
     persistState()
   }
 
@@ -477,16 +531,6 @@ export const useEditorStore = defineStore('editor', () => {
     persistState()
   }
 
-  const toggleAutoPlaceIcons = () => {
-    autoPlaceIcons.value = !autoPlaceIcons.value
-    if (autoPlaceIcons.value) {
-      ensureAutoPlacedIcons()
-    } else {
-      removeAutoPlacedIcons()
-    }
-    persistState()
-  }
-
   return {
     // State
     currentTool,
@@ -495,7 +539,9 @@ export const useEditorStore = defineStore('editor', () => {
     brushType,
     selectedHero,
     selectedMapIcon,
-    autoPlaceIcons,
+    autoPlaceBuildings,
+    autoPlaceWatchers,
+    autoPlaceStructures,
     strokes,
     icons,
     undoStack,
@@ -515,7 +561,6 @@ export const useEditorStore = defineStore('editor', () => {
     updateIconPosition,
     removeIcon,
     ensureAutoPlacedIcons,
-    removeAutoPlacedIcons,
     saveState,
     undo,
     redo,
@@ -523,7 +568,9 @@ export const useEditorStore = defineStore('editor', () => {
     removeDrawings,
     removeIcons,
     toggleMap,
-    toggleAutoPlaceIcons,
+    toggleAutoPlaceBuildings,
+    toggleAutoPlaceWatchers,
+    toggleAutoPlaceStructures,
     loadState,
     persistState
   }

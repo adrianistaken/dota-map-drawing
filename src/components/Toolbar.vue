@@ -334,17 +334,37 @@ onUnmounted(() => {
             </svg>
           </button> -->
         </div>
-        <div class="pt-2">
-          <button @click="store.toggleAutoPlaceIcons()" class="w-full px-2 py-1.5 rounded border-2 transition-all flex items-center justify-between"
-            :class="store.autoPlaceIcons
-              ? 'bg-indigo-700 text-white border-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.6)]'
-              : 'bg-gray-700 text-gray-200 border-transparent hover:bg-gray-600'">
-            <span class="text-sm font-medium">Auto-place map icons</span>
-            <span class="text-xs px-2 py-0.5 rounded-full"
-              :class="store.autoPlaceIcons ? 'bg-indigo-900 text-indigo-100' : 'bg-gray-800 text-gray-200'">
-              {{ store.autoPlaceIcons ? 'On' : 'Off' }}
-            </span>
-          </button>
+        <div class="pt-2 space-y-2">
+          <div class="toggle-row">
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold text-gray-100">Buildings</span>
+              <span class="text-[11px] text-gray-300">Ancients & towers</span>
+            </div>
+            <button class="toggle-switch" :class="{ on: store.autoPlaceBuildings }"
+              :aria-pressed="store.autoPlaceBuildings" @click="store.toggleAutoPlaceBuildings()">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+          <div class="toggle-row">
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold text-gray-100">Watchers</span>
+              <span class="text-[11px] text-gray-300">Auto-place watcher spots</span>
+            </div>
+            <button class="toggle-switch" :class="{ on: store.autoPlaceWatchers }"
+              :aria-pressed="store.autoPlaceWatchers" @click="store.toggleAutoPlaceWatchers()">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+          <div class="toggle-row">
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold text-gray-100">Structures</span>
+              <span class="text-[11px] text-gray-300">Warp gate, tormentor, lotus</span>
+            </div>
+            <button class="toggle-switch" :class="{ on: store.autoPlaceStructures }"
+              :aria-pressed="store.autoPlaceStructures" @click="store.toggleAutoPlaceStructures()">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -431,5 +451,56 @@ onUnmounted(() => {
   border-color: rgba(147, 197, 253, 0.6);
   color: white;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.75rem;
+  background-color: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border-radius: 9999px;
+  border: 2px solid #d6e3f2;
+  background: linear-gradient(145deg, #0f1623, #111827);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #e9f6ff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toggle-switch.on {
+  border-color: #ebf4ff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(64, 172, 255, 0.35);
+}
+
+.toggle-switch.on .toggle-thumb {
+  transform: translateX(18px);
+  background: #f4fbff;
+}
+
+.toggle-switch:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
 }
 </style>

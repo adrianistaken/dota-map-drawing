@@ -27,6 +27,9 @@ const ICON_BASE_SIZE = 64
 
 const currentScale = ref(1)
 const iconImageCache = ref<Record<string, HTMLImageElement>>({})
+const autoPlacementEnabled = computed(() =>
+    store.autoPlaceBuildings || store.autoPlaceWatchers || store.autoPlaceStructures
+)
 
 // Current drawing state
 const isDrawing = ref(false)
@@ -130,7 +133,7 @@ watch(() => store.useSimpleMap, () => {
 // Load map image and hero icon
 onMounted(() => {
     loadMapImage()
-    if (store.autoPlaceIcons) {
+    if (autoPlacementEnabled.value) {
         store.ensureAutoPlacedIcons()
     }
     window.addEventListener('resize', handleResize)
