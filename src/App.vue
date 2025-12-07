@@ -48,10 +48,12 @@ onBeforeUnmount(() => {
       </aside>
 
       <main class="center-panel">
-        <div class="map-frame">
-          <MapCanvas ref="mapCanvasRef" />
+        <div class="center-overlays">
           <LastUpdatedBadge />
           <SocialLinks />
+        </div>
+        <div class="map-frame">
+          <MapCanvas ref="mapCanvasRef" />
         </div>
       </main>
 
@@ -128,6 +130,23 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.center-overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.center-overlays :deep(*) {
+  pointer-events: auto;
 }
 
 .map-frame {

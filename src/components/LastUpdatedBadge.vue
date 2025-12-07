@@ -1,6 +1,6 @@
 <template>
     <div class="last-updated" aria-label="Last updated timestamp">
-        Last updated: Nov 30, 2025
+        Last updated: Dec 6, 2025
     </div>
 </template>
 
@@ -9,12 +9,12 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    padding: 0.45rem 0.9rem;
+    padding: 0.25rem 0.5rem;
     color: rgba(255, 255, 255, 0.9);
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(6px);
     border-radius: 999px;
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     letter-spacing: 0.01em;
     z-index: 10;
     opacity: 0.9;
