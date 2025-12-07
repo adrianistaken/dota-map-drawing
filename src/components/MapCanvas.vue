@@ -621,7 +621,8 @@ defineExpose({
                     height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
                     draggable: true,
                     listening: true,
-                    name: 'hero-icon'
+                    name: 'hero-icon',
+                    opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1
                 }" @dragstart="handleIconDragStart" @dragend="createDragEndHandler(icon.id, $event)" />
             </v-layer>
         </v-stage>
