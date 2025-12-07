@@ -19,12 +19,12 @@
 
 <style scoped>
 .social-links {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     display: flex;
     gap: 0.75rem;
-    z-index: 1000;
+    z-index: 10;
 }
 
 .social-link {
@@ -33,16 +33,24 @@
     justify-content: center;
     color: rgba(255, 255, 255, 0.87);
     opacity: 0.2;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     text-decoration: none;
 }
 
 .social-link:hover {
     opacity: 1;
+    transform: translateY(-2px);
 }
 
 .social-icon {
     width: 24px;
     height: 24px;
+}
+
+@media (max-width: 600px) {
+    .social-links {
+        top: 0.75rem;
+        right: 0.75rem;
+    }
 }
 </style>
