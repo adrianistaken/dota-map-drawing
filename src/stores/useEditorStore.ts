@@ -22,7 +22,7 @@ const buildAutoIcon = (folder: MapIconFolder, filename: string, preset: { id: st
   }
 }
 
-type AutoIconCategory = 'buildings' | 'watchers' | 'structures'
+type AutoIconCategory = 'buildings' | 'watchers' | 'structures' | 'neutralCamps'
 
 const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
   buildings: [
@@ -199,6 +199,152 @@ const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
       x: 75.93,
       y: 32.66
     })
+  ],
+  neutralCamps: [
+    // Ancient camps
+    buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-ancient-1',
+      x: 190.92,
+      y: 16.80
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-ancient-2',
+      x: 629.85,
+      y: 417.75
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-ancient-3',
+      x: 682.85,
+      y: 822.99
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-ancient-4',
+      x: 176.44,
+      y: 451.35
+    }),
+    // Large camps
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-1',
+      x: 542.83,
+      y: 15.82
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-2',
+      x: 817.20,
+      y: 426.00
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-3',
+      x: 483.02,
+      y: 292.74
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-4',
+      x: 598.68,
+      y: 483.20
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-5',
+      x: 235.95,
+      y: 352.32
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-6',
+      x: 1.88,
+      y: 457.50
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-7',
+      x: 290.41,
+      y: 835.48
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-8',
+      x: 370.06,
+      y: 574.60
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-9',
+      x: 670.07,
+      y: 586.01
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-10',
+      x: 195.84,
+      y: 232.06
+    }),
+    // Medium camps
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-1',
+      x: 312.91,
+      y: 237.95
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-2',
+      x: 491.99,
+      y: 201.09
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-3',
+      x: 852.96,
+      y: 378.19
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-4',
+      x: 532.79,
+      y: 598.78
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-5',
+      x: 333.86,
+      y: 641.24
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-6',
+      x: 9.73,
+      y: 531.16
+    }),
+    // Small camps
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-1',
+      x: 278.19,
+      y: 67.38
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-2',
+      x: 227.43,
+      y: 180.75
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-3',
+      x: 642.70,
+      y: 687.74
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-4',
+      x: 595.13,
+      y: 828.11
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-5',
+      x: 392.42,
+      y: 177.81
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-6',
+      x: 420.71,
+      y: 16.25
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-7',
+      x: 441.57,
+      y: 674.92
+    }),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-8',
+      x: 433.82,
+      y: 780.21
+    })
   ]
 }
 
@@ -254,6 +400,7 @@ export const useEditorStore = defineStore('editor', () => {
   const autoPlaceBuildings = ref(false)
   const autoPlaceWatchers = ref(false)
   const autoPlaceStructures = ref(false)
+  const autoPlaceNeutralCamps = ref(false)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -276,10 +423,11 @@ export const useEditorStore = defineStore('editor', () => {
         brushSize: brushSize.value,
         brushType: brushType.value,
         useSimpleMap: useSimpleMap.value,
-        autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || undefined,
+        autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || autoPlaceNeutralCamps.value || undefined,
         autoPlaceBuildings: autoPlaceBuildings.value,
         autoPlaceWatchers: autoPlaceWatchers.value,
-        autoPlaceStructures: autoPlaceStructures.value
+        autoPlaceStructures: autoPlaceStructures.value,
+        autoPlaceNeutralCamps: autoPlaceNeutralCamps.value
       },
       version: STORAGE_VERSION
     }
@@ -309,6 +457,7 @@ export const useEditorStore = defineStore('editor', () => {
         autoPlaceBuildings.value = savedState.preferences.autoPlaceBuildings ?? legacyAutoPlace
         autoPlaceWatchers.value = savedState.preferences.autoPlaceWatchers ?? legacyAutoPlace
         autoPlaceStructures.value = savedState.preferences.autoPlaceStructures ?? legacyAutoPlace
+        autoPlaceNeutralCamps.value = savedState.preferences.autoPlaceNeutralCamps ?? legacyAutoPlace
       }
     }
   }
@@ -424,6 +573,7 @@ export const useEditorStore = defineStore('editor', () => {
     if (autoPlaceBuildings.value) addAutoIconsForCategory('buildings')
     if (autoPlaceWatchers.value) addAutoIconsForCategory('watchers')
     if (autoPlaceStructures.value) addAutoIconsForCategory('structures')
+    if (autoPlaceNeutralCamps.value) addAutoIconsForCategory('neutralCamps')
   }
 
   const toggleAutoPlaceBuildings = () => {
@@ -452,6 +602,16 @@ export const useEditorStore = defineStore('editor', () => {
       addAutoIconsForCategory('structures')
     } else {
       removeAutoIconsForCategory('structures')
+    }
+    persistState()
+  }
+
+  const toggleAutoPlaceNeutralCamps = () => {
+    autoPlaceNeutralCamps.value = !autoPlaceNeutralCamps.value
+    if (autoPlaceNeutralCamps.value) {
+      addAutoIconsForCategory('neutralCamps')
+    } else {
+      removeAutoIconsForCategory('neutralCamps')
     }
     persistState()
   }
@@ -542,6 +702,7 @@ export const useEditorStore = defineStore('editor', () => {
     autoPlaceBuildings,
     autoPlaceWatchers,
     autoPlaceStructures,
+    autoPlaceNeutralCamps,
     strokes,
     icons,
     undoStack,
@@ -571,6 +732,7 @@ export const useEditorStore = defineStore('editor', () => {
     toggleAutoPlaceBuildings,
     toggleAutoPlaceWatchers,
     toggleAutoPlaceStructures,
+    toggleAutoPlaceNeutralCamps,
     loadState,
     persistState
   }

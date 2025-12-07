@@ -37,10 +37,10 @@ export const mapIconFiles: MapIconFile[] = [
 
     // Map
     { folder: 'map', filename: 'Lotus_Pool_mapicon_dota2_gameasset.png', size: 54, showInPalette: false },
-    { folder: 'map', filename: 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', size: 54 },
-    { folder: 'map', filename: 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', size: 54 },
-    { folder: 'map', filename: 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', size: 54 },
-    { folder: 'map', filename: 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', size: 54 },
+    { folder: 'map', filename: 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', size: 38 },
+    { folder: 'map', filename: 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', size: 38 },
+    { folder: 'map', filename: 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', size: 38 },
+    { folder: 'map', filename: 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', size: 38 },
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset.png', size: 56 },
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset green.png', size: 56 },
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasse redt.png', size: 56 },

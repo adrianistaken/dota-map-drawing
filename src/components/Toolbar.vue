@@ -202,8 +202,7 @@ onUnmounted(() => {
             ]" title="Arrow Brush">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                style="width: 20px; height: 20px; display: block;"
-                class="absolute rotate-180">
+                style="width: 20px; height: 20px; display: block;" class="absolute rotate-180">
                 <line x1="4" y1="12" x2="16" y2="12" />
                 <line x1="12" y1="6" x2="20" y2="12" />
                 <line x1="12" y1="18" x2="20" y2="12" />
@@ -362,6 +361,16 @@ onUnmounted(() => {
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceStructures }"
               :aria-pressed="store.autoPlaceStructures" @click="store.toggleAutoPlaceStructures()">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+          <div class="toggle-row">
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold text-gray-100">Neutral Camps</span>
+              <span class="text-[11px] text-gray-300">Ancient, large, medium, small</span>
+            </div>
+            <button class="toggle-switch" :class="{ on: store.autoPlaceNeutralCamps }"
+              :aria-pressed="store.autoPlaceNeutralCamps" @click="store.toggleAutoPlaceNeutralCamps()">
               <span class="toggle-thumb"></span>
             </button>
           </div>
