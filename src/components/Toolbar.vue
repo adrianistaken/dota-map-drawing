@@ -321,7 +321,7 @@ const selectBrushType = (type: BrushType) => {
           <div class="toggle-row">
             <div class="flex flex-col leading-tight">
               <span class="text-sm font-semibold text-gray-100">Structures</span>
-              <span class="text-[11px] text-gray-300">Warp gate, tormentor, lotus</span>
+              <span class="text-[11px] text-gray-300">Warp gate, tormentor, lotus, wisdom rune</span>
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceStructures }"
               :aria-pressed="store.autoPlaceStructures" @click="store.toggleAutoPlaceStructures()">
@@ -335,6 +335,16 @@ const selectBrushType = (type: BrushType) => {
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceNeutralCamps }"
               :aria-pressed="store.autoPlaceNeutralCamps" @click="store.toggleAutoPlaceNeutralCamps()">
+              <span class="toggle-thumb"></span>
+            </button>
+          </div>
+          <div class="toggle-row">
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold text-gray-100">Runes</span>
+              <span class="text-[11px] text-gray-300">Water rune, bounty rune</span>
+            </div>
+            <button class="toggle-switch" :class="{ on: store.autoPlaceRunes }" :aria-pressed="store.autoPlaceRunes"
+              @click="store.toggleAutoPlaceRunes()">
               <span class="toggle-thumb"></span>
             </button>
           </div>

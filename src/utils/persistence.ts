@@ -29,6 +29,7 @@ export interface PersistedState {
         autoPlaceWatchers?: boolean
         autoPlaceStructures?: boolean
         autoPlaceNeutralCamps?: boolean
+        autoPlaceRunes?: boolean
     }
     version: string
 }

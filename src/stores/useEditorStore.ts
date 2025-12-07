@@ -22,7 +22,7 @@ const buildAutoIcon = (folder: MapIconFolder, filename: string, preset: { id: st
   }
 }
 
-type AutoIconCategory = 'buildings' | 'watchers' | 'structures' | 'neutralCamps'
+type AutoIconCategory = 'buildings' | 'watchers' | 'structures' | 'neutralCamps' | 'runes'
 
 const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
   buildings: [
@@ -198,6 +198,17 @@ const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
       id: 'auto-tormentor-2',
       x: 75.93,
       y: 32.66
+    }),
+    // Wisdom Runes
+    buildAutoIcon('runes', 'Wisdom_Rune_mapicon_dota2_gameasset.png', {
+      id: 'auto-wisdom-1',
+      x: 847.15,
+      y: 414.99
+    }),
+    buildAutoIcon('runes', 'Wisdom_Rune_mapicon_dota2_gameasset.png', {
+      id: 'auto-wisdom-2',
+      x: 27.34,
+      y: 430.00
     })
   ],
   neutralCamps: [
@@ -345,6 +356,30 @@ const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
       x: 433.82,
       y: 780.21
     })
+  ],
+  runes: [
+    // Water Runes
+    buildAutoIcon('runes', 'Water_Rune_mapicon_dota2_gameasset.png', {
+      id: 'auto-water-1',
+      x: 347.36,
+      y: 375.24
+    }),
+    buildAutoIcon('runes', 'Water_Rune_mapicon_dota2_gameasset.png', {
+      id: 'auto-water-2',
+      x: 500.27,
+      y: 485.09
+    }),
+    // Bounty Runes
+    buildAutoIcon('runes', 'Bounty_Rune_mapicon_dota2_gameasset.png', {
+      id: 'auto-bounty-1',
+      x: 392.23,
+      y: 196.48
+    }),
+    buildAutoIcon('runes', 'Bounty_Rune_mapicon_dota2_gameasset.png', {
+      id: 'auto-bounty-2',
+      x: 450.67,
+      y: 656.09
+    })
   ]
 }
 
@@ -402,6 +437,7 @@ export const useEditorStore = defineStore('editor', () => {
   const autoPlaceWatchers = ref(false)
   const autoPlaceStructures = ref(false)
   const autoPlaceNeutralCamps = ref(false)
+  const autoPlaceRunes = ref(false)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -424,11 +460,12 @@ export const useEditorStore = defineStore('editor', () => {
         brushSize: brushSize.value,
         brushType: brushType.value,
         useSimpleMap: useSimpleMap.value,
-        autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || autoPlaceNeutralCamps.value || undefined,
+        autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || autoPlaceNeutralCamps.value || autoPlaceRunes.value || undefined,
         autoPlaceBuildings: autoPlaceBuildings.value,
         autoPlaceWatchers: autoPlaceWatchers.value,
         autoPlaceStructures: autoPlaceStructures.value,
-        autoPlaceNeutralCamps: autoPlaceNeutralCamps.value
+        autoPlaceNeutralCamps: autoPlaceNeutralCamps.value,
+        autoPlaceRunes: autoPlaceRunes.value
       },
       version: STORAGE_VERSION
     }
@@ -459,6 +496,7 @@ export const useEditorStore = defineStore('editor', () => {
         autoPlaceWatchers.value = savedState.preferences.autoPlaceWatchers ?? legacyAutoPlace
         autoPlaceStructures.value = savedState.preferences.autoPlaceStructures ?? legacyAutoPlace
         autoPlaceNeutralCamps.value = savedState.preferences.autoPlaceNeutralCamps ?? legacyAutoPlace
+        autoPlaceRunes.value = savedState.preferences.autoPlaceRunes ?? legacyAutoPlace
       }
     }
   }
@@ -575,6 +613,7 @@ export const useEditorStore = defineStore('editor', () => {
     if (autoPlaceWatchers.value) addAutoIconsForCategory('watchers')
     if (autoPlaceStructures.value) addAutoIconsForCategory('structures')
     if (autoPlaceNeutralCamps.value) addAutoIconsForCategory('neutralCamps')
+    if (autoPlaceRunes.value) addAutoIconsForCategory('runes')
   }
 
   const toggleAutoPlaceBuildings = () => {
@@ -613,6 +652,16 @@ export const useEditorStore = defineStore('editor', () => {
       addAutoIconsForCategory('neutralCamps')
     } else {
       removeAutoIconsForCategory('neutralCamps')
+    }
+    persistState()
+  }
+
+  const toggleAutoPlaceRunes = () => {
+    autoPlaceRunes.value = !autoPlaceRunes.value
+    if (autoPlaceRunes.value) {
+      addAutoIconsForCategory('runes')
+    } else {
+      removeAutoIconsForCategory('runes')
     }
     persistState()
   }
@@ -704,6 +753,7 @@ export const useEditorStore = defineStore('editor', () => {
     autoPlaceWatchers,
     autoPlaceStructures,
     autoPlaceNeutralCamps,
+    autoPlaceRunes,
     strokes,
     icons,
     undoStack,
@@ -734,6 +784,7 @@ export const useEditorStore = defineStore('editor', () => {
     toggleAutoPlaceWatchers,
     toggleAutoPlaceStructures,
     toggleAutoPlaceNeutralCamps,
+    toggleAutoPlaceRunes,
     loadState,
     persistState
   }
