@@ -165,19 +165,19 @@ onBeforeUnmount(() => {
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
 }
 
-.right-panel .panel-surface {
-  overflow: hidden;
-}
-
 .hero-surface {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .hero-surface :deep(.hero-palette) {
   height: 100%;
+  width: 100%;
 }
 
 .icons-surface {
@@ -208,6 +208,7 @@ onBeforeUnmount(() => {
   .center-panel {
     order: 1;
     height: auto;
+    width: 100%;
   }
 
   .panel-surface,
@@ -220,7 +221,13 @@ onBeforeUnmount(() => {
   }
 
   .hero-surface {
-    max-height: 18rem;
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+
+  .map-frame {
+    width: 100%;
+    padding: 0;
   }
 }
 </style>

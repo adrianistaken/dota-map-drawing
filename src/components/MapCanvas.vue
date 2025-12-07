@@ -19,7 +19,7 @@ const originalMapSize = ref({ width: 0, height: 0 })
 const SIDE_PANEL_WIDTH = 300
 // Account for app container padding + gaps so the map stays centered between side panels
 const MAP_PADDING = 70
-const MOBILE_PADDING = 80
+const MOBILE_PADDING = 0
 const COMFORTABLE_SCALE = 0.6
 const MOBILE_COMFORTABLE_SCALE = 0.95
 const MOBILE_BREAKPOINT = 900

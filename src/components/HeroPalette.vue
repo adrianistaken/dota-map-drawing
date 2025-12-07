@@ -46,7 +46,7 @@ const selectHero = (hero: HeroSelection) => {
 
 <template>
   <div class="hero-palette p-2 rounded-lg flex flex-col" style="height: 100%; max-height: 100%;">
-    <div class="grid grid-cols-10 gap-1 overflow-y-auto" style="max-height: 100%;">
+    <div class="hero-grid">
       <button v-for="hero in heroOptions" :key="hero.id" @click="selectHero(hero)" :aria-label="`Select ${hero.name}`"
         :class="[
           'w-8 h-8 relative transition-all cursor-pointer focus-visible:outline-none flex items-center justify-center',
@@ -64,6 +64,17 @@ const selectHero = (hero: HeroSelection) => {
 .hero-palette {
   background-color: rgba(30, 58, 138, 0.3);
   backdrop-filter: blur(4px);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+  gap: 0.25rem;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.1rem; /* small inset to avoid accidental horizontal scroll */
 }
 
 .hero-palette button {
