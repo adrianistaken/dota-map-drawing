@@ -16,17 +16,20 @@ const mapLoaded = ref(false)
 // Preserve the original map dimensions so we can scale it responsibly
 const originalMapSize = ref({ width: 0, height: 0 })
 
-const SIDEBAR_WIDTH = 450
-// Account for app container padding (1.5rem = 24px on each side) + gap (1.5rem = 24px) + extra margin
-const MAP_PADDING = 150
-const MOBILE_PADDING = 80
-const COMFORTABLE_SCALE = 0.7
+const SIDE_PANEL_WIDTH = 300
+// Account for app container padding + gaps so the map stays centered between side panels
+const MAP_PADDING = 70
+const MOBILE_PADDING = 0
+const COMFORTABLE_SCALE = 0.6
 const MOBILE_COMFORTABLE_SCALE = 0.95
 const MOBILE_BREAKPOINT = 900
 const ICON_BASE_SIZE = 64
 
 const currentScale = ref(1)
 const iconImageCache = ref<Record<string, HTMLImageElement>>({})
+const autoPlacementEnabled = computed(() =>
+    store.autoPlaceBuildings || store.autoPlaceWatchers || store.autoPlaceStructures
+)
 
 // Current drawing state
 const isDrawing = ref(false)
@@ -84,7 +87,7 @@ const updateStageSize = () => {
     const isMobile = window.innerWidth <= MOBILE_BREAKPOINT
     const horizontalPadding = isMobile ? MOBILE_PADDING : MAP_PADDING
     const verticalPadding = isMobile ? MOBILE_PADDING : MAP_PADDING
-    const sidebarOffset = isMobile ? 0 : SIDEBAR_WIDTH
+    const sidebarOffset = isMobile ? 0 : SIDE_PANEL_WIDTH * 2
 
     const availableWidth = Math.max(300, window.innerWidth - sidebarOffset - horizontalPadding)
     const availableHeight = Math.max(300, window.innerHeight - verticalPadding)
@@ -130,7 +133,7 @@ watch(() => store.useSimpleMap, () => {
 // Load map image and hero icon
 onMounted(() => {
     loadMapImage()
-    if (store.autoPlaceIcons) {
+    if (autoPlacementEnabled.value) {
         store.ensureAutoPlacedIcons()
     }
     window.addEventListener('resize', handleResize)

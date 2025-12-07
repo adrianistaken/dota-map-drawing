@@ -25,6 +25,9 @@ export interface PersistedState {
         brushType: 'standard' | 'dotted' | 'arrow'
         useSimpleMap: boolean
         autoPlaceIcons?: boolean
+        autoPlaceBuildings?: boolean
+        autoPlaceWatchers?: boolean
+        autoPlaceStructures?: boolean
     }
     version: string
 }

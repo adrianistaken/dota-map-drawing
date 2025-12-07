@@ -11,10 +11,7 @@ import { useEditorStore } from './stores/useEditorStore'
 const store = useEditorStore()
 
 const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
-const sidebarHeight = ref<number | null>(null)
 const isMobileLayout = ref(false)
-const toolsWrapperRef = ref<HTMLElement | null>(null)
-const toolsHeight = ref<number | null>(null)
 
 const updateLayoutMode = () => {
   isMobileLayout.value = window.innerWidth <= 900
@@ -22,41 +19,10 @@ const updateLayoutMode = () => {
 
 const handleResize = () => {
   updateLayoutMode()
-  setTimeout(() => {
-    updateSidebarHeight()
-    updateToolsHeight()
-  }, 100)
 }
 
-const updateToolsHeight = () => {
-  if (toolsWrapperRef.value) {
-    toolsHeight.value = toolsWrapperRef.value.offsetHeight
-  } else {
-    toolsHeight.value = null
-  }
-}
-
-// Watch for map height changes and update sidebar height
-const updateSidebarHeight = () => {
-  if (mapCanvasRef.value && !isMobileLayout.value) {
-    const height = mapCanvasRef.value.getStageHeight?.()
-    if (height) {
-      sidebarHeight.value = height
-    }
-  } else {
-    sidebarHeight.value = null
-  }
-}
-
-// Watch for changes to mapCanvasRef and update height
-watch(mapCanvasRef, () => {
-  // Small delay to ensure the component is fully mounted
-  setTimeout(updateSidebarHeight, 100)
-}, { immediate: true })
-
-watch(toolsWrapperRef, () => {
-  setTimeout(updateToolsHeight, 50)
-})
+// Watch for changes to mapCanvasRef (in case future hooks are needed)
+watch(mapCanvasRef, () => {}, { immediate: true })
 
 // Also update on window resize
 onMounted(() => {
@@ -65,12 +31,6 @@ onMounted(() => {
 
   handleResize()
   window.addEventListener('resize', handleResize)
-
-  // Initial update after a short delay to ensure map is loaded
-  setTimeout(() => {
-    updateSidebarHeight()
-    updateToolsHeight()
-  }, 500)
 })
 
 onBeforeUnmount(() => {
@@ -79,37 +39,41 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app-container">
-    <div class="main-content">
-      <!-- Map Canvas on the left -->
-      <div class="map-section">
-        <MapCanvas ref="mapCanvasRef" />
-      </div>
+  <div class="app-container" :class="{ 'mobile-layout': isMobileLayout }">
+    <div class="layout-grid">
+      <aside class="side-panel left-panel">
+        <div class="panel-surface tools-surface fill-vertical">
+          <Toolbar :map-canvas-ref="mapCanvasRef" />
+        </div>
+      </aside>
 
-      <!-- Right sidebar with three-box layout -->
-      <div class="sidebar" :style="sidebarHeight ? { height: `${sidebarHeight}px` } : {}">
-        <div class="sidebar-top">
+      <main class="center-panel">
+        <div class="center-overlays">
+          <LastUpdatedBadge />
+          <SocialLinks />
+        </div>
+        <div class="map-frame">
+          <MapCanvas ref="mapCanvasRef" />
+        </div>
+      </main>
+
+      <aside class="side-panel right-panel">
+        <div class="panel-surface hero-surface">
           <HeroPalette />
         </div>
-        <div class="sidebar-bottom">
-          <MapIconsPalette :max-height="toolsHeight" />
-          <div ref="toolsWrapperRef">
-            <Toolbar :map-canvas-ref="mapCanvasRef" />
-          </div>
+        <div class="panel-surface icons-surface">
+          <MapIconsPalette />
         </div>
-      </div>
+      </aside>
     </div>
-    <LastUpdatedBadge />
-    <SocialLinks />
   </div>
 </template>
 
 <style scoped>
 .app-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  --side-panel-width: 300px;
+  --grid-gap: 1.25rem;
+  --panel-padding: 1rem;
   width: 100%;
   min-height: 100vh;
   background-image: url('/images/dota2websitebackground.jpg');
@@ -117,104 +81,153 @@ onBeforeUnmount(() => {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-}
-
-.main-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 1.5rem;
   box-sizing: border-box;
-  width: min(100%, 1400px);
-  margin: 0 auto;
 }
 
-.map-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  box-sizing: border-box;
-  flex: 0 0 auto;
-}
-
-.sidebar {
-  width: 510px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0;
-  /* Semi-transparent overlay to make sidebar readable */
-  background-color: transparent;
-  overflow: hidden;
-  align-self: center;
-  flex-shrink: 0;
-}
-
-.sidebar-top {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.sidebar-top>* {
-  height: 100%;
-  min-height: 0;
-}
-
-.sidebar-bottom {
+.layout-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  flex-shrink: 0;
-  height: fit-content;
-  overflow: visible;
+  grid-template-columns: minmax(240px, var(--side-panel-width)) minmax(0, 1fr) minmax(240px, var(--side-panel-width));
+  grid-template-rows: 1fr;
+  gap: var(--grid-gap);
+  width: 100%;
+  height: 100vh;
   align-items: stretch;
 }
 
-.sidebar-bottom>* {
-  min-width: 0;
+.side-panel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, rgba(12, 24, 48, 0.75), rgba(8, 16, 34, 0.85));
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.right-panel {
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.panel-surface {
+  background-color: rgba(12, 24, 48, 0.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
+  /* padding: var(--panel-padding); */
+}
+
+.fill-vertical {
   height: 100%;
+}
+
+.center-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.center-overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.center-overlays :deep(*) {
+  pointer-events: auto;
+}
+
+.map-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(140deg, rgba(10, 10, 20, 0.55), rgba(20, 34, 72, 0.4));
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.map-frame :deep(canvas) {
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
+}
+
+.hero-surface {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.hero-surface :deep(.hero-palette) {
+  height: 100%;
+  width: 100%;
+}
+
+.icons-surface {
+  flex: 0 0 auto;
 }
 
 @media (max-width: 900px) {
   .app-container {
-    justify-content: flex-start;
+    padding: 0;
   }
 
-  .main-content {
+  .layout-grid {
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    padding: 1rem;
-    padding-top: 4.5rem; /* leave room for fixed badges on small screens */
     gap: 1rem;
+    height: auto;
   }
 
-  .map-section {
-    flex: 1 1 auto;
+  .side-panel {
+    min-height: auto;
+    order: 2;
+  }
+
+  .right-panel {
+    order: 3;
+  }
+
+  .center-panel {
+    order: 1;
+    height: auto;
     width: 100%;
   }
 
-  .sidebar {
+  .panel-surface,
+  .map-frame {
+    border-radius: 0.75rem;
+  }
+
+  .tools-surface {
+    position: static;
+  }
+
+  .hero-surface {
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+
+  .map-frame {
     width: 100%;
-    height: auto !important;
-  }
-
-  .sidebar-bottom {
-    flex-direction: column;
-  }
-
-  .sidebar-bottom>* {
-    width: 100%;
-  }
-
-  .sidebar-top {
-    max-height: 16rem;
-    flex: initial;
+    padding: 0;
   }
 }
 </style>
