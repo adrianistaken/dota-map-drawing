@@ -22,7 +22,7 @@ const handleResize = () => {
 }
 
 // Watch for changes to mapCanvasRef (in case future hooks are needed)
-watch(mapCanvasRef, () => {}, { immediate: true })
+watch(mapCanvasRef, () => { }, { immediate: true })
 
 // Also update on window resize
 onMounted(() => {
@@ -209,6 +209,14 @@ onBeforeUnmount(() => {
     order: 1;
     height: auto;
     width: 100%;
+    flex-direction: column;
+    padding-top: 2rem;
+  }
+
+  .center-overlays {
+    position: static;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .panel-surface,
