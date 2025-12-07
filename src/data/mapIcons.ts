@@ -42,9 +42,9 @@ export const mapIconFiles: MapIconFile[] = [
     { folder: 'map', filename: 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
     { folder: 'map', filename: 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
     { folder: 'map', filename: 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
-    { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset.png', size: 56 },
-    { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset green.png', size: 56 },
-    { folder: 'map', filename: 'Roshan_symbol_dota2_gameasse redt.png', size: 56 },
+    { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset.png', width: 53, height: 43 },
+    { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset green.png', width: 53, height: 43 },
+    { folder: 'map', filename: 'Roshan_symbol_dota2_gameasse redt.png', width: 53, height: 43 },
 
     { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasset.png', size: 45, showInPalette: false },
     { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasset green.png', size: 45, showInPalette: false },
