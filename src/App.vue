@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
   background-color: rgba(12, 24, 48, 0.55);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 0.75rem;
+  /* border-radius: 0.75rem; */
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
   /* padding: var(--panel-padding); */
 }

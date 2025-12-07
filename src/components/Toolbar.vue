@@ -126,7 +126,7 @@ const selectBrushType = (type: BrushType) => {
 </script>
 
 <template>
-  <div class="toolbar p-2 rounded-lg space-y-2 flex flex-col">
+  <div class="toolbar p-2 space-y-2 flex flex-col">
     <!-- Brush Type Selection -->
     <div class="flex gap-1">
       <button @click="selectBrushType('standard')" :class="[
@@ -305,7 +305,17 @@ const selectBrushType = (type: BrushType) => {
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceBuildings }"
               :aria-pressed="store.autoPlaceBuildings" @click="store.toggleAutoPlaceBuildings()">
-              <span class="toggle-thumb"></span>
+              <span class="toggle-thumb">
+                <svg v-if="!store.autoPlaceBuildings" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
             </button>
           </div>
           <div class="toggle-row">
@@ -315,17 +325,37 @@ const selectBrushType = (type: BrushType) => {
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceWatchers }"
               :aria-pressed="store.autoPlaceWatchers" @click="store.toggleAutoPlaceWatchers()">
-              <span class="toggle-thumb"></span>
+              <span class="toggle-thumb">
+                <svg v-if="!store.autoPlaceWatchers" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
             </button>
           </div>
           <div class="toggle-row">
             <div class="flex flex-col leading-tight">
               <span class="text-sm font-semibold text-gray-100">Structures</span>
-              <span class="text-[11px] text-gray-300">Warp gate, tormentor, lotus, wisdom rune</span>
+              <span class="text-[11px] text-gray-300">Warp gate, tormentor, lotus, wisdom shrines</span>
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceStructures }"
               :aria-pressed="store.autoPlaceStructures" @click="store.toggleAutoPlaceStructures()">
-              <span class="toggle-thumb"></span>
+              <span class="toggle-thumb">
+                <svg v-if="!store.autoPlaceStructures" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
             </button>
           </div>
           <div class="toggle-row">
@@ -335,7 +365,17 @@ const selectBrushType = (type: BrushType) => {
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceNeutralCamps }"
               :aria-pressed="store.autoPlaceNeutralCamps" @click="store.toggleAutoPlaceNeutralCamps()">
-              <span class="toggle-thumb"></span>
+              <span class="toggle-thumb">
+                <svg v-if="!store.autoPlaceNeutralCamps" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
             </button>
           </div>
           <div class="toggle-row">
@@ -345,7 +385,17 @@ const selectBrushType = (type: BrushType) => {
             </div>
             <button class="toggle-switch" :class="{ on: store.autoPlaceRunes }" :aria-pressed="store.autoPlaceRunes"
               @click="store.toggleAutoPlaceRunes()">
-              <span class="toggle-thumb"></span>
+              <span class="toggle-thumb">
+                <svg v-if="!store.autoPlaceRunes" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
             </button>
           </div>
         </div>
@@ -386,34 +436,49 @@ const selectBrushType = (type: BrushType) => {
   width: 46px;
   height: 26px;
   border-radius: 9999px;
-  border: 2px solid #d6e3f2;
-  background: linear-gradient(145deg, #0f1623, #111827);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.35);
+  border: none;
+  background: #3d4a5e;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease;
   padding: 0;
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .toggle-thumb {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 4px;
+  left: 4px;
   width: 18px;
   height: 18px;
   border-radius: 9999px;
-  background: #e9f6ff;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.toggle-icon {
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+
+.toggle-icon-x {
+  color: #4b5563;
+}
+
+.toggle-icon-check {
+  color: #a78bfa;
 }
 
 .toggle-switch.on {
-  border-color: #ebf4ff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(64, 172, 255, 0.35);
+  background: #a78bfa;
 }
 
 .toggle-switch.on .toggle-thumb {
-  transform: translateX(18px);
-  background: #f4fbff;
+  transform: translateX(20px);
 }
 
 .toggle-switch:focus-visible {
