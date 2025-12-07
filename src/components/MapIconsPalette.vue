@@ -12,19 +12,19 @@ const props = defineProps<{
 // Generate map icon options
 const mapIconOptions: MapIconSelection[] = mapIconFiles
     .filter(icon => icon.showInPalette !== false)
-    .map(({ folder, filename, size, width, height }) => {
-    // Convert filename to display name
-    let displayName = filename
-        .replace(/_mapicon_dota2_gameasset.*\.png$/i, '')
-        .replace(/^\d+px-/, '')
-        .replace(/_/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .replace(/\b\w/g, l => l.toUpperCase())
-        .replace(/\(Radiant\)/gi, '(Radiant)')
+    .map(({ folder, filename, size, width, height, paletteSize }) => {
+        // Convert filename to display name
+        let displayName = filename
+            .replace(/_mapicon_dota2_gameasset.*\.png$/i, '')
+            .replace(/^\d+px-/, '')
+            .replace(/_/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/\b\w/g, l => l.toUpperCase())
+            .replace(/\(Radiant\)/gi, '(Radiant)')
 
-    const imagePath = mapIconPath(folder, filename)
-    const id = `${folder}-${filename.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`
+        const imagePath = mapIconPath(folder, filename)
+        const id = `${folder}-${filename.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`
 
         return {
             id,
@@ -32,7 +32,8 @@ const mapIconOptions: MapIconSelection[] = mapIconFiles
             image: imagePath,
             size,
             width,
-            height
+            height,
+            paletteSize: paletteSize ?? 28 // Default to 28px (w-7 equivalent)
         }
     })
 
@@ -57,7 +58,9 @@ const containerStyle = computed(() => props.maxHeight ? {
                         ? 'ring-2 ring-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.65)] scale-110'
                         : 'hover:opacity-80 hover:scale-105'
                 ]">
-                <img :src="icon.image" :alt="`${icon.name} icon`" class="w-7 absolute object-contain" />
+                <img :src="icon.image" :alt="`${icon.name} icon`"
+                    :style="{ width: `${icon.paletteSize}px`, height: `${icon.paletteSize}px` }"
+                    class="absolute object-contain" />
             </button>
         </div>
     </div>

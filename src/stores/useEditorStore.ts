@@ -361,6 +361,7 @@ export interface MapIconSelection {
   size?: number
   width?: number
   height?: number
+  paletteSize?: number
 }
 
 export interface Stroke {
