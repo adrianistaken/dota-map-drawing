@@ -19,12 +19,11 @@
 
 <style scoped>
 .social-links {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
     display: flex;
     gap: 0.75rem;
-    z-index: 10;
+    padding: 0.75rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .social-link {
@@ -32,7 +31,7 @@
     align-items: center;
     justify-content: center;
     color: rgba(255, 255, 255, 0.87);
-    opacity: 0.2;
+    opacity: 0.7;
     transition: opacity 0.3s ease, transform 0.3s ease;
     text-decoration: none;
 }
@@ -45,12 +44,5 @@
 .social-icon {
     width: 24px;
     height: 24px;
-}
-
-@media (max-width: 600px) {
-    .social-links {
-        top: 0.75rem;
-        right: 0.75rem;
-    }
 }
 </style>

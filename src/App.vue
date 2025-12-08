@@ -5,7 +5,6 @@ import Toolbar from './components/Toolbar.vue'
 import HeroPalette from './components/HeroPalette.vue'
 import MapIconsPalette from './components/MapIconsPalette.vue'
 import SocialLinks from './components/SocialLinks.vue'
-import LastUpdatedBadge from './components/LastUpdatedBadge.vue'
 import { useEditorStore } from './stores/useEditorStore'
 
 const store = useEditorStore()
@@ -48,21 +47,26 @@ onBeforeUnmount(() => {
       </aside>
 
       <main class="center-panel">
-        <div class="center-overlays">
-          <LastUpdatedBadge />
-          <SocialLinks />
-        </div>
         <div class="map-frame">
           <MapCanvas ref="mapCanvasRef" />
         </div>
       </main>
 
       <aside class="side-panel right-panel">
-        <div class="panel-surface hero-surface">
-          <HeroPalette />
-        </div>
-        <div class="panel-surface icons-surface">
-          <MapIconsPalette />
+        <div class="panel-surface right-panel-content fill-vertical">
+          <div class="right-panel-section social-section p-2">
+            <SocialLinks />
+          </div>
+          <div class="right-panel-section hero-section p-2 flex-1 overflow-y-auto">
+            <div class="pt-2 border-t border-gray-700">
+              <HeroPalette />
+            </div>
+          </div>
+          <div class="right-panel-section icons-section p-2">
+            <div class="pt-2 border-t border-gray-700">
+              <MapIconsPalette />
+            </div>
+          </div>
         </div>
       </aside>
     </div>
@@ -71,7 +75,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .app-container {
-  --side-panel-width: 300px;
+  --side-panel-width: 240px;
   --grid-gap: 1.25rem;
   --panel-padding: 1rem;
   width: 100%;
@@ -86,7 +90,7 @@ onBeforeUnmount(() => {
 
 .layout-grid {
   display: grid;
-  grid-template-columns: minmax(240px, var(--side-panel-width)) minmax(0, 1fr) minmax(240px, var(--side-panel-width));
+  grid-template-columns: minmax(200px, var(--side-panel-width)) minmax(0, 1fr) minmax(200px, var(--side-panel-width));
   grid-template-rows: 1fr;
   gap: var(--grid-gap);
   width: 100%;
@@ -102,7 +106,8 @@ onBeforeUnmount(() => {
   width: 100%;
   padding: 0;
   box-sizing: border-box;
-  background: linear-gradient(180deg, rgba(12, 24, 48, 0.75), rgba(8, 16, 34, 0.85));
+  background: rgba(12, 24, 48, 0.75);
+  background-color: #121212d6;
   border-right: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -112,12 +117,10 @@ onBeforeUnmount(() => {
 }
 
 .panel-surface {
-  background-color: rgba(12, 24, 48, 0.55);
+  /* background-color: rgba(12, 24, 48, 0.75); */
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  /* border-radius: 0.75rem; */
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
-  /* padding: var(--panel-padding); */
 }
 
 .fill-vertical {
@@ -132,21 +135,8 @@ onBeforeUnmount(() => {
   height: 100%;
 }
 
-.center-overlays {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
-.center-overlays :deep(*) {
-  pointer-events: auto;
+.social-surface {
+  flex: 0 0 auto;
 }
 
 .map-frame {
@@ -155,7 +145,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: linear-gradient(140deg, rgba(10, 10, 20, 0.55), rgba(20, 34, 72, 0.4));
+  background: linear-gradient(140deg, rgb(13 13 18 / 55%), rgb(18 19 22 / 40%));
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
@@ -165,22 +155,32 @@ onBeforeUnmount(() => {
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
 }
 
-.hero-surface {
-  flex: 1 1 auto;
-  min-height: 0;
+.right-panel-content {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: 100%;
+  height: 100%;
 }
 
-.hero-surface :deep(.hero-palette) {
+.right-panel-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.social-section {
+  flex: 0 0 auto;
+}
+
+.hero-section {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.hero-section :deep(.hero-palette) {
   height: 100%;
   width: 100%;
 }
 
-.icons-surface {
+.icons-section {
   flex: 0 0 auto;
 }
 
@@ -210,14 +210,9 @@ onBeforeUnmount(() => {
     height: auto;
     width: 100%;
     flex-direction: column;
-    padding-top: 2rem;
+    /* padding-top: 2rem; */
   }
 
-  .center-overlays {
-    position: static;
-    padding: 0.5rem 1rem;
-    margin-bottom: 0.5rem;
-  }
 
   .panel-surface,
   .map-frame {
@@ -228,9 +223,8 @@ onBeforeUnmount(() => {
     position: static;
   }
 
-  .hero-surface {
+  .hero-section {
     max-height: 20rem;
-    overflow-y: auto;
   }
 
   .map-frame {

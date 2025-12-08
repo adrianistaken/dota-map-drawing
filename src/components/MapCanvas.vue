@@ -16,7 +16,7 @@ const mapLoaded = ref(false)
 // Preserve the original map dimensions so we can scale it responsibly
 const originalMapSize = ref({ width: 0, height: 0 })
 
-const SIDE_PANEL_WIDTH = 300
+const SIDE_PANEL_WIDTH = 240
 // Account for app container padding + gaps so the map stays centered between side panels
 const MAP_PADDING = 70
 const MOBILE_PADDING = 0

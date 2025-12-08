@@ -62,8 +62,7 @@ const selectHero = (hero: HeroSelection) => {
 
 <style scoped>
 .hero-palette {
-  background-color: rgba(30, 58, 138, 0.3);
-  backdrop-filter: blur(4px);
+  background-color: transparent;
 }
 
 .hero-grid {
@@ -74,7 +73,8 @@ const selectHero = (hero: HeroSelection) => {
   max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 0.1rem; /* small inset to avoid accidental horizontal scroll */
+  padding-right: 0.1rem;
+  /* small inset to avoid accidental horizontal scroll */
 }
 
 .hero-palette button {

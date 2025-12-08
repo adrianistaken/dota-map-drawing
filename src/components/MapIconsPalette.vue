@@ -68,10 +68,8 @@ const containerStyle = computed(() => props.maxHeight ? {
 
 <style scoped>
 .map-icons-palette {
-    background-color: rgba(30, 58, 138, 0.3);
+    background-color: transparent;
     padding: 0.5rem;
-    /* border-radius: 0.5rem; */
-    backdrop-filter: blur(4px);
 }
 
 .map-icons-palette button {
