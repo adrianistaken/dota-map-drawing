@@ -1,1 +1,1 @@
-https://dota-map-drawing.vercel.app/
+http://dota2mapdrawing.com/
