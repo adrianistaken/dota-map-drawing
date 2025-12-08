@@ -470,11 +470,11 @@ const selectBrushType = (type: BrushType) => {
 }
 
 .toggle-icon-check {
-  color: #a78bfa;
+  color: #4c67ff;
 }
 
 .toggle-switch.on {
-  background: #a78bfa;
+  background: #4c67ff;
 }
 
 .toggle-switch.on .toggle-thumb {
