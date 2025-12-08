@@ -39,33 +39,61 @@ const currentArrowAngle = ref<number | null>(null)
 const currentMousePos = ref<{ x: number; y: number } | null>(null)
 
 // Helper function to calculate smoothed angle from a window of points
-// Uses a fixed number of points for consistent behavior regardless of line length
-// lookbackPoints: fixed number of points to look back (e.g., 25 points)
-// ignoreEndPoints: fixed number of points to ignore at the end (e.g., 3 points)
-const calculateSmoothedAngle = (points: number[], lookbackPoints: number, ignoreEndPoints: number = 3): number | null => {
+// Uses a stable segment well before the end to avoid jitter from final mouse movements
+// lookbackPoints: fixed number of points to look back from the end (e.g., 30 points)
+// ignoreEndPoints: fixed number of points to ignore at the end (e.g., 10 points)
+// The angle is calculated from a point that's lookbackPoints back to a point that's ignoreEndPoints back
+// This ensures we use the direction from well before any jitter at the end
+const calculateSmoothedAngle = (points: number[], lookbackPoints: number, ignoreEndPoints: number = 10): number | null => {
     if (points.length < 4) return null // Need at least 2 points
 
     const totalPoints = points.length / 2 // Each point is x, y
 
-    // Use fixed lookback, but ensure we have enough points
-    const actualLookback = Math.min(lookbackPoints, totalPoints - ignoreEndPoints - 1)
-    const actualIgnore = Math.min(ignoreEndPoints, Math.floor(totalPoints / 4)) // Cap ignore at 25% of total
+    // Ensure we have enough points for the calculation
+    const minPointsNeeded = Math.max(lookbackPoints, ignoreEndPoints) + 1
+    if (totalPoints < minPointsNeeded) {
+        // For short lines, use a simpler calculation from start to a point before the end
+        if (totalPoints < 4) return null
+        const safeEndPoint = Math.max(2, totalPoints - 2) // Use a point 2 points back from end
+        const startIdx = 0
+        const endIdx = (safeEndPoint - 1) * 2
+        const x1 = points[startIdx]
+        const y1 = points[startIdx + 1]
+        const x2 = points[endIdx]
+        const y2 = points[endIdx + 1]
+        return Math.atan2(y2 - y1, x2 - x1)
+    }
 
-    // Calculate effective end point (before ignored points)
-    const effectiveEndPoint = totalPoints - actualIgnore
+    // Calculate stable segment well before the end
+    // Start point: lookbackPoints back from the end
+    // End point: ignoreEndPoints back from the end
+    // This uses a stable segment that's well before any jitter
+    const startPointIndex = Math.max(0, totalPoints - lookbackPoints)
+    const endPointIndex = totalPoints - ignoreEndPoints
 
-    // Get the start and end indices for the lookback window
-    // Start from earlier in the line, end before the very last points (to ignore sharp turns)
-    const startIdx = Math.max(0, (effectiveEndPoint - actualLookback) * 2)
-    const endIdx = Math.max(startIdx + 2, (effectiveEndPoint - 1) * 2)
+    // Ensure we have valid indices and start is before end
+    if (startPointIndex >= endPointIndex || endPointIndex <= 0) {
+        // Fallback: use a simpler calculation
+        const safeEndPoint = Math.max(2, totalPoints - ignoreEndPoints)
+        const startIdx = Math.max(0, (safeEndPoint - Math.min(lookbackPoints, safeEndPoint)) * 2)
+        const endIdx = (safeEndPoint - 1) * 2
+        const x1 = points[startIdx]
+        const y1 = points[startIdx + 1]
+        const x2 = points[endIdx]
+        const y2 = points[endIdx + 1]
+        return Math.atan2(y2 - y1, x2 - x1)
+    }
 
-    // Get the first and last points in the window
+    // Get the start and end points of the stable segment
+    const startIdx = startPointIndex * 2
+    const endIdx = (endPointIndex - 1) * 2
+
     const x1 = points[startIdx]
     const y1 = points[startIdx + 1]
     const x2 = points[endIdx]
     const y2 = points[endIdx + 1]
 
-    // Calculate angle from start to end of the window
+    // Calculate angle from start to end of the stable segment
     return Math.atan2(y2 - y1, x2 - x1)
 }
 
@@ -298,10 +326,10 @@ const handleStagePointerMove = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
         // Calculate arrow angle for arrow brush type with smoothing
         if (store.brushType === 'arrow') {
             if (currentLine.value.length >= 4) {
-                // Use smoothed angle calculation with a fixed lookback window
-                // Look back at last 25 points, ignoring the last 3 points to avoid jitter
-                // This makes it responsive to recent direction changes regardless of line length
-                const newAngle = calculateSmoothedAngle(currentLine.value, 25, 3)
+                // Use smoothed angle calculation with a stable segment well before the end
+                // Look back 30 points from the end, and use a point that's 10 points back from the end
+                // This makes it responsive to recent direction changes while avoiding jitter
+                const newAngle = calculateSmoothedAngle(currentLine.value, 30, 10)
 
                 if (newAngle !== null) {
                     // Use a smaller threshold (~3 degrees = 0.052 radians) for more responsive updates
@@ -334,9 +362,10 @@ const handleStagePointerUp = () => {
         // Calculate final arrow angle if needed
         let arrowAngle: number | undefined = undefined
         if (store.brushType === 'arrow') {
-            // Use a fixed lookback window (30 points) and ignore last 5 points to avoid sharp turns
-            // This uses the recent direction of travel, just before the end, regardless of line length
-            const finalAngle = calculateSmoothedAngle(currentLine.value, 30, 5)
+            // Use a stable segment well before the end to avoid jitter from final mouse movements
+            // Look back 35 points from the end, and use a point that's 12 points back from the end
+            // This ensures we use the direction from well before any jitter occurs
+            const finalAngle = calculateSmoothedAngle(currentLine.value, 35, 12)
             if (finalAngle !== null) {
                 arrowAngle = finalAngle
             } else if (currentArrowAngle.value !== null) {
