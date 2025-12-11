@@ -592,6 +592,21 @@ const getIconImage = (imagePath: string) => {
     return iconImageCache.value[imagePath]
 }
 
+// Separate icons into toggleable icons and hero icons for proper rendering order
+const toggleableIcons = computed(() => {
+    return store.icons.filter(icon => icon.id.startsWith('auto-'))
+})
+
+const heroIcons = computed(() => {
+    return store.icons.filter(icon => icon.image.includes('/images/icons/heroes/'))
+})
+
+const otherIcons = computed(() => {
+    return store.icons.filter(icon =>
+        !icon.id.startsWith('auto-') && !icon.image.includes('/images/icons/heroes/')
+    )
+})
+
 // Expose stage ref and height for parent components (for export functionality)
 defineExpose({
     getStage,
@@ -641,8 +656,34 @@ defineExpose({
                 <!-- Render current arrow during drawing -->
                 <v-shape v-if="currentArrow" :config="currentArrow" />
 
-                <!-- Render all icons with drag functionality -->
-                <v-image v-for="icon in store.icons" :key="icon.id" :config="{
+                <!-- Render toggleable icons first (bottom layer) -->
+                <v-image v-for="icon in toggleableIcons" :key="icon.id" :config="{
+                    image: getIconImage(icon.image),
+                    x: icon.x * currentScale,
+                    y: icon.y * currentScale,
+                    width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    draggable: true,
+                    listening: true,
+                    name: 'hero-icon',
+                    opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1
+                }" @dragstart="handleIconDragStart" @dragend="createDragEndHandler(icon.id, $event)" />
+
+                <!-- Render other manually placed icons (middle layer) -->
+                <v-image v-for="icon in otherIcons" :key="icon.id" :config="{
+                    image: getIconImage(icon.image),
+                    x: icon.x * currentScale,
+                    y: icon.y * currentScale,
+                    width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    draggable: true,
+                    listening: true,
+                    name: 'hero-icon',
+                    opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1
+                }" @dragstart="handleIconDragStart" @dragend="createDragEndHandler(icon.id, $event)" />
+
+                <!-- Render hero icons last (top layer) -->
+                <v-image v-for="icon in heroIcons" :key="icon.id" :config="{
                     image: getIconImage(icon.image),
                     x: icon.x * currentScale,
                     y: icon.y * currentScale,
