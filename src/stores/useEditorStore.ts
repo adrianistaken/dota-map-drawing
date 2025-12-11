@@ -719,6 +719,12 @@ export const useEditorStore = defineStore('editor', () => {
     strokes.value = []
     icons.value = []
     redoStack.value = []
+    // Turn off all toggleables
+    autoPlaceBuildings.value = false
+    autoPlaceWatchers.value = false
+    autoPlaceStructures.value = false
+    autoPlaceNeutralCamps.value = false
+    autoPlaceRunes.value = false
     persistState()
   }
 
