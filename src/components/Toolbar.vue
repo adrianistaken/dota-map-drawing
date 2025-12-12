@@ -124,6 +124,11 @@ const selectBrushType = (type: BrushType) => {
   store.setTool('draw')
 }
 
+const handleHeroIconSizeChange = (event: Event) => {
+  const value = Number((event.target as HTMLInputElement).value)
+  store.setHeroIconSize(value)
+}
+
 </script>
 
 <template>
@@ -416,10 +421,25 @@ const selectBrushType = (type: BrushType) => {
               </svg>
               <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+        </button>
+      </div>
+        <div class="space-y-2 pt-3 border-t border-gray-700">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="toggle-category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="7" r="4" />
+                <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
               </svg>
-            </span>
-          </button>
+              <span class="text-sm font-semibold text-white">Hero Icon Size</span>
+            </div>
+            <span class="text-xs text-gray-300">{{ store.heroIconSize }}px</span>
+          </div>
+          <input type="range" min="32" max="96" step="2" :value="store.heroIconSize"
+            @input="handleHeroIconSizeChange" class="hero-slider" aria-label="Adjust hero icon size" />
         </div>
       </div>
     </div>
@@ -536,5 +556,35 @@ const selectBrushType = (type: BrushType) => {
 .toggle-switch:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
+}
+
+.hero-slider {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #1f2937, #374151);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.hero-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ff9500;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.25);
+  cursor: pointer;
+}
+
+.hero-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ff9500;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.25);
+  cursor: pointer;
 }
 </style>

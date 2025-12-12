@@ -6,6 +6,8 @@ import { mapIconFiles, mapIconPath, type MapIconFolder } from '../data/mapIcons'
 export type Tool = 'draw' | 'erase' | 'icon'
 export type BrushType = 'standard' | 'dotted' | 'arrow'
 
+const HERO_ICON_DEFAULT_SIZE = 64
+
 const findMapIconMeta = (folder: MapIconFolder, filename: string) =>
   mapIconFiles.find(icon => icon.folder === folder && icon.filename === filename)
 
@@ -431,6 +433,7 @@ export const useEditorStore = defineStore('editor', () => {
   const brushColor = ref<string>(brushColorOptions[brushColorIndex.value])
   const brushSize = ref<number>(5)
   const brushType = ref<BrushType>('standard')
+  const heroIconSize = ref<number>(HERO_ICON_DEFAULT_SIZE)
   const selectedHero = ref<HeroSelection | null>(null)
   const selectedMapIcon = ref<MapIconSelection | null>(null)
   const autoPlaceBuildings = ref(false)
@@ -459,6 +462,7 @@ export const useEditorStore = defineStore('editor', () => {
         brushColor: brushColor.value,
         brushSize: brushSize.value,
         brushType: brushType.value,
+        heroIconSize: heroIconSize.value,
         useSimpleMap: useSimpleMap.value,
         autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || autoPlaceNeutralCamps.value || autoPlaceRunes.value || undefined,
         autoPlaceBuildings: autoPlaceBuildings.value,
@@ -490,6 +494,7 @@ export const useEditorStore = defineStore('editor', () => {
         brushColor.value = savedState.preferences.brushColor
         brushSize.value = savedState.preferences.brushSize
         brushType.value = savedState.preferences.brushType
+        heroIconSize.value = savedState.preferences.heroIconSize ?? HERO_ICON_DEFAULT_SIZE
         useSimpleMap.value = savedState.preferences.useSimpleMap
         const legacyAutoPlace = savedState.preferences.autoPlaceIcons ?? false
         autoPlaceBuildings.value = savedState.preferences.autoPlaceBuildings ?? legacyAutoPlace
@@ -503,6 +508,10 @@ export const useEditorStore = defineStore('editor', () => {
 
   // Tool actions
   const setTool = (tool: Tool) => {
+    if (tool !== 'icon') {
+      selectedHero.value = null
+      selectedMapIcon.value = null
+    }
     currentTool.value = tool
   }
 
@@ -679,6 +688,21 @@ export const useEditorStore = defineStore('editor', () => {
     }
   }
 
+  const setHeroIconSize = (size: number) => {
+    heroIconSize.value = size
+
+    const hasHeroIcons = icons.value.some(icon => icon.image.includes('/images/icons/heroes/'))
+    if (hasHeroIcons) {
+      saveState()
+      icons.value = icons.value.map(icon => icon.image.includes('/images/icons/heroes/')
+        ? { ...icon, width: size, height: size, size }
+        : icon)
+      redoStack.value = []
+    }
+
+    persistState()
+  }
+
   const undo = () => {
     if (undoStack.value.length === 0) return
 
@@ -753,6 +777,7 @@ export const useEditorStore = defineStore('editor', () => {
     brushColor,
     brushSize,
     brushType,
+    heroIconSize,
     selectedHero,
     selectedMapIcon,
     autoPlaceBuildings,
@@ -773,6 +798,7 @@ export const useEditorStore = defineStore('editor', () => {
     toggleBrushColor,
     setBrushSize,
     setBrushType,
+    setHeroIconSize,
     addStroke,
     removeStroke,
     addIcon,

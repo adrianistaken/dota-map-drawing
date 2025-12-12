@@ -286,8 +286,13 @@ const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
             const selectedIcon = store.selectedHero || store.selectedMapIcon
             if (!selectedIcon) return
             const iconId = `icon-${Date.now()}-${Math.random()}`
-            const iconWidth = (selectedIcon as any).width ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
-            const iconHeight = (selectedIcon as any).height ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
+            const isHeroSelection = !!store.selectedHero
+            const iconWidth = isHeroSelection
+                ? store.heroIconSize
+                : (selectedIcon as any).width ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
+            const iconHeight = isHeroSelection
+                ? store.heroIconSize
+                : (selectedIcon as any).height ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
             const newIcon: Icon = {
                 id: iconId,
                 x: pos.x / currentScale.value - iconWidth / 2,

@@ -23,6 +23,7 @@ export interface PersistedState {
         brushColor: string
         brushSize: number
         brushType: 'standard' | 'dotted' | 'arrow'
+        heroIconSize: number
         useSimpleMap: boolean
         autoPlaceIcons?: boolean
         autoPlaceBuildings?: boolean
