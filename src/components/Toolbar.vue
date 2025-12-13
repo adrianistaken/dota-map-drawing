@@ -165,6 +165,8 @@ const handleHeroIconSizeChange = (event: Event) => {
             <circle cx="5" cy="12" r="1" />
           </svg>
         </button>
+        <!-- Temporarily hiding arrow brush option while keeping implementation intact -->
+        <!--
         <button @click="selectBrushType('arrow')" :class="[
           'flex-1 px-2 py-1.5 rounded border-2 transition-all flex items-center justify-center',
           store.currentTool === 'draw' && store.brushType === 'arrow'
@@ -179,6 +181,7 @@ const handleHeroIconSizeChange = (event: Event) => {
             <line x1="12" y1="18" x2="20" y2="12" />
           </svg>
         </button>
+        -->
       </div>
 
       <!-- Brush Color and Eraser -->
