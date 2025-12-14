@@ -703,6 +703,41 @@ export const useEditorStore = defineStore('editor', () => {
     persistState()
   }
 
+  // Helper function to check if any icons from a category exist
+  const hasIconsForCategory = (category: AutoIconCategory): boolean => {
+    const presetIds = new Set(AUTO_ICON_PRESETS[category].map(icon => icon.id))
+    return icons.value.some(icon => presetIds.has(icon.id))
+  }
+
+  // Helper function to sync toggleable states with actual icon presence
+  const syncToggleableStates = () => {
+    // Sync each toggleable: turn on if icons exist, turn off if they don't
+    const hasBuildings = hasIconsForCategory('buildings')
+    if (autoPlaceBuildings.value !== hasBuildings) {
+      autoPlaceBuildings.value = hasBuildings
+    }
+
+    const hasWatchers = hasIconsForCategory('watchers')
+    if (autoPlaceWatchers.value !== hasWatchers) {
+      autoPlaceWatchers.value = hasWatchers
+    }
+
+    const hasStructures = hasIconsForCategory('structures')
+    if (autoPlaceStructures.value !== hasStructures) {
+      autoPlaceStructures.value = hasStructures
+    }
+
+    const hasNeutralCamps = hasIconsForCategory('neutralCamps')
+    if (autoPlaceNeutralCamps.value !== hasNeutralCamps) {
+      autoPlaceNeutralCamps.value = hasNeutralCamps
+    }
+
+    const hasRunes = hasIconsForCategory('runes')
+    if (autoPlaceRunes.value !== hasRunes) {
+      autoPlaceRunes.value = hasRunes
+    }
+  }
+
   const undo = () => {
     if (undoStack.value.length === 0) return
 
@@ -717,6 +752,10 @@ export const useEditorStore = defineStore('editor', () => {
     const previousSnapshot = undoStack.value.pop()!
     strokes.value = previousSnapshot.strokes
     icons.value = previousSnapshot.icons
+
+    // Sync toggleable states after restoring icons
+    syncToggleableStates()
+
     persistState()
   }
 
@@ -734,6 +773,10 @@ export const useEditorStore = defineStore('editor', () => {
     const nextSnapshot = redoStack.value.pop()!
     strokes.value = nextSnapshot.strokes
     icons.value = nextSnapshot.icons
+
+    // Sync toggleable states after restoring icons
+    syncToggleableStates()
+
     persistState()
   }
 
