@@ -124,9 +124,34 @@ const selectBrushType = (type: BrushType) => {
   store.setTool('draw')
 }
 
-const handleHeroIconSizeChange = (event: Event) => {
+// Track starting size when slider interaction begins
+let heroIconSizeStartValue: number | null = null
+let hasHeroIconsAtStart = false
+
+const handleHeroIconSizeInput = (event: Event) => {
   const value = Number((event.target as HTMLInputElement).value)
-  store.setHeroIconSize(value)
+  // Update in real-time without saving to history
+  store.setHeroIconSize(value, false)
+}
+
+const handleHeroIconSizeMouseDown = () => {
+  // Save the starting value and state when user starts dragging
+  heroIconSizeStartValue = store.heroIconSize
+  hasHeroIconsAtStart = store.icons.some((icon: { image: string }) => icon.image.includes('/images/icons/heroes/'))
+  if (hasHeroIconsAtStart) {
+    // Save state before any changes
+    store.saveState()
+  }
+}
+
+const handleHeroIconSizeMouseUp = () => {
+  // Only save to history if the value actually changed and we have hero icons
+  if (heroIconSizeStartValue !== null && heroIconSizeStartValue !== store.heroIconSize && hasHeroIconsAtStart) {
+    // Clear redo stack since we made a change
+    store.redoStack.length = 0
+  }
+  heroIconSizeStartValue = null
+  hasHeroIconsAtStart = false
 }
 
 </script>
@@ -467,8 +492,10 @@ const handleHeroIconSizeChange = (event: Event) => {
             </div>
             <span class="text-xs text-gray-300">{{ store.heroIconSize }}px</span>
           </div>
-          <input type="range" min="32" max="96" step="2" :value="store.heroIconSize" @input="handleHeroIconSizeChange"
-            class="hero-slider" aria-label="Adjust hero icon size" />
+          <input type="range" min="32" max="96" step="2" :value="store.heroIconSize" @input="handleHeroIconSizeInput"
+            @mousedown="handleHeroIconSizeMouseDown" @mouseup="handleHeroIconSizeMouseUp"
+            @touchstart="handleHeroIconSizeMouseDown" @touchend="handleHeroIconSizeMouseUp" class="hero-slider"
+            aria-label="Adjust hero icon size" />
         </div>
       </div>
     </div>

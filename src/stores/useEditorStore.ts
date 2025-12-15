@@ -717,12 +717,14 @@ export const useEditorStore = defineStore('editor', () => {
     }
   }
 
-  const setHeroIconSize = (size: number) => {
+  const setHeroIconSize = (size: number, saveToHistory: boolean = true) => {
     heroIconSize.value = size
 
     const hasHeroIcons = icons.value.some(icon => icon.image.includes('/images/icons/heroes/'))
     if (hasHeroIcons) {
-      saveState()
+      if (saveToHistory) {
+        saveState()
+      }
       icons.value = icons.value.map(icon => {
         if (icon.image.includes('/images/icons/heroes/')) {
           // Calculate current center position
@@ -739,7 +741,9 @@ export const useEditorStore = defineStore('editor', () => {
         }
         return icon
       })
-      redoStack.value = []
+      if (saveToHistory) {
+        redoStack.value = []
+      }
     }
 
     persistState()
@@ -749,6 +753,18 @@ export const useEditorStore = defineStore('editor', () => {
   const hasIconsForCategory = (category: AutoIconCategory): boolean => {
     const presetIds = new Set(AUTO_ICON_PRESETS[category].map(icon => icon.id))
     return icons.value.some(icon => presetIds.has(icon.id))
+  }
+
+  // Helper function to sync hero icon size from actual hero icons
+  const syncHeroIconSize = () => {
+    const heroIcon = icons.value.find(icon => icon.image.includes('/images/icons/heroes/'))
+    if (heroIcon) {
+      // Get the size from the hero icon (width, height, or size property)
+      const iconSize = heroIcon.width ?? heroIcon.height ?? heroIcon.size ?? HERO_ICON_DEFAULT_SIZE
+      if (heroIconSize.value !== iconSize) {
+        heroIconSize.value = iconSize
+      }
+    }
   }
 
   // Helper function to sync toggleable states with actual icon presence
@@ -797,6 +813,8 @@ export const useEditorStore = defineStore('editor', () => {
 
     // Sync toggleable states after restoring icons
     syncToggleableStates()
+    // Sync hero icon size from restored icons
+    syncHeroIconSize()
 
     persistState()
   }
@@ -818,6 +836,8 @@ export const useEditorStore = defineStore('editor', () => {
 
     // Sync toggleable states after restoring icons
     syncToggleableStates()
+    // Sync hero icon size from restored icons
+    syncHeroIconSize()
 
     persistState()
   }
