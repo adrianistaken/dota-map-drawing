@@ -38,6 +38,76 @@ const currentStrokeId = ref<string | null>(null)
 const currentArrowAngle = ref<number | null>(null)
 const currentMousePos = ref<{ x: number; y: number } | null>(null)
 
+// Audio for drawing sound
+const drawingAudio = ref<HTMLAudioElement | null>(null)
+const audioDuration = ref<number>(0) // Total duration of the audio clip
+const isFirstPlay = ref(true) // Track if this is the first play after drawing starts
+const isMouseMoving = ref(false) // Track if mouse is currently moving
+let movementTimeout: ReturnType<typeof setTimeout> | null = null // Timeout to detect when movement stops
+
+// Possible loop start times (in seconds) - all after the pencil down sound
+// These will be used randomly to create natural variation
+const LOOP_START_TIMES = [0.3, 0.5, 0.7, 0.4, 0.6, 0.8]
+
+// Get a random loop start time (after pencil down sound, before end of clip)
+const getRandomLoopStartTime = (): number => {
+    if (audioDuration.value === 0) return 0.5 // Fallback if duration not loaded yet
+
+    // Filter to only include times that are valid (not too close to the end)
+    // Leave at least 0.5 seconds of audio to play
+    const maxTime = Math.max(0, audioDuration.value - 0.5)
+    const validTimes = LOOP_START_TIMES.filter(time => time < maxTime)
+
+    // If we have valid times, pick one randomly
+    if (validTimes.length > 0) {
+        return validTimes[Math.floor(Math.random() * validTimes.length)]
+    }
+
+    // Fallback: use a point that's not too close to the end
+    return Math.max(0.3, maxTime / 2)
+}
+
+// Handle mouse movement state for audio control
+const handleMouseMovement = () => {
+    if (!isDrawing.value || !drawingAudio.value) return
+
+    // Clear any existing timeout
+    if (movementTimeout) {
+        clearTimeout(movementTimeout)
+        movementTimeout = null
+    }
+
+    // If mouse wasn't moving, start/resume audio
+    if (!isMouseMoving.value) {
+        isMouseMoving.value = true
+
+        // First play: start from beginning
+        if (isFirstPlay.value) {
+            drawingAudio.value.currentTime = 0
+            isFirstPlay.value = false
+        }
+        // Otherwise: resume from current position (or start from random point if at end)
+
+        // If audio has ended, restart from a random loop point
+        if (drawingAudio.value.ended || drawingAudio.value.currentTime >= audioDuration.value - 0.1) {
+            drawingAudio.value.currentTime = getRandomLoopStartTime()
+        }
+
+        drawingAudio.value.play().catch((err: unknown) => {
+            console.warn('Could not play drawing audio:', err)
+        })
+    }
+
+    // Set timeout to detect when movement stops (after 50ms of no movement)
+    movementTimeout = setTimeout(() => {
+        isMouseMoving.value = false
+        if (drawingAudio.value) {
+            drawingAudio.value.pause()
+        }
+        movementTimeout = null
+    }, 50)
+}
+
 // Helper function to calculate smoothed angle from a window of points
 // Uses a stable segment well before the end to avoid jitter from final mouse movements
 // lookbackPoints: fixed number of points to look back from the end (e.g., 30 points)
@@ -158,6 +228,26 @@ watch(() => store.useSimpleMap, () => {
     loadMapImage()
 })
 
+// Watch drawing state to control audio playback
+watch(isDrawing, (newValue: boolean) => {
+    if (!drawingAudio.value) return
+
+    if (!newValue) {
+        // Stop drawing - pause audio and reset
+        drawingAudio.value.pause()
+        drawingAudio.value.currentTime = 0
+        isFirstPlay.value = true // Reset for next drawing session
+        isMouseMoving.value = false
+
+        // Clear movement timeout
+        if (movementTimeout) {
+            clearTimeout(movementTimeout)
+            movementTimeout = null
+        }
+    }
+    // Note: We don't start audio here - it will start when mouse moves (handled in handleMouseMovement)
+})
+
 // Load map image and hero icon
 onMounted(() => {
     loadMapImage()
@@ -165,10 +255,43 @@ onMounted(() => {
         store.ensureAutoPlacedIcons()
     }
     window.addEventListener('resize', handleResize)
+
+    // Initialize drawing audio
+    drawingAudio.value = new Audio('/sounds/Ui_map_write.mp3')
+    drawingAudio.value.loop = false // We'll handle looping manually
+    drawingAudio.value.volume = 0.7 // Set volume to 70% (30% reduction)
+
+    // Store audio duration once metadata loads
+    drawingAudio.value.addEventListener('loadedmetadata', () => {
+        if (drawingAudio.value) {
+            audioDuration.value = drawingAudio.value.duration
+        }
+    })
+
+    // Handle audio end - restart from random loop point if still moving
+    drawingAudio.value.addEventListener('ended', () => {
+        if (drawingAudio.value && isDrawing.value && isMouseMoving.value) {
+            // Still drawing and moving, so loop from a random point after the pencil down sound
+            drawingAudio.value.currentTime = getRandomLoopStartTime()
+            drawingAudio.value.play().catch((err: unknown) => {
+                console.warn('Could not loop drawing audio:', err)
+            })
+        }
+    })
 })
 
 onBeforeUnmount(() => {
     window.removeEventListener('resize', handleResize)
+
+    // Clean up audio and timeout
+    if (movementTimeout) {
+        clearTimeout(movementTimeout)
+        movementTimeout = null
+    }
+    if (drawingAudio.value) {
+        drawingAudio.value.pause()
+        drawingAudio.value = null
+    }
 })
 
 // Get stage instance from vue-konva
@@ -321,6 +444,9 @@ const handleStagePointerMove = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
     if (!pos) return
 
     if (store.currentTool === 'draw' && isDrawing.value) {
+        // Handle mouse movement for audio control
+        handleMouseMovement()
+
         // Update current mouse position for arrow tracking
         currentMousePos.value = { x: pos.x, y: pos.y }
 
