@@ -723,9 +723,22 @@ export const useEditorStore = defineStore('editor', () => {
     const hasHeroIcons = icons.value.some(icon => icon.image.includes('/images/icons/heroes/'))
     if (hasHeroIcons) {
       saveState()
-      icons.value = icons.value.map(icon => icon.image.includes('/images/icons/heroes/')
-        ? { ...icon, width: size, height: size, size }
-        : icon)
+      icons.value = icons.value.map(icon => {
+        if (icon.image.includes('/images/icons/heroes/')) {
+          // Calculate current center position
+          const currentWidth = icon.width ?? icon.size ?? HERO_ICON_DEFAULT_SIZE
+          const currentHeight = icon.height ?? icon.size ?? HERO_ICON_DEFAULT_SIZE
+          const centerX = icon.x + currentWidth / 2
+          const centerY = icon.y + currentHeight / 2
+
+          // Adjust position to keep center in the same place
+          const newX = centerX - size / 2
+          const newY = centerY - size / 2
+
+          return { ...icon, x: newX, y: newY, width: size, height: size, size }
+        }
+        return icon
+      })
       redoStack.value = []
     }
 
