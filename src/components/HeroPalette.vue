@@ -11,7 +11,7 @@ const heroList = [
   'Dazzle', 'Death_Prophet', 'Disruptor', 'Doom', 'Dragon_Knight', 'Drow_Ranger', 'Earth_Spirit', 'Earthshaker',
   'Elder_Titan', 'Ember_Spirit', 'Enchantress', 'Enigma', 'Faceless_Void', 'Grimstroke', 'Gyrocopter', 'Hoodwink',
   'Huskar', 'Invoker', 'Io', 'Jakiro', 'Juggernaut', 'Keeper_of_the_Light', 'Kez', 'Kunkka',
-  'Legion_Commander', 'Leshrac', 'Lich', 'Lifestealer', 'Lina', 'Lion', 'Lone_Druid', 'Luna',
+  'Largo', 'Legion_Commander', 'Leshrac', 'Lich', 'Lifestealer', 'Lina', 'Lion', 'Lone_Druid', 'Luna',
   'Lycan', 'Magnus', 'Marci', 'Mars', 'Medusa', 'Meepo', 'Mirana', 'Monkey_King',
   'Morphling', 'Muerta', 'Naga_Siren', 'Nature\'s_Prophet', 'Necrophos', 'Night_Stalker', 'Nyx_Assassin', 'Ogre_Magi',
   'Omniknight', 'Oracle', 'Outworld_Destroyer', 'Pangolier', 'Phantom_Assassin', 'Phantom_Lancer', 'Phoenix', 'Primal_Beast',
