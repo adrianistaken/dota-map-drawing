@@ -302,26 +302,26 @@ const getStage = () => {
     return null
 }
 
-const logIconPlacement = (icon: Icon, stageX: number, stageY: number) => {
-    const iconWidth = icon.width ?? icon.size ?? ICON_BASE_SIZE
-    const iconHeight = icon.height ?? icon.size ?? ICON_BASE_SIZE
-    console.log('Icon placed', {
-        id: icon.id,
-        map: {
-            x: icon.x,
-            y: icon.y
-        },
-        center: {
-            x: icon.x + iconWidth / 2,
-            y: icon.y + iconHeight / 2
-        },
-        stage: {
-            x: stageX,
-            y: stageY
-        },
-        scale: currentScale.value
-    })
-}
+// const logIconPlacement = (icon: Icon, stageX: number, stageY: number) => {
+//     const iconWidth = icon.width ?? icon.size ?? ICON_BASE_SIZE
+//     const iconHeight = icon.height ?? icon.size ?? ICON_BASE_SIZE
+//     console.log('Icon placed', {
+//         id: icon.id,
+//         map: {
+//             x: icon.x,
+//             y: icon.y
+//         },
+//         center: {
+//             x: icon.x + iconWidth / 2,
+//             y: icon.y + iconHeight / 2
+//         },
+//         stage: {
+//             x: stageX,
+//             y: stageY
+//         },
+//         scale: currentScale.value
+//     })
+// }
 
 const humanizeIconName = (filename: string) => {
     return filename
@@ -426,7 +426,7 @@ const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
                 height: iconHeight
             }
             store.addIcon(newIcon)
-            logIconPlacement(newIcon, pos.x, pos.y)
+            // logIconPlacement(newIcon, pos.x, pos.y)
             logAllIconPositions()
         }
     } else if (store.currentTool === 'erase') {
