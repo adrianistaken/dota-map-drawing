@@ -21,9 +21,9 @@ export const mapIconFiles: MapIconFile[] = [
     { folder: 'misc', filename: 'Sentry_Ward_mapicon_dota2_gameasset 2.png', width: 50, height: 30 },
 
     // Runes/ancients
-    { folder: 'runes', filename: '60px-Ancient_mapicon_dota2_gameasset.png', width: 39, height: 50, showInPalette: false },
-    { folder: 'runes', filename: '60px-Ancient_mapicon_dota2_gameasset red.png', width: 39, height: 50, showInPalette: false },
-    { folder: 'runes', filename: '60px-Ancient_mapicon_dota2_gameasse greent.png', width: 39, height: 50, showInPalette: false },
+    { folder: 'runes', filename: '60px-Ancient_mapicon_dota2_gameasset.png', width: 39, height: 50 },
+    { folder: 'runes', filename: '60px-Ancient_mapicon_dota2_gameasset red.png', width: 39, height: 50 },
+    { folder: 'runes', filename: '60px-Ancient_mapicon_dota2_gameasse greent.png', width: 39, height: 50 },
 
     { folder: 'runes', filename: 'Amplify_Damage_Rune_mapicon_dota2_gameasset.png', width: 35, height: 40 },
     { folder: 'runes', filename: 'Arcane_Rune_mapicon_dota2_gameasset.png', width: 35, height: 40 },
@@ -46,12 +46,12 @@ export const mapIconFiles: MapIconFile[] = [
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset green.png', width: 53, height: 43 },
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasse redt.png', width: 53, height: 43 },
 
-    { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasset.png', size: 45, showInPalette: false },
-    { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasset green.png', size: 45, showInPalette: false },
-    { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasse redt.png', size: 45, showInPalette: false },
-    { folder: 'map', filename: 'Tower_90_mapicon_dota2_gameasset.png', size: 37, showInPalette: false },
-    { folder: 'map', filename: 'Tower_90_mapicon_dota2_gameasset red.png', size: 37, showInPalette: false },
-    { folder: 'map', filename: 'Tower_90_mapicon_dota2_gameasse greent.png', size: 37, showInPalette: false },
+    { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasset.png', size: 45 },
+    { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasset green.png', size: 45 },
+    { folder: 'map', filename: 'Tower_45_mapicon_dota2_gameasse redt.png', size: 45 },
+    { folder: 'map', filename: 'Tower_90_mapicon_dota2_gameasset.png', size: 37 },
+    { folder: 'map', filename: 'Tower_90_mapicon_dota2_gameasset red.png', size: 37 },
+    { folder: 'map', filename: 'Tower_90_mapicon_dota2_gameasse greent.png', size: 37 },
 
     { folder: 'map', filename: 'Warp_Gate_mapicon_dota2_gameasset.png', size: 45, showInPalette: false },
     { folder: 'map', filename: 'Watcher_mapicon_dota2_gameasset.png', width: 47, height: 35, showInPalette: false },
