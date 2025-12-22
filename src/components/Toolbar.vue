@@ -11,18 +11,25 @@ const store = useEditorStore()
 
 // Keyboard shortcuts for undo/redo
 const handleKeyDown = (e: KeyboardEvent) => {
-  // Ctrl+Z or Cmd+Z for undo
-  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+  const isModifierPressed = e.ctrlKey || e.metaKey
+  const key = typeof e.key === 'string' ? e.key.toLowerCase() : ''
+  const isZKey = e.code === 'KeyZ' || key === 'z'
+  const isYKey = e.code === 'KeyY' || key === 'y'
+
+  // Ctrl/Cmd + Z for undo
+  if (isModifierPressed && isZKey && !e.shiftKey) {
     e.preventDefault()
     store.undo()
+    return
   }
-  // Ctrl+Shift+Z or Cmd+Shift+Z for redo
-  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+  // Ctrl/Cmd + Shift + Z or Ctrl/Cmd + Shift + Y for redo (Mac-style)
+  if (isModifierPressed && e.shiftKey && (isZKey || isYKey)) {
     e.preventDefault()
     store.redo()
+    return
   }
-  // Ctrl+Y or Cmd+Y for redo (alternative)
-  if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+  // Ctrl/Cmd + Y for redo (alternative)
+  if (isModifierPressed && isYKey) {
     e.preventDefault()
     store.redo()
   }
