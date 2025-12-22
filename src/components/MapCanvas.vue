@@ -5,6 +5,84 @@ import type { KonvaEventObject } from 'konva/lib/Node'
 import type { Node } from 'konva/lib/Node'
 import { mapIconFiles, mapIconPath } from '../data/mapIcons'
 
+type AutoIconCategory = 'buildings' | 'watchers' | 'structures' | 'neutralCamps' | 'runes'
+
+// Determine which toggleable category an icon belongs to based on its image path
+const getIconCategory = (imagePath: string): AutoIconCategory | null => {
+    const path = imagePath.toLowerCase()
+
+    // Buildings: Towers and Ancients
+    if (path.includes('tower_45') || path.includes('tower_90') || path.includes('60px-ancient')) {
+        return 'buildings'
+    }
+
+    // Watchers
+    if (path.includes('watcher')) {
+        return 'watchers'
+    }
+
+    // Structures: Lotus Pool, Warp Gate, Tormentor, Wisdom Rune
+    if (path.includes('lotus_pool') || path.includes('warp_gate') || path.includes('tormentor') || path.includes('wisdom_rune')) {
+        return 'structures'
+    }
+
+    // Neutral Camps
+    if (path.includes('neutral_camp')) {
+        return 'neutralCamps'
+    }
+
+    // Runes toggleable: Water Rune and Bounty Rune
+    if (path.includes('water_rune') || path.includes('bounty_rune')) {
+        return 'runes'
+    }
+
+    return null
+}
+
+// Apply the same shrinking logic as buildAutoIcon for manually placed icons
+const applyToggleableIconShrinking = (icon: Icon): Icon => {
+    const category = getIconCategory(icon.image)
+    if (!category || category === 'runes') {
+        // Runes don't shrink, and non-toggleable icons don't shrink
+        return icon
+    }
+
+    // Determine shrink amount: neutral camps shrink by 4px, others by 8px
+    const shrinkBy = category === 'neutralCamps' ? 4 : 8
+
+    let size = icon.size
+    let width = icon.width
+    let height = icon.height
+
+    // Apply shrinking
+    if (size !== undefined) {
+        size = Math.max(1, size - shrinkBy)
+    }
+    if (width !== undefined) {
+        width = Math.max(1, width - shrinkBy)
+    }
+    if (height !== undefined) {
+        height = Math.max(1, height - shrinkBy)
+    }
+
+    // Adjust position to keep center in same place
+    const centerX = icon.x + (icon.width ?? icon.size ?? ICON_BASE_SIZE) / 2
+    const centerY = icon.y + (icon.height ?? icon.size ?? ICON_BASE_SIZE) / 2
+    const newWidth = width ?? size ?? ICON_BASE_SIZE
+    const newHeight = height ?? size ?? ICON_BASE_SIZE
+    const newX = centerX - newWidth / 2
+    const newY = centerY - newHeight / 2
+
+    return {
+        ...icon,
+        x: newX,
+        y: newY,
+        size,
+        width,
+        height
+    }
+}
+
 const store = useEditorStore()
 
 // Map image dimensions - will be set when image loads
@@ -416,7 +494,7 @@ const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
             const iconHeight = isHeroSelection
                 ? store.heroIconSize
                 : (selectedIcon as any).height ?? (selectedIcon as any).size ?? ICON_BASE_SIZE
-            const newIcon: Icon = {
+            let newIcon: Icon = {
                 id: iconId,
                 x: pos.x / currentScale.value - iconWidth / 2,
                 y: pos.y / currentScale.value - iconHeight / 2,
@@ -425,6 +503,10 @@ const handleStagePointerDown = (e: KonvaEventObject<MouseEvent | TouchEvent | Po
                 width: iconWidth,
                 height: iconHeight
             }
+
+            // Apply the same shrinking logic as toggleable icons
+            newIcon = applyToggleableIconShrinking(newIcon)
+
             store.addIcon(newIcon)
             // logIconPlacement(newIcon, pos.x, pos.y)
             logAllIconPositions()
