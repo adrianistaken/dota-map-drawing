@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed } from 'vue'
 import { useEditorStore, type Tool, type BrushType } from '../stores/useEditorStore'
-import LastUpdatedBadge from './LastUpdatedBadge.vue'
+import LastUpdatedBadge from './LastUpdatedBadge.vue';
+import posthog from 'posthog-js';
 
 const props = defineProps<{
   mapCanvasRef?: { getStage: () => any } | null
@@ -94,6 +95,7 @@ const copyToClipboard = async () => {
         })
       ])
       alert('Map copied to clipboard!')
+      posthog.capture('map_copied_to_clipboard', { property: 'value' })
     } catch (err) {
       console.error('Failed to copy to clipboard:', err)
       // Fallback: copy data URL as text
