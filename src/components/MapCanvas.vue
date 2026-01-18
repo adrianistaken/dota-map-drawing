@@ -429,15 +429,11 @@ const getIconDisplayName = (icon: Icon) => {
 }
 
 const logAllIconPositions = () => {
-    if (!store.icons.length) {
-        console.log('Icon positions: (none)')
-        return
-    }
     const lines = store.icons.map(icon => {
         const name = getIconDisplayName(icon)
         return `${name}: x: ${icon.x.toFixed(2)}, y: ${icon.y.toFixed(2)}`
     })
-    console.log('Icon positions:\n' + lines.join('\n'))
+    // console.log('Icon positions:\n' + lines.join('\n'))
 }
 
 // Handle stage pointer down - start drawing or place icon
