@@ -44,27 +44,132 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
 })
 
+// Add watermark to exported image
+const addWatermarkToImage = async (imageDataURL: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    // Load the map image
+    const mapImage = new Image()
+    mapImage.crossOrigin = 'anonymous'
+    mapImage.onload = () => {
+      // Load the favicon
+      const faviconImage = new Image()
+      faviconImage.crossOrigin = 'anonymous'
+      faviconImage.onload = () => {
+        try {
+          // Create a canvas matching the map image dimensions
+          const canvas = document.createElement('canvas')
+          canvas.width = mapImage.width
+          canvas.height = mapImage.height
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            reject(new Error('Failed to get canvas context'))
+            return
+          }
+
+          // Draw the map image
+          ctx.drawImage(mapImage, 0, 0)
+
+          // Watermark specifications
+          const faviconHeight = 45 // Fixed pixel size
+          const padding = 25 // Padding from edges (increased)
+          const textSpacing = 15 // Space between favicon and text (increased)
+          const opacity = 0.65 // 65% opacity (moderate subtlety)
+
+          // Calculate favicon dimensions (maintain aspect ratio)
+          const faviconAspectRatio = faviconImage.width / faviconImage.height
+          const faviconWidth = faviconHeight * faviconAspectRatio
+
+          // Calculate text dimensions - match toggleables font (text-sm font-semibold)
+          // Using system font stack to match the app's font family
+          const fontSize = faviconHeight * 0.6 // ~27px at 2x pixel ratio
+          ctx.font = `600 ${fontSize}px system-ui, Avenir, Helvetica, Arial, sans-serif` // font-semibold (600 weight)
+          ctx.textBaseline = 'middle'
+          const text = 'dota2mapdrawing.com'
+
+          // Calculate watermark position (bottom-left with padding)
+          const watermarkX = padding
+          const watermarkY = canvas.height - faviconHeight - padding
+
+          // Set opacity for watermark
+          ctx.save()
+          ctx.globalAlpha = opacity
+
+          // Draw favicon
+          ctx.drawImage(
+            faviconImage,
+            watermarkX,
+            watermarkY,
+            faviconWidth,
+            faviconHeight
+          )
+
+          // Draw text next to favicon
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)' // Light color for visibility
+          ctx.fillText(
+            text,
+            watermarkX + faviconWidth + textSpacing,
+            watermarkY + faviconHeight / 2
+          )
+
+          ctx.restore()
+
+          // Export the watermarked canvas as data URL
+          const watermarkedDataURL = canvas.toDataURL('image/png', 1)
+          resolve(watermarkedDataURL)
+        } catch (error) {
+          reject(error)
+        }
+      }
+      faviconImage.onerror = () => {
+        reject(new Error('Failed to load favicon image'))
+      }
+      faviconImage.src = '/dota2mapdrawinglogo.png'
+    }
+    mapImage.onerror = () => {
+      reject(new Error('Failed to load map image'))
+    }
+    mapImage.src = imageDataURL
+  })
+}
+
 // Export stage to PNG
-const downloadPNG = () => {
+const downloadPNG = async () => {
   const stage = props.mapCanvasRef?.getStage()
   if (!stage) {
     console.error('Stage not found')
     return
   }
 
-  // Use Konva's toDataURL method for high-quality export
-  // pixelRatio: 2 for higher resolution
-  const dataURL = stage.toDataURL({
-    pixelRatio: 2,
-    mimeType: 'image/png',
-    quality: 1
-  })
+  try {
+    // Use Konva's toDataURL method for high-quality export
+    // pixelRatio: 2 for higher resolution
+    const dataURL = stage.toDataURL({
+      pixelRatio: 2,
+      mimeType: 'image/png',
+      quality: 1
+    })
 
-  // Create download link
-  const link = document.createElement('a')
-  link.download = 'dota-map-drawing.png'
-  link.href = dataURL
-  link.click()
+    // Add watermark to the exported image
+    const watermarkedDataURL = await addWatermarkToImage(dataURL)
+
+    // Create download link
+    const link = document.createElement('a')
+    link.download = 'dota-map-drawing.png'
+    link.href = watermarkedDataURL
+    link.click()
+  } catch (error) {
+    console.error('Failed to add watermark:', error)
+    // Fallback: download without watermark
+    const dataURL = stage.toDataURL({
+      pixelRatio: 2,
+      mimeType: 'image/png',
+      quality: 1
+    })
+    const link = document.createElement('a')
+    link.download = 'dota-map-drawing.png'
+    link.href = dataURL
+    link.click()
+  }
 }
 
 // Copy to clipboard
@@ -83,8 +188,18 @@ const copyToClipboard = async () => {
       quality: 1
     })
 
+    // Add watermark to the exported image
+    let watermarkedDataURL: string
+    try {
+      watermarkedDataURL = await addWatermarkToImage(dataURL)
+    } catch (watermarkError) {
+      console.error('Failed to add watermark:', watermarkError)
+      // Fallback: use original image without watermark
+      watermarkedDataURL = dataURL
+    }
+
     // Convert data URL to blob
-    const response = await fetch(dataURL)
+    const response = await fetch(watermarkedDataURL)
     const blob = await response.blob()
 
     try {
@@ -99,7 +214,7 @@ const copyToClipboard = async () => {
     } catch (err) {
       console.error('Failed to copy to clipboard:', err)
       // Fallback: copy data URL as text
-      await navigator.clipboard.writeText(dataURL)
+      await navigator.clipboard.writeText(watermarkedDataURL)
       alert('Image data URL copied to clipboard (fallback)')
     }
   } catch (err) {
