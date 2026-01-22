@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, computed, ref, nextTick } from 'vue'
 import { useBoardsStore } from '../stores/useBoardsStore'
 import BoardSlot from './BoardSlot.vue'
 
@@ -9,6 +9,9 @@ const props = defineProps<{
 
 const boardsStore = useBoardsStore()
 const isCapturingThumbnails = ref(false)
+
+// Track current board ID reactively
+const currentBoardId = computed(() => boardsStore.currentBoardId)
 
 // Create array of 3 slots (1, 2, 3)
 const slots = computed(() => {
@@ -39,23 +42,24 @@ async function handleSaveCurrent(slotNumber: number) {
       alert('Failed to save board. Please try again.')
     }
   } else {
-    // Capture thumbnail for newly duplicated board
-    if (props.mapCanvasRef) {
-      setTimeout(async () => {
-        await captureThumbnails()
-      }, 100)
+    // Capture thumbnail immediately for the newly duplicated board
+    if (props.mapCanvasRef && result.data) {
+      const thumbnail = boardsStore.captureThumbnail(props.mapCanvasRef)
+      if (thumbnail) {
+        await boardsStore.updateBoardThumbnail(result.data.id, thumbnail)
+      }
     }
   }
 }
 
 async function handleCreateNew(slotNumber: number) {
   const confirmed = confirm(
-    'Create a new blank board? Your current workspace will be saved first, then replaced with an empty canvas.'
+    'Create a new blank board? Your current map will be saved first, then replaced with an empty canvas.'
   )
 
   if (!confirmed) return
 
-  // Save current workspace before switching
+  // Save current map before switching
   await boardsStore.persistCurrentBoard()
 
   const result = await boardsStore.createFreshBoardInSlot(slotNumber)
@@ -68,8 +72,18 @@ async function handleCreateNew(slotNumber: number) {
     } else {
       alert('Failed to create new board. Please try again.')
     }
+  } else {
+    // Capture thumbnail for the new empty board (shows empty map)
+    if (props.mapCanvasRef && result.data) {
+      // Small delay to ensure the empty board is rendered
+      setTimeout(async () => {
+        const thumbnail = boardsStore.captureThumbnail(props.mapCanvasRef)
+        if (thumbnail) {
+          await boardsStore.updateBoardThumbnail(result.data.id, thumbnail)
+        }
+      }, 100)
+    }
   }
-  // No need to capture thumbnail - empty boards don't need thumbnails yet
 }
 
 async function captureThumbnails() {
@@ -130,7 +144,7 @@ defineExpose({
                 <polyline points="17 21 17 13 7 13 7 21" />
                 <polyline points="7 3 7 8 15 8" />
               </svg>
-              <span>Save Current Workspace</span>
+              <span>Save Current Map</span>
             </button>
             <button
               @click="handleCreateNew(slot.slotNumber)"
@@ -147,7 +161,7 @@ defineExpose({
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <span>Create New Workspace</span>
+              <span>Create New Map</span>
             </button>
           </div>
         </div>

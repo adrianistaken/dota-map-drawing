@@ -743,7 +743,12 @@ export const useBoardsStore = defineStore('boards', () => {
       savedBoards.value.push(newBoard)
       savedBoards.value.sort((a, b) => (a.slotNumber || 0) - (b.slotNumber || 0))
 
-      // Do NOT switch to new board (keep working on current)
+      // If currently on draft, switch to the newly saved board
+      // If on a saved board, keep working on current
+      if (currentBoardId.value === DRAFT_BOARD_ID) {
+        currentBoardId.value = newBoard.id
+        await storageAdapter.setMetadata(METADATA_KEY_LAST_OPENED, newBoard.id)
+      }
 
       console.log('[BoardsStore] Duplicated current board to slot', slotNumber)
       return { success: true, data: newBoard }
@@ -835,11 +840,21 @@ export const useBoardsStore = defineStore('boards', () => {
         return null
       }
 
-      // Capture at 300x300 with 2x pixel ratio for retina
+      // Get current stage dimensions
+      const stageWidth = stage.width()
+      const stageHeight = stage.height()
+
+      // Calculate scale to fit 300x300 thumbnail while maintaining aspect ratio
+      const targetSize = 300
+      const scale = Math.min(targetSize / stageWidth, targetSize / stageHeight)
+
+      // Capture the entire stage scaled down to thumbnail size
       const dataURL = stage.toDataURL({
-        pixelRatio: 2,
-        width: 300,
-        height: 300
+        pixelRatio: scale * 2, // 2x for retina
+        x: 0,
+        y: 0,
+        width: stageWidth,
+        height: stageHeight
       })
 
       return dataURL

@@ -43,7 +43,7 @@ async function saveName() {
 async function handleOpen() {
   if (props.isActive) return
 
-  const confirmed = confirm('Open this board? Your current workspace will be replaced.')
+  const confirmed = confirm('Open this board? Your current map will be replaced.')
   if (confirmed) {
     const result = await boardsStore.setCurrentBoard(props.board.id)
     if (!result.success) {
