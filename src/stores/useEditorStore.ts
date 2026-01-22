@@ -504,6 +504,15 @@ export const useEditorStore = defineStore('editor', () => {
   // Persistence: save current state to storage
   const persistState = () => {
     debouncedSave()
+
+    // Also trigger boards store auto-save
+    // Import is lazy to avoid circular dependency
+    import('./useBoardsStore').then(({ useBoardsStore }) => {
+      const boardsStore = useBoardsStore()
+      if (boardsStore.isInitialized) {
+        boardsStore.autoSaveCurrentBoard()
+      }
+    })
   }
 
   // Persistence: load state from storage

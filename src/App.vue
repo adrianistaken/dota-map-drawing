@@ -5,12 +5,18 @@ import Toolbar from './components/Toolbar.vue'
 import HeroPalette from './components/HeroPalette.vue'
 import MapIconsPalette from './components/MapIconsPalette.vue'
 import SocialLinks from './components/SocialLinks.vue'
+import PanelTabs from './components/PanelTabs.vue'
+import BoardsPanel from './components/BoardsPanel.vue'
 import { useEditorStore } from './stores/useEditorStore'
+import { useBoardsStore } from './stores/useBoardsStore'
 
 const store = useEditorStore()
+const boardsStore = useBoardsStore()
 
 const mapCanvasRef = ref<InstanceType<typeof MapCanvas> | null>(null)
+const boardsPanelRef = ref<InstanceType<typeof BoardsPanel> | null>(null)
 const isMobileLayout = ref(false)
+const activeTab = ref<'tools' | 'boards'>('tools')
 
 const updateLayoutMode = () => {
   isMobileLayout.value = window.innerWidth <= 900
@@ -20,13 +26,28 @@ const handleResize = () => {
   updateLayoutMode()
 }
 
+async function handleTabChange(tab: 'tools' | 'boards') {
+  activeTab.value = tab
+
+  // Capture thumbnails when switching to Boards tab
+  if (tab === 'boards' && boardsPanelRef.value) {
+    // Small delay to ensure panel is visible
+    setTimeout(() => {
+      boardsPanelRef.value?.captureThumbnails()
+    }, 100)
+  }
+}
+
 // Watch for changes to mapCanvasRef (in case future hooks are needed)
 watch(mapCanvasRef, () => { }, { immediate: true })
 
 // Also update on window resize
-onMounted(() => {
-  // Load persisted state from localStorage
-  store.loadState()
+onMounted(async () => {
+  // Initialize boards store first (handles editor hydration)
+  await boardsStore.initBoards()
+
+  // Note: store.loadState() is no longer called here
+  // The boards store handles loading the appropriate board state
 
   handleResize()
   window.addEventListener('resize', handleResize)
@@ -42,7 +63,13 @@ onBeforeUnmount(() => {
     <div class="layout-grid">
       <aside class="side-panel left-panel">
         <div class="panel-surface tools-surface fill-vertical">
-          <Toolbar :map-canvas-ref="mapCanvasRef" />
+          <PanelTabs @tab-change="handleTabChange" />
+          <div v-show="activeTab === 'tools'" class="panel-content">
+            <Toolbar :map-canvas-ref="mapCanvasRef" />
+          </div>
+          <div v-show="activeTab === 'boards'" class="panel-content">
+            <BoardsPanel ref="boardsPanelRef" :map-canvas-ref="mapCanvasRef" />
+          </div>
         </div>
       </aside>
 
@@ -125,6 +152,14 @@ onBeforeUnmount(() => {
 
 .fill-vertical {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .center-panel {
