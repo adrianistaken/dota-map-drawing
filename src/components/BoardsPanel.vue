@@ -27,25 +27,49 @@ onMounted(async () => {
   }
 })
 
-async function handleSaveToSlot(slotNumber: number) {
-  const result = await boardsStore.pinCurrentBoardToSaved(slotNumber)
+async function handleSaveCurrent(slotNumber: number) {
+  const result = await boardsStore.duplicateCurrentBoardToSlot(slotNumber)
 
   if (!result.success) {
     if (result.error.code === 'LIMIT_REACHED') {
       alert(result.error.message)
-    } else if (result.error.code === 'STORAGE_ERROR' && result.error.message.includes('occupied')) {
+    } else if (result.error.message.includes('occupied')) {
       alert(`Slot ${slotNumber} is already occupied. Please clear it first.`)
     } else {
       alert('Failed to save board. Please try again.')
     }
   } else {
-    // Capture thumbnail for newly saved board
+    // Capture thumbnail for newly duplicated board
     if (props.mapCanvasRef) {
       setTimeout(async () => {
         await captureThumbnails()
       }, 100)
     }
   }
+}
+
+async function handleCreateNew(slotNumber: number) {
+  const confirmed = confirm(
+    'Create a new blank board? Your current workspace will be saved first, then replaced with an empty canvas.'
+  )
+
+  if (!confirmed) return
+
+  // Save current workspace before switching
+  await boardsStore.persistCurrentBoard()
+
+  const result = await boardsStore.createFreshBoardInSlot(slotNumber)
+
+  if (!result.success) {
+    if (result.error.code === 'LIMIT_REACHED') {
+      alert(result.error.message)
+    } else if (result.error.message.includes('occupied')) {
+      alert(`Slot ${slotNumber} is already occupied. Please clear it first.`)
+    } else {
+      alert('Failed to create new board. Please try again.')
+    }
+  }
+  // No need to capture thumbnail - empty boards don't need thumbnails yet
 }
 
 async function captureThumbnails() {
@@ -87,26 +111,45 @@ defineExpose({
 
         <!-- Empty slot -->
         <div v-else class="board-slot empty">
-          <button
-            @click="handleSaveToSlot(slot.slotNumber)"
-            class="save-button"
-            :disabled="!boardsStore.canSaveMore"
-          >
-            <div class="plus-icon-wrapper">
+          <div class="empty-slot-actions">
+            <button
+              @click="handleSaveCurrent(slot.slotNumber)"
+              class="slot-action-button save-action"
+              :disabled="!boardsStore.canSaveMore"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
-                class="plus-icon"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              <span>Save Current Workspace</span>
+            </button>
+            <button
+              @click="handleCreateNew(slot.slotNumber)"
+              class="slot-action-button create-action"
+              :disabled="!boardsStore.canSaveMore"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
               >
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-            </div>
-            <span class="save-text">Save Current Board</span>
-          </button>
+              <span>Create New Workspace</span>
+            </button>
+          </div>
         </div>
       </template>
     </div>
@@ -171,53 +214,57 @@ defineExpose({
   background: rgba(255, 255, 255, 0.05);
 }
 
-.save-button {
+.empty-slot-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 180px;
+  padding: 1rem;
+}
+
+.slot-action-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.6);
+  gap: 0.375rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.375rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
-  padding: 1rem;
-  width: 100%;
-  height: 100%;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
-.save-button:hover:not(:disabled) {
+.slot-action-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ff9500;
   color: #ff9500;
 }
 
-.save-button:disabled {
+.slot-action-button:disabled {
   cursor: not-allowed;
   opacity: 0.3;
 }
 
-.plus-icon-wrapper {
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  transition: all 0.2s;
+.slot-action-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
-.save-button:hover:not(:disabled) .plus-icon-wrapper {
+.save-action:hover:not(:disabled) {
+  background: rgba(79, 118, 226, 0.15);
+  border-color: #4f76e2;
+  color: #4f76e2;
+}
+
+.create-action:hover:not(:disabled) {
   background: rgba(255, 149, 0, 0.15);
-}
-
-.plus-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.save-text {
-  font-size: 0.75rem;
-  font-weight: 500;
+  border-color: #ff9500;
+  color: #ff9500;
 }
 
 .loading-overlay {

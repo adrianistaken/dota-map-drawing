@@ -685,6 +685,140 @@ export const useBoardsStore = defineStore('boards', () => {
   }
 
   /**
+   * Duplicate current board to a specific slot
+   * Creates a copy with new UUID, keeps working on current board
+   */
+  async function duplicateCurrentBoardToSlot(slotNumber: number, name?: string): Promise<BoardResult<Board>> {
+    if (!storageAdapter) {
+      return {
+        success: false,
+        error: { code: 'STORAGE_ERROR', message: 'Storage not initialized' }
+      }
+    }
+
+    try {
+      // Check limit
+      if (savedBoards.value.length >= MAX_SAVED_BOARDS) {
+        return {
+          success: false,
+          error: {
+            code: 'LIMIT_REACHED',
+            message: `Maximum ${MAX_SAVED_BOARDS} boards reached. Clear a board first.`,
+            details: { savedCount: savedBoards.value.length }
+          }
+        }
+      }
+
+      // Check if slot occupied
+      const existingInSlot = savedBoards.value.find(b => b.slotNumber === slotNumber)
+      if (existingInSlot) {
+        return {
+          success: false,
+          error: { code: 'STORAGE_ERROR', message: 'Slot occupied' }
+        }
+      }
+
+      // Serialize current workspace (draft or saved board)
+      const payload = serializeCurrentBoard()
+
+      // Create new board with new ID
+      const newBoard: Board = {
+        id: generateUUID(),
+        name: name || `Board ${slotNumber}`,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        isSaved: true,
+        slotNumber,
+        thumbnail: null,
+        data: {
+          schemaVersion: BOARD_SCHEMA_VERSION,
+          payload
+        }
+      }
+
+      // Save to storage
+      await storageAdapter.saveBoard(newBoard)
+
+      // Add to saved boards
+      savedBoards.value.push(newBoard)
+      savedBoards.value.sort((a, b) => (a.slotNumber || 0) - (b.slotNumber || 0))
+
+      // Do NOT switch to new board (keep working on current)
+
+      console.log('[BoardsStore] Duplicated current board to slot', slotNumber)
+      return { success: true, data: newBoard }
+    } catch (err) {
+      console.error('[BoardsStore] duplicateCurrentBoardToSlot failed:', err)
+      return {
+        success: false,
+        error: { code: 'STORAGE_ERROR', message: 'Failed to duplicate board', details: err }
+      }
+    }
+  }
+
+  /**
+   * Create fresh empty board in a specific slot and switch to it
+   */
+  async function createFreshBoardInSlot(slotNumber: number): Promise<BoardResult<Board>> {
+    if (!storageAdapter) {
+      return {
+        success: false,
+        error: { code: 'STORAGE_ERROR', message: 'Storage not initialized' }
+      }
+    }
+
+    try {
+      // Check limit
+      if (savedBoards.value.length >= MAX_SAVED_BOARDS) {
+        return {
+          success: false,
+          error: {
+            code: 'LIMIT_REACHED',
+            message: `Maximum ${MAX_SAVED_BOARDS} boards reached. Clear a board first.`,
+            details: { savedCount: savedBoards.value.length }
+          }
+        }
+      }
+
+      // Check if slot occupied
+      const existingInSlot = savedBoards.value.find(b => b.slotNumber === slotNumber)
+      if (existingInSlot) {
+        return {
+          success: false,
+          error: { code: 'STORAGE_ERROR', message: 'Slot occupied' }
+        }
+      }
+
+      // Create fresh empty board
+      const freshBoard = createFreshBoard(
+        generateUUID(),
+        `Board ${slotNumber}`,
+        true,
+        slotNumber
+      )
+
+      // Save to storage
+      await storageAdapter.saveBoard(freshBoard)
+
+      // Add to saved boards
+      savedBoards.value.push(freshBoard)
+      savedBoards.value.sort((a, b) => (a.slotNumber || 0) - (b.slotNumber || 0))
+
+      // Switch to this new empty board
+      await setCurrentBoard(freshBoard.id)
+
+      console.log('[BoardsStore] Created fresh board in slot', slotNumber)
+      return { success: true, data: freshBoard }
+    } catch (err) {
+      console.error('[BoardsStore] createFreshBoardInSlot failed:', err)
+      return {
+        success: false,
+        error: { code: 'STORAGE_ERROR', message: 'Failed to create new board', details: err }
+      }
+    }
+  }
+
+  /**
    * Capture thumbnail for current board
    * Uses Konva stage toDataURL method
    */
@@ -785,6 +919,8 @@ export const useBoardsStore = defineStore('boards', () => {
     createNewDraft,
     renameBoard,
     deleteSavedBoard,
+    duplicateCurrentBoardToSlot,
+    createFreshBoardInSlot,
     autoSaveCurrentBoard,
     captureThumbnail,
     updateBoardThumbnail,
