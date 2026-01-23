@@ -9,7 +9,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createBoardStorage, type BoardStorageAdapter } from '../utils/boardStorage'
 import { useEditorStore, type Stroke, type Icon, type BrushType } from './useEditorStore'
-import { debounce } from '../utils/persistence'
+import { debounce, loadStateFromStorage, clearStateFromStorage } from '../utils/persistence'
 
 // Constants
 export const BOARD_SCHEMA_VERSION = 1
@@ -290,6 +290,8 @@ export const useBoardsStore = defineStore('boards', () => {
 
   /**
    * Persist current board to storage
+   * Note: We must deep clone the board object to remove Vue's reactive Proxy wrappers
+   * before saving to IndexedDB, as Proxy objects cannot be cloned by IndexedDB.
    */
   async function persistCurrentBoard(): Promise<void> {
     if (!storageAdapter) return
@@ -306,7 +308,9 @@ export const useBoardsStore = defineStore('boards', () => {
           draftBoard.value.data.payload = payload
           draftBoard.value.updatedAt = now
 
-          await storageAdapter.saveBoard(draftBoard.value)
+          // Deep clone to remove Vue Proxy before saving to IndexedDB
+          const boardToSave = JSON.parse(JSON.stringify(draftBoard.value))
+          await storageAdapter.saveBoard(boardToSave)
         }
       } else {
         // Update saved board
@@ -315,7 +319,9 @@ export const useBoardsStore = defineStore('boards', () => {
           board.data.payload = payload
           board.updatedAt = now
 
-          await storageAdapter.saveBoard(board)
+          // Deep clone to remove Vue Proxy before saving to IndexedDB
+          const boardToSave = JSON.parse(JSON.stringify(board))
+          await storageAdapter.saveBoard(boardToSave)
         }
       }
     } catch (err) {
@@ -327,12 +333,14 @@ export const useBoardsStore = defineStore('boards', () => {
 
   /**
    * Debounced auto-save (called by editor store on every change)
+   * Uses a short debounce to batch rapid changes while ensuring saves happen quickly
    */
   const debouncedAutoSave = debounce(async () => {
     await persistCurrentBoard()
-  }, 500)
+  }, 300)
 
   function autoSaveCurrentBoard(): void {
+    if (!storageAdapter) return
     debouncedAutoSave()
   }
 
@@ -378,6 +386,7 @@ export const useBoardsStore = defineStore('boards', () => {
   /**
    * Initialize boards store
    * Loads draft and saved boards from storage, determines last opened
+   * Migrates legacy localStorage data on first run
    */
   async function initBoards(): Promise<void> {
     if (isInitialized.value) return
@@ -393,9 +402,54 @@ export const useBoardsStore = defineStore('boards', () => {
       if (draft) {
         draftBoard.value = draft
       } else {
-        // Create fresh draft
-        draftBoard.value = createFreshBoard(DRAFT_BOARD_ID, 'Draft', false)
-        await storageAdapter.saveBoard(draftBoard.value)
+        // Check for legacy localStorage data to migrate
+        const legacyState = loadStateFromStorage()
+        if (legacyState && (legacyState.strokes.length > 0 || legacyState.icons.length > 0)) {
+          // Migrate legacy data to draft board
+          console.log('[BoardsStore] Migrating legacy localStorage data to draft board')
+          const migratedDraft: Board = {
+            id: DRAFT_BOARD_ID,
+            name: 'Draft',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            isSaved: false,
+            slotNumber: null,
+            thumbnail: null,
+            data: {
+              schemaVersion: BOARD_SCHEMA_VERSION,
+              payload: {
+                strokes: legacyState.strokes.map(s => ({
+                  ...s,
+                  brushType: s.brushType || 'standard'
+                })) as Stroke[],
+                icons: legacyState.icons as Icon[],
+                preferences: {
+                  brushColor: legacyState.preferences.brushColor,
+                  brushSize: legacyState.preferences.brushSize,
+                  brushType: legacyState.preferences.brushType,
+                  heroIconSize: legacyState.preferences.heroIconSize ?? 64,
+                  useSimpleMap: legacyState.preferences.useSimpleMap,
+                  autoPlaceBuildings: legacyState.preferences.autoPlaceBuildings ?? false,
+                  autoPlaceWatchers: legacyState.preferences.autoPlaceWatchers ?? false,
+                  autoPlaceStructures: legacyState.preferences.autoPlaceStructures ?? false,
+                  autoPlaceNeutralCamps: legacyState.preferences.autoPlaceNeutralCamps ?? false,
+                  autoPlaceRunes: legacyState.preferences.autoPlaceRunes ?? false
+                }
+              }
+            }
+          }
+          draftBoard.value = migratedDraft
+          await storageAdapter.saveBoard(migratedDraft)
+          // Clear legacy storage after successful migration
+          clearStateFromStorage()
+          console.log('[BoardsStore] Legacy data migration complete')
+        } else {
+          // Create fresh draft
+          draftBoard.value = createFreshBoard(DRAFT_BOARD_ID, 'Draft', false)
+          // Deep clone to remove Vue Proxy before saving to IndexedDB
+          const boardToSave = JSON.parse(JSON.stringify(draftBoard.value))
+          await storageAdapter.saveBoard(boardToSave)
+        }
       }
 
       // Load saved boards
@@ -409,18 +463,21 @@ export const useBoardsStore = defineStore('boards', () => {
       const lastOpenedId = await storageAdapter.getMetadata(METADATA_KEY_LAST_OPENED)
       if (lastOpenedId && savedBoards.value.some(b => b.id === lastOpenedId)) {
         currentBoardId.value = lastOpenedId
-        await hydrateEditorWithBoard(lastOpenedId)
       } else if (savedBoards.value.length > 0) {
         // If no last opened, but boards exist, open the first one
         currentBoardId.value = savedBoards.value[0].id
-        await hydrateEditorWithBoard(savedBoards.value[0].id)
       } else {
         // No saved boards, use draft
         currentBoardId.value = DRAFT_BOARD_ID
-        await hydrateEditorWithBoard(DRAFT_BOARD_ID)
       }
 
+      // Set initialized BEFORE hydrating to ensure persistState works correctly
+      // This allows auto-save to work if ensureAutoPlacedIcons is called during hydration
       isInitialized.value = true
+
+      // Now hydrate the editor with the current board
+      await hydrateEditorWithBoard(currentBoardId.value)
+
       console.log('[BoardsStore] Initialized with', savedBoards.value.length, 'saved boards')
     } catch (err) {
       console.error('[BoardsStore] Init failed:', err)
@@ -631,8 +688,9 @@ export const useBoardsStore = defineStore('boards', () => {
       board.name = trimmedName
       board.updatedAt = Date.now()
 
-      // Save to storage
-      await storageAdapter.saveBoard(board)
+      // Save to storage - deep clone to remove Vue Proxy
+      const boardToSave = JSON.parse(JSON.stringify(board))
+      await storageAdapter.saveBoard(boardToSave)
 
       console.log('[BoardsStore] Renamed board:', id, 'to', trimmedName)
       return { success: true, data: board }
@@ -880,7 +938,9 @@ export const useBoardsStore = defineStore('boards', () => {
       board.thumbnail = thumbnail
       board.updatedAt = Date.now()
 
-      await storageAdapter.saveBoard(board)
+      // Deep clone to remove Vue Proxy before saving to IndexedDB
+      const boardToSave = JSON.parse(JSON.stringify(board))
+      await storageAdapter.saveBoard(boardToSave)
     } catch (err) {
       console.error('[BoardsStore] updateBoardThumbnail failed:', err)
     }

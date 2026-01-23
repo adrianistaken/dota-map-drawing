@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { saveStateToStorage, loadStateFromStorage, debounce, type PersistedState, STORAGE_VERSION } from '../utils/persistence'
+import { loadStateFromStorage } from '../utils/persistence'
 import { mapIconFiles, mapIconPath, type MapIconFolder } from '../data/mapIcons'
 
 export type Tool = 'draw' | 'erase' | 'icon'
@@ -478,35 +478,11 @@ export const useEditorStore = defineStore('editor', () => {
   // Map state
   const useSimpleMap = ref(false)
 
-  // Persistence: debounced save function
-  const debouncedSave = debounce(() => {
-    const state: PersistedState = {
-      strokes: JSON.parse(JSON.stringify(strokes.value)),
-      icons: JSON.parse(JSON.stringify(icons.value)),
-      preferences: {
-        brushColor: brushColor.value,
-        brushSize: brushSize.value,
-        brushType: brushType.value,
-        heroIconSize: heroIconSize.value,
-        useSimpleMap: useSimpleMap.value,
-        autoPlaceIcons: autoPlaceBuildings.value || autoPlaceWatchers.value || autoPlaceStructures.value || autoPlaceNeutralCamps.value || autoPlaceRunes.value || undefined,
-        autoPlaceBuildings: autoPlaceBuildings.value,
-        autoPlaceWatchers: autoPlaceWatchers.value,
-        autoPlaceStructures: autoPlaceStructures.value,
-        autoPlaceNeutralCamps: autoPlaceNeutralCamps.value,
-        autoPlaceRunes: autoPlaceRunes.value
-      },
-      version: STORAGE_VERSION
-    }
-    saveStateToStorage(state)
-  }, 500)
-
-  // Persistence: save current state to storage
+  // Persistence: save current state to boards storage
+  // Note: Legacy localStorage saving has been removed - boards store handles all persistence
   const persistState = () => {
-    debouncedSave()
-
-    // Also trigger boards store auto-save
-    // Import is lazy to avoid circular dependency
+    // Use dynamic import to avoid circular dependency at module load time
+    // The import is cached by the browser/bundler, so subsequent calls are fast
     import('./useBoardsStore').then(({ useBoardsStore }) => {
       const boardsStore = useBoardsStore()
       if (boardsStore.isInitialized) {

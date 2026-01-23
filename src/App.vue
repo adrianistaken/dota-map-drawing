@@ -41,6 +41,14 @@ async function handleTabChange(tab: 'tools' | 'boards') {
 // Watch for changes to mapCanvasRef (in case future hooks are needed)
 watch(mapCanvasRef, () => { }, { immediate: true })
 
+// Save state before page unload to prevent data loss
+const handleBeforeUnload = () => {
+  // Force an immediate save (bypassing debounce) when page is about to close
+  if (boardsStore.isInitialized) {
+    boardsStore.persistCurrentBoard()
+  }
+}
+
 // Also update on window resize
 onMounted(async () => {
   // Initialize boards store first (handles editor hydration)
@@ -51,10 +59,12 @@ onMounted(async () => {
 
   handleResize()
   window.addEventListener('resize', handleResize)
+  window.addEventListener('beforeunload', handleBeforeUnload)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
+  window.removeEventListener('beforeunload', handleBeforeUnload)
 })
 </script>
 
