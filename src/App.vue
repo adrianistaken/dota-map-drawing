@@ -7,6 +7,7 @@ import MapIconsPalette from './components/MapIconsPalette.vue'
 import SocialLinks from './components/SocialLinks.vue'
 import PanelTabs from './components/PanelTabs.vue'
 import BoardsPanel from './components/BoardsPanel.vue'
+import AnnouncementBanner from './components/AnnouncementBanner.vue'
 import { useEditorStore } from './stores/useEditorStore'
 import { useBoardsStore } from './stores/useBoardsStore'
 
@@ -73,7 +74,7 @@ onBeforeUnmount(() => {
     <div class="layout-grid">
       <aside class="side-panel left-panel">
         <div class="panel-surface tools-surface fill-vertical">
-          <PanelTabs @tab-change="handleTabChange" />
+          <PanelTabs :active-tab="activeTab" @tab-change="handleTabChange" />
           <div v-show="activeTab === 'tools'" class="panel-content">
             <Toolbar :map-canvas-ref="mapCanvasRef" />
           </div>
@@ -84,6 +85,11 @@ onBeforeUnmount(() => {
       </aside>
 
       <main class="center-panel">
+        <AnnouncementBanner
+          message="New: Save up to 3 boards! Switch between strategies instantly."
+          link-text="Try it"
+          :link-action="() => handleTabChange('boards')"
+        />
         <div class="map-frame">
           <MapCanvas ref="mapCanvasRef" />
         </div>
@@ -175,9 +181,11 @@ onBeforeUnmount(() => {
 .center-panel {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 100%;
 }
 
 .social-surface {

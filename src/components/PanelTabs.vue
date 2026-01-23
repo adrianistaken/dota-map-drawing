@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
 type Tab = 'tools' | 'boards'
 
-const activeTab = ref<Tab>('tools')
+const props = defineProps<{
+  activeTab: Tab
+}>()
 
 const emit = defineEmits<{
   (e: 'tabChange', tab: Tab): void
 }>()
 
 function selectTab(tab: Tab) {
-  activeTab.value = tab
   emit('tabChange', tab)
 }
 </script>
@@ -19,7 +18,7 @@ function selectTab(tab: Tab) {
   <div class="panel-tabs">
     <button
       @click="selectTab('tools')"
-      :class="['tab-button', { active: activeTab === 'tools' }]"
+      :class="['tab-button', { active: props.activeTab === 'tools' }]"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +36,7 @@ function selectTab(tab: Tab) {
     </button>
     <button
       @click="selectTab('boards')"
-      :class="['tab-button', { active: activeTab === 'boards' }]"
+      :class="['tab-button', { active: props.activeTab === 'boards' }]"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
