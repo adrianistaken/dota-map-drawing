@@ -66,21 +66,10 @@ async function handleClear() {
   <div :class="['board-slot', { active: isActive }]">
     <!-- Thumbnail -->
     <div class="slot-thumbnail">
-      <img
-        v-if="board.thumbnail"
-        :src="board.thumbnail"
-        :alt="`${board.name} preview`"
-        class="thumbnail-image"
-      />
+      <img v-if="board.thumbnail" :src="board.thumbnail" :alt="`${board.name} preview`" class="thumbnail-image" />
       <div v-else class="thumbnail-placeholder">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          class="placeholder-icon"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          class="placeholder-icon">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
           <circle cx="8.5" cy="8.5" r="1.5" />
           <polyline points="21 15 16 10 5 21" />
@@ -96,16 +85,8 @@ async function handleClear() {
 
     <!-- Name -->
     <div class="slot-name">
-      <input
-        v-if="isEditing"
-        v-model="editedName"
-        @blur="saveName"
-        @keydown.enter="saveName"
-        @keydown.esc="cancelEditing"
-        class="name-input"
-        maxlength="50"
-        autofocus
-      />
+      <input v-if="isEditing" v-model="editedName" @blur="saveName" @keydown.enter="saveName"
+        @keydown.esc="cancelEditing" class="name-input" maxlength="50" autofocus />
       <button v-else @click="startEditing" class="name-button">
         {{ board.name }}
       </button>
@@ -113,33 +94,17 @@ async function handleClear() {
 
     <!-- Actions -->
     <div class="slot-actions">
-      <button
-        @click="handleOpen"
-        class="action-button open-button"
-        :disabled="isActive"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          class="action-icon"
-        >
+      <button @click="handleOpen" class="action-button open-button" :disabled="isActive">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          class="action-icon">
           <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
           <circle cx="12" cy="12" r="3" />
         </svg>
         <span>{{ isActive ? 'Active' : 'Open' }}</span>
       </button>
       <button @click="handleClear" class="action-button clear-button">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          class="action-icon"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          class="action-icon">
           <path d="M3 6h18" />
           <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
           <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />

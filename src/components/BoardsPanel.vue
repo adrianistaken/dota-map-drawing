@@ -86,18 +86,8 @@ defineExpose({
 <template>
   <div class="boards-panel">
     <!-- Single Create New Map button -->
-    <button
-      @click="handleCreateNew"
-      class="create-new-button"
-      :disabled="!boardsStore.canSaveMore"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
+    <button @click="handleCreateNew" class="create-new-button" :disabled="!boardsStore.canSaveMore">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="5" x2="12" y2="19" />
         <line x1="5" y1="12" x2="19" y2="12" />
       </svg>
@@ -115,30 +105,16 @@ defineExpose({
       <!-- Loop through 3 slots -->
       <template v-for="slot in slots" :key="slot.slotNumber">
         <!-- Filled slot -->
-        <BoardSlot
-          v-if="slot.board"
-          :board="slot.board"
-          :slot-number="slot.slotNumber"
-          :is-active="boardsStore.currentBoardId === slot.board.id"
-        />
+        <BoardSlot v-if="slot.board" :board="slot.board" :slot-number="slot.slotNumber"
+          :is-active="boardsStore.currentBoardId === slot.board.id" />
 
         <!-- Empty slot -->
         <div v-else class="board-slot empty">
           <div class="empty-slot-actions">
-            <button
-              @click="handleSaveCurrent(slot.slotNumber)"
-              class="slot-action-button save-action"
-              :disabled="!boardsStore.canSaveMore"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+            <button @click="handleSaveCurrent(slot.slotNumber)" class="slot-action-button save-action"
+              :disabled="!boardsStore.canSaveMore">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                 <polyline points="17 21 17 13 7 13 7 21" />
                 <polyline points="7 3 7 8 15 8" />
@@ -357,7 +333,7 @@ defineExpose({
     -webkit-overflow-scrolling: touch;
   }
 
-  .boards-list > * {
+  .boards-list>* {
     scroll-snap-align: start;
     flex-shrink: 0;
   }
