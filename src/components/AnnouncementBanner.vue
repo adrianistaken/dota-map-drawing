@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import posthog from 'posthog-js'
 
 /**
  * Banner version - INCREMENT THIS NUMBER for each new announcement.
@@ -16,6 +17,8 @@ const props = defineProps<{
 
 const isVisible = ref(false)
 
+type BannerDismissReason = 'x_button' | 'link_click'
+
 function shouldShowBanner(): boolean {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
@@ -27,7 +30,14 @@ function shouldShowBanner(): boolean {
   }
 }
 
-function handleDismiss(): void {
+function handleDismiss(reason: BannerDismissReason): void {
+  posthog.capture('announcement_banner_dismissed', {
+    property: 'value',
+    banner_version: BANNER_VERSION,
+    reason,
+    link_text: props.linkText ?? null,
+  })
+
   isVisible.value = false
   try {
     localStorage.setItem(STORAGE_KEY, BANNER_VERSION.toString())
@@ -37,10 +47,16 @@ function handleDismiss(): void {
 }
 
 function handleLinkClick(): void {
+  posthog.capture('announcement_banner_link_clicked', {
+    property: 'value',
+    banner_version: BANNER_VERSION,
+    link_text: props.linkText ?? null,
+  })
+
   if (props.linkAction) {
     props.linkAction()
   }
-  handleDismiss()
+  handleDismiss('link_click')
 }
 
 onMounted(() => {
@@ -52,13 +68,14 @@ onMounted(() => {
   <Transition name="banner-slide">
     <div v-if="isVisible" class="announcement-banner">
       <div class="banner-glow"></div>
+      <div class="banner-shimmer"></div>
       <div class="banner-content">
         <span class="banner-message">{{ message }}</span>
         <button v-if="linkText" class="banner-link" @click="handleLinkClick">
           {{ linkText }}
         </button>
       </div>
-      <button class="banner-dismiss" @click="handleDismiss" aria-label="Dismiss announcement">
+      <button class="banner-dismiss" @click="handleDismiss('x_button')" aria-label="Dismiss announcement">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -81,10 +98,23 @@ onMounted(() => {
   justify-content: center;
   gap: 1rem;
   padding: 0.625rem 3rem;
-  background: rgba(15, 20, 30, 0.92);
+  background: rgba(15, 20, 30, 0.95);
   backdrop-filter: blur(12px);
   overflow: hidden;
   box-sizing: border-box;
+  animation: holographic-border 6s linear infinite;
+}
+
+@keyframes holographic-border {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    filter: hue-rotate(15deg) brightness(1.15);
+  }
+  100% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
 }
 
 /* Animated holographic border (bottom edge only) */
@@ -94,26 +124,60 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
   background: linear-gradient(90deg,
-      rgba(100, 180, 255, 0.5),
-      rgba(180, 130, 255, 0.5),
-      rgba(255, 180, 100, 0.4),
-      rgba(100, 255, 200, 0.5),
-      rgba(100, 180, 255, 0.5));
+      rgba(100, 180, 255, 0.7),
+      rgba(180, 130, 255, 0.7),
+      rgba(255, 180, 100, 0.5),
+      rgba(100, 255, 200, 0.7),
+      rgba(100, 180, 255, 0.7));
   background-size: 300% 100%;
-  animation: holographic-shift 8s linear infinite;
+  animation: holographic-shift 6s linear infinite;
   pointer-events: none;
 }
 
-/* Subtle inner glow */
+/* Enhanced inner glow with pulsing effect */
 .banner-glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 0%,
-      rgba(140, 180, 255, 0.08) 0%,
-      transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%,
+      rgba(140, 180, 255, 0.18) 0%,
+      rgba(180, 130, 255, 0.12) 40%,
+      transparent 80%);
   pointer-events: none;
+  animation: banner-pulse 3s ease-in-out infinite;
+}
+
+@keyframes banner-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Shimmer effect that sweeps across */
+.banner-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%);
+  transform: translateX(-100%);
+  animation: shimmer-sweep 4s ease-in-out infinite;
+  animation-delay: 1s;
+  pointer-events: none;
+}
+
+@keyframes shimmer-sweep {
+  0%, 20% {
+    transform: translateX(-100%);
+  }
+  30%, 100% {
+    transform: translateX(200%);
+  }
 }
 
 @keyframes holographic-shift {
