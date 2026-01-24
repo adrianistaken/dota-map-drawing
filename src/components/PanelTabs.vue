@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import posthog from 'posthog-js'
+
 type Tab = 'tools' | 'boards'
 
 const props = defineProps<{
@@ -10,6 +12,7 @@ const emit = defineEmits<{
 }>()
 
 function selectTab(tab: Tab) {
+  posthog.capture('panel_tab_clicked', { tab })
   emit('tabChange', tab)
 }
 </script>
