@@ -75,6 +75,7 @@ export const useBoardsStore = defineStore('boards', () => {
   const isInitialized = ref(false)
   const isLoading = ref(false)
   const isSaving = ref(false)
+  const isHydrating = ref(false) // Prevents auto-save during board switching
   const lastError = ref<BoardError | null>(null)
 
   // Storage adapter (lazy initialized)
@@ -240,6 +241,7 @@ export const useBoardsStore = defineStore('boards', () => {
 
   /**
    * Hydrate editor store from board payload
+   * Sets isHydrating flag to prevent auto-save from triggering during load
    */
   async function hydrateEditorWithBoard(boardId: string): Promise<void> {
     const board = getBoardById(boardId)
@@ -260,32 +262,39 @@ export const useBoardsStore = defineStore('boards', () => {
       payload = migrateBoardData(board.data)
     }
 
-    const editorStore = useEditorStore()
+    // Set hydrating flag to prevent auto-save during this process
+    isHydrating.value = true
 
-    // Clear current state (don't save to history)
-    editorStore.strokes = []
-    editorStore.icons = []
-    editorStore.undoStack = []
-    editorStore.redoStack = []
+    try {
+      const editorStore = useEditorStore()
 
-    // Load payload
-    editorStore.strokes = JSON.parse(JSON.stringify(payload.strokes))
-    editorStore.icons = JSON.parse(JSON.stringify(payload.icons))
+      // Clear current state (don't save to history)
+      editorStore.strokes = []
+      editorStore.icons = []
+      editorStore.undoStack = []
+      editorStore.redoStack = []
 
-    // Load preferences
-    editorStore.brushColor = payload.preferences.brushColor
-    editorStore.brushSize = payload.preferences.brushSize
-    editorStore.brushType = payload.preferences.brushType
-    editorStore.heroIconSize = payload.preferences.heroIconSize
-    editorStore.useSimpleMap = payload.preferences.useSimpleMap
-    editorStore.autoPlaceBuildings = payload.preferences.autoPlaceBuildings
-    editorStore.autoPlaceWatchers = payload.preferences.autoPlaceWatchers
-    editorStore.autoPlaceStructures = payload.preferences.autoPlaceStructures
-    editorStore.autoPlaceNeutralCamps = payload.preferences.autoPlaceNeutralCamps
-    editorStore.autoPlaceRunes = payload.preferences.autoPlaceRunes
+      // Load payload
+      editorStore.strokes = JSON.parse(JSON.stringify(payload.strokes))
+      editorStore.icons = JSON.parse(JSON.stringify(payload.icons))
 
-    // Ensure auto-placed icons are synced
-    editorStore.ensureAutoPlacedIcons()
+      // Load preferences
+      editorStore.brushColor = payload.preferences.brushColor
+      editorStore.brushSize = payload.preferences.brushSize
+      editorStore.brushType = payload.preferences.brushType
+      editorStore.heroIconSize = payload.preferences.heroIconSize
+      editorStore.useSimpleMap = payload.preferences.useSimpleMap
+      editorStore.autoPlaceBuildings = payload.preferences.autoPlaceBuildings
+      editorStore.autoPlaceWatchers = payload.preferences.autoPlaceWatchers
+      editorStore.autoPlaceStructures = payload.preferences.autoPlaceStructures
+      editorStore.autoPlaceNeutralCamps = payload.preferences.autoPlaceNeutralCamps
+      editorStore.autoPlaceRunes = payload.preferences.autoPlaceRunes
+
+      // Ensure auto-placed icons are synced
+      editorStore.ensureAutoPlacedIcons()
+    } finally {
+      isHydrating.value = false
+    }
   }
 
   /**
@@ -341,6 +350,7 @@ export const useBoardsStore = defineStore('boards', () => {
 
   function autoSaveCurrentBoard(): void {
     if (!storageAdapter) return
+    if (isHydrating.value) return // Skip auto-save during board switching
     debouncedAutoSave()
   }
 
@@ -936,7 +946,7 @@ export const useBoardsStore = defineStore('boards', () => {
       }
 
       board.thumbnail = thumbnail
-      board.updatedAt = Date.now()
+      // Note: Don't update updatedAt here - thumbnail capture isn't a content change
 
       // Deep clone to remove Vue Proxy before saving to IndexedDB
       const boardToSave = JSON.parse(JSON.stringify(board))

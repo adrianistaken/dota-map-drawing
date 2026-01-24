@@ -767,4 +767,62 @@ const handleHeroIconSizeMouseUp = () => {
   box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.25);
   cursor: pointer;
 }
+
+/* Mobile adjustments */
+@media (max-width: 900px) {
+  .toolbar-middle .space-y-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .toggle-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.375rem;
+    border-top: none;
+  }
+
+  .toggle-row .flex-1 span {
+    font-size: 0.6875rem;
+  }
+
+  .toggle-category-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .toggle-switch {
+    width: 36px;
+    height: 20px;
+  }
+
+  .toggle-thumb {
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .toggle-switch.on .toggle-thumb {
+    transform: translateX(16px);
+  }
+
+  .toggle-icon {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Hero icon size section spans full width */
+  .toolbar-middle .space-y-2 > .space-y-2 {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
 </style>

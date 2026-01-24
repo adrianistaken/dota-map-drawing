@@ -306,4 +306,59 @@ defineExpose({
     transform: rotate(360deg);
   }
 }
+
+/* Mobile adjustments */
+@media (max-width: 900px) {
+  .boards-panel {
+    padding: 0.75rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .boards-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .boards-title {
+    font-size: 0.875rem;
+  }
+
+  .boards-list {
+    flex-direction: row;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    /* Horizontal scroll snapping */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .boards-list > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .board-slot.empty {
+    min-height: auto;
+    width: 140px;
+    height: 180px;
+  }
+
+  .empty-slot-actions {
+    gap: 0.5rem;
+    padding: 0.5rem;
+    max-width: none;
+  }
+
+  .slot-action-button {
+    padding: 0.5rem;
+    font-size: 0.625rem;
+  }
+
+  .slot-action-button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
 </style>

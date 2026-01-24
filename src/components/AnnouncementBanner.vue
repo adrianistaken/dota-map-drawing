@@ -222,14 +222,18 @@ onMounted(() => {
   }
 
   .banner-content {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 0.375rem;
+    gap: 0.5rem;
   }
 
   .banner-message {
-    font-size: 0.75rem;
-    text-align: center;
+    font-size: 0.6875rem;
+  }
+
+  .banner-link {
+    padding: 0.1875rem 0.5rem;
+    font-size: 0.6875rem;
   }
 
   .banner-dismiss {

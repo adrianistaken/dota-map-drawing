@@ -307,4 +307,61 @@ async function handleClear() {
 .clear-button:hover {
   background: #dc2626;
 }
+
+/* Mobile adjustments */
+@media (max-width: 900px) {
+  .board-slot {
+    width: 140px;
+    padding: 0.5rem;
+    gap: 0.375rem;
+    flex-shrink: 0;
+  }
+
+  .slot-thumbnail {
+    aspect-ratio: 1;
+    max-height: 80px;
+  }
+
+  .placeholder-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .slot-header {
+    font-size: 0.625rem;
+  }
+
+  .slot-name {
+    margin: 0;
+  }
+
+  .name-button {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.6875rem;
+  }
+
+  .name-input {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.6875rem;
+  }
+
+  .slot-actions {
+    gap: 0.375rem;
+  }
+
+  .action-button {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.625rem;
+    gap: 0.125rem;
+  }
+
+  .action-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .action-button span {
+    display: none;
+  }
+}
 </style>
