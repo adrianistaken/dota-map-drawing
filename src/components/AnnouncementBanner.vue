@@ -109,9 +109,11 @@ onMounted(() => {
   0% {
     filter: hue-rotate(0deg) brightness(1);
   }
+
   50% {
     filter: hue-rotate(15deg) brightness(1.15);
   }
+
   100% {
     filter: hue-rotate(0deg) brightness(1);
   }
@@ -149,9 +151,12 @@ onMounted(() => {
 }
 
 @keyframes banner-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 1;
   }
@@ -162,9 +167,9 @@ onMounted(() => {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%);
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%);
   transform: translateX(-100%);
   animation: shimmer-sweep 4s ease-in-out infinite;
   animation-delay: 1s;
@@ -172,10 +177,14 @@ onMounted(() => {
 }
 
 @keyframes shimmer-sweep {
-  0%, 20% {
+
+  0%,
+  20% {
     transform: translateX(-100%);
   }
-  30%, 100% {
+
+  30%,
+  100% {
     transform: translateX(200%);
   }
 }
