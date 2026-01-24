@@ -43,12 +43,9 @@ async function saveName() {
 async function handleOpen() {
   if (props.isActive) return
 
-  const confirmed = confirm('Open this board? Your current map will be replaced.')
-  if (confirmed) {
-    const result = await boardsStore.setCurrentBoard(props.board.id)
-    if (!result.success) {
-      alert(`Failed to open board: ${result.error.message}`)
-    }
+  const result = await boardsStore.setCurrentBoard(props.board.id)
+  if (!result.success) {
+    alert(`Failed to open board: ${result.error.message}`)
   }
 }
 
