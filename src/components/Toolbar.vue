@@ -818,7 +818,7 @@ const handleHeroIconSizeMouseUp = () => {
   }
 
   /* Hero icon size section spans full width */
-  .toolbar-middle .space-y-2 > .space-y-2 {
+  .toolbar-middle .space-y-2>.space-y-2 {
     grid-column: span 2;
     display: flex;
     flex-direction: column;

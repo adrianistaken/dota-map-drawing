@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, computed, ref, nextTick } from 'vue'
-import { useBoardsStore } from '../stores/useBoardsStore'
+import { useBoardsStore, DRAFT_BOARD_ID } from '../stores/useBoardsStore'
 import BoardSlot from './BoardSlot.vue'
 
 const props = defineProps<{
@@ -53,14 +53,19 @@ async function handleSaveCurrent(slotNumber: number) {
 }
 
 async function handleCreateNew(slotNumber: number) {
-  const confirmed = confirm(
-    'Create a new blank board? Your current map will be saved first, then replaced with an empty canvas.'
-  )
+  const isOnDraft = boardsStore.currentBoardId === DRAFT_BOARD_ID
+  const message = isOnDraft
+    ? 'Create a new blank board? Your current workspace will be replaced with an empty canvas.'
+    : 'Create a new blank board? Your current board will be saved, then you\'ll switch to the new one.'
+
+  const confirmed = confirm(message)
 
   if (!confirmed) return
 
-  // Save current map before switching
-  await boardsStore.persistCurrentBoard()
+  // Save current map before switching (only matters for saved boards)
+  if (!isOnDraft) {
+    await boardsStore.persistCurrentBoard()
+  }
 
   const result = await boardsStore.createFreshBoardInSlot(slotNumber)
 
