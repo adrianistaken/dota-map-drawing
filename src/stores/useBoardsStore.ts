@@ -500,7 +500,6 @@ export const useBoardsStore = defineStore('boards', () => {
       // Now hydrate the editor with the current board
       await hydrateEditorWithBoard(currentBoardId.value)
 
-      console.log('[BoardsStore] Initialized with', savedBoards.value.length, 'saved boards')
     } catch (err) {
       reportError(err, {
         source: 'BoardsStore',
