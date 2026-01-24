@@ -52,43 +52,18 @@ async function handleSaveCurrent(slotNumber: number) {
   }
 }
 
-async function handleCreateNew(slotNumber: number) {
+async function handleCreateNew() {
   const isOnDraft = boardsStore.currentBoardId === DRAFT_BOARD_ID
   const message = isOnDraft
-    ? 'Create a new blank board? Your current workspace will be replaced with an empty canvas.'
-    : 'Create a new blank board? Your current board will be saved, then you\'ll switch to the new one.'
+    ? 'Create a new blank workspace? Your current workspace will be replaced with an empty canvas.'
+    : 'Create a new blank workspace? Your current board will be saved, then you\'ll switch to a fresh workspace.'
 
   const confirmed = confirm(message)
 
   if (!confirmed) return
 
-  // Save current map before switching (only matters for saved boards)
-  if (!isOnDraft) {
-    await boardsStore.persistCurrentBoard()
-  }
-
-  const result = await boardsStore.createFreshBoardInSlot(slotNumber)
-
-  if (!result.success) {
-    if (result.error.code === 'LIMIT_REACHED') {
-      alert(result.error.message)
-    } else if (result.error.message.includes('occupied')) {
-      alert(`Slot ${slotNumber} is already occupied. Please clear it first.`)
-    } else {
-      alert('Failed to create new board. Please try again.')
-    }
-  } else {
-    // Capture thumbnail for the new empty board (shows empty map)
-    if (props.mapCanvasRef && result.data) {
-      // Small delay to ensure the empty board is rendered
-      setTimeout(async () => {
-        const thumbnail = boardsStore.captureThumbnail(props.mapCanvasRef)
-        if (thumbnail) {
-          await boardsStore.updateBoardThumbnail(result.data.id, thumbnail)
-        }
-      }, 100)
-    }
-  }
+  // Create a fresh draft workspace (this function handles saving current board automatically)
+  await boardsStore.createNewDraft()
 }
 
 async function captureThumbnails() {
@@ -110,6 +85,25 @@ defineExpose({
 
 <template>
   <div class="boards-panel">
+    <!-- Single Create New Map button -->
+    <button
+      @click="handleCreateNew"
+      class="create-new-button"
+      :disabled="!boardsStore.canSaveMore"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      <span>Create New Map</span>
+    </button>
+
     <div class="boards-header">
       <h3 class="boards-title">Saved Boards</h3>
       <p class="boards-subtitle">
@@ -151,23 +145,6 @@ defineExpose({
               </svg>
               <span>Save Current Map</span>
             </button>
-            <button
-              @click="handleCreateNew(slot.slotNumber)"
-              class="slot-action-button create-action"
-              :disabled="!boardsStore.canSaveMore"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span>Create New Map</span>
-            </button>
           </div>
         </div>
       </template>
@@ -191,7 +168,7 @@ defineExpose({
 }
 
 .boards-header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   flex-shrink: 0;
 }
 
@@ -206,6 +183,42 @@ defineExpose({
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   margin: 0;
+}
+
+.create-new-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 149, 0, 0.15);
+  border: 1px solid rgba(255, 149, 0, 0.3);
+  border-radius: 0.5rem;
+  color: #ff9500;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.create-new-button:hover:not(:disabled) {
+  background: rgba(255, 149, 0, 0.25);
+  border-color: #ff9500;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.2);
+}
+
+.create-new-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.create-new-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .boards-list {
@@ -224,7 +237,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
   /* Match the height of filled slots */
-  min-height: 200px;
+  min-height: 140px;
   transition: all 0.2s;
 }
 
@@ -236,23 +249,23 @@ defineExpose({
 .empty-slot-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   width: 100%;
-  max-width: 180px;
-  padding: 1rem;
+  max-width: 160px;
+  padding: 0.75rem;
 }
 
 .slot-action-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.75rem 1rem;
+  gap: 0.25rem;
+  padding: 0.625rem 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.375rem;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -270,20 +283,14 @@ defineExpose({
 }
 
 .slot-action-button svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 .save-action:hover:not(:disabled) {
   background: rgba(79, 118, 226, 0.15);
   border-color: #4f76e2;
   color: #4f76e2;
-}
-
-.create-action:hover:not(:disabled) {
-  background: rgba(255, 149, 0, 0.15);
-  border-color: #ff9500;
-  color: #ff9500;
 }
 
 .loading-overlay {
@@ -321,11 +328,22 @@ defineExpose({
   }
 
   .boards-header {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .boards-title {
     font-size: 0.875rem;
+  }
+
+  .create-new-button {
+    padding: 0.625rem 0.875rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .create-new-button svg {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   .boards-list {

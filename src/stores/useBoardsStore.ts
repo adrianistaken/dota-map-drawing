@@ -471,7 +471,11 @@ export const useBoardsStore = defineStore('boards', () => {
 
       // Determine current board
       const lastOpenedId = await storageAdapter.getMetadata(METADATA_KEY_LAST_OPENED)
-      if (lastOpenedId && savedBoards.value.some(b => b.id === lastOpenedId)) {
+      if (lastOpenedId === DRAFT_BOARD_ID) {
+        // User was working on draft, restore it
+        currentBoardId.value = DRAFT_BOARD_ID
+      } else if (lastOpenedId && savedBoards.value.some(b => b.id === lastOpenedId)) {
+        // User was working on a saved board, restore it
         currentBoardId.value = lastOpenedId
       } else if (savedBoards.value.length > 0) {
         // If no last opened, but boards exist, open the first one
@@ -660,6 +664,9 @@ export const useBoardsStore = defineStore('boards', () => {
 
       // Switch to draft
       currentBoardId.value = DRAFT_BOARD_ID
+
+      // Save to metadata so we restore draft on page refresh
+      await storageAdapter.setMetadata(METADATA_KEY_LAST_OPENED, DRAFT_BOARD_ID)
 
       // Clear editor state
       const editorStore = useEditorStore()

@@ -84,6 +84,7 @@ function selectTab(tab: Tab) {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  outline: none;
 }
 
 .tab-icon {
