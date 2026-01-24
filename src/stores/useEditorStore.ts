@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { loadStateFromStorage } from '../utils/persistence'
 import { mapIconFiles, mapIconPath, type MapIconFolder } from '../data/mapIcons'
+import { reportError } from '../utils/errorHandler'
 
 export type Tool = 'draw' | 'erase' | 'icon'
 export type BrushType = 'standard' | 'dotted' | 'arrow'
@@ -483,12 +484,20 @@ export const useEditorStore = defineStore('editor', () => {
   const persistState = () => {
     // Use dynamic import to avoid circular dependency at module load time
     // The import is cached by the browser/bundler, so subsequent calls are fast
-    import('./useBoardsStore').then(({ useBoardsStore }) => {
-      const boardsStore = useBoardsStore()
-      if (boardsStore.isInitialized) {
-        boardsStore.autoSaveCurrentBoard()
-      }
-    })
+    import('./useBoardsStore')
+      .then(({ useBoardsStore }) => {
+        const boardsStore = useBoardsStore()
+        if (boardsStore.isInitialized) {
+          boardsStore.autoSaveCurrentBoard()
+        }
+      })
+      .catch((err) => {
+        reportError(err, {
+          source: 'EditorStore',
+          operation: 'dynamic import of BoardsStore',
+          level: 'error'
+        })
+      })
   }
 
   // Persistence: load state from storage

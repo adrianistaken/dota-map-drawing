@@ -6,6 +6,7 @@
  */
 
 import type { Board } from '../stores/useBoardsStore'
+import { reportError } from './errorHandler'
 
 // IndexedDB configuration
 const DB_NAME = 'dota-map-drawing'
@@ -96,7 +97,11 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[IndexedDBAdapter] getBoard failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'getting board',
+        extra: { boardId: id }
+      })
       return null
     }
   }
@@ -119,7 +124,10 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[IndexedDBAdapter] getAllBoards failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'getting all boards'
+      })
       return []
     }
   }
@@ -145,7 +153,15 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[IndexedDBAdapter] saveBoard failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'saving board',
+        boardId: board.id,
+        extra: {
+          boardName: board.name,
+          isSaved: board.isSaved
+        }
+      })
       throw error
     }
   }
@@ -168,7 +184,11 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[IndexedDBAdapter] deleteBoard failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'deleting board',
+        extra: { boardId: id }
+      })
       throw error
     }
   }
@@ -191,7 +211,11 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[IndexedDBAdapter] getMetadata failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'getting metadata',
+        extra: { key }
+      })
       return null
     }
   }
@@ -214,7 +238,11 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[IndexedDBAdapter] setMetadata failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'setting metadata',
+        extra: { key, value }
+      })
       throw error
     }
   }
@@ -235,7 +263,11 @@ class IndexedDBAdapter implements BoardStorageAdapter {
 
       return hasBoards && hasMetadata
     } catch (error) {
-      console.error('[IndexedDBAdapter] isAvailable check failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'checking availability',
+        level: 'warning'
+      })
       return false
     }
   }
@@ -261,7 +293,10 @@ class IndexedDBAdapter implements BoardStorageAdapter {
         })
       ])
     } catch (error) {
-      console.error('[IndexedDBAdapter] clear failed:', error)
+      reportError(error, {
+        source: 'IndexedDBAdapter',
+        operation: 'clearing storage'
+      })
       throw error
     }
   }
@@ -290,7 +325,10 @@ class LocalStorageAdapter implements BoardStorageAdapter {
       const boards = JSON.parse(serialized) as Board[]
       return Array.isArray(boards) ? boards : []
     } catch (error) {
-      console.error('[LocalStorageAdapter] Failed to parse boards from localStorage:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'parsing boards from localStorage'
+      })
       return []
     }
   }
@@ -304,9 +342,18 @@ class LocalStorageAdapter implements BoardStorageAdapter {
       localStorage.setItem(this.BOARDS_KEY, serialized)
     } catch (error) {
       if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-        console.error('[LocalStorageAdapter] Storage quota exceeded')
+        reportError(error, {
+          source: 'LocalStorageAdapter',
+          operation: 'saving boards to localStorage',
+          extra: { boardCount: boards.length, isQuotaError: true }
+        })
         throw new Error('Storage quota exceeded. Delete old boards to continue.')
       }
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'saving boards to localStorage',
+        extra: { boardCount: boards.length }
+      })
       throw error
     }
   }
@@ -316,7 +363,11 @@ class LocalStorageAdapter implements BoardStorageAdapter {
       const boards = this.getAllBoardsFromStorage()
       return boards.find(b => b.id === id) || null
     } catch (error) {
-      console.error('[LocalStorageAdapter] getBoard failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'getting board',
+        extra: { boardId: id }
+      })
       return null
     }
   }
@@ -325,7 +376,10 @@ class LocalStorageAdapter implements BoardStorageAdapter {
     try {
       return this.getAllBoardsFromStorage()
     } catch (error) {
-      console.error('[LocalStorageAdapter] getAllBoards failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'getting all boards'
+      })
       return []
     }
   }
@@ -348,7 +402,15 @@ class LocalStorageAdapter implements BoardStorageAdapter {
 
       this.saveAllBoardsToStorage(boards)
     } catch (error) {
-      console.error('[LocalStorageAdapter] saveBoard failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'saving board',
+        boardId: board.id,
+        extra: {
+          boardName: board.name,
+          isSaved: board.isSaved
+        }
+      })
       throw error
     }
   }
@@ -359,7 +421,11 @@ class LocalStorageAdapter implements BoardStorageAdapter {
       const filtered = boards.filter(b => b.id !== id)
       this.saveAllBoardsToStorage(filtered)
     } catch (error) {
-      console.error('[LocalStorageAdapter] deleteBoard failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'deleting board',
+        extra: { boardId: id }
+      })
       throw error
     }
   }
@@ -368,7 +434,11 @@ class LocalStorageAdapter implements BoardStorageAdapter {
     try {
       return localStorage.getItem(this.METADATA_KEY_PREFIX + key)
     } catch (error) {
-      console.error('[LocalStorageAdapter] getMetadata failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'getting metadata',
+        extra: { key }
+      })
       return null
     }
   }
@@ -377,7 +447,11 @@ class LocalStorageAdapter implements BoardStorageAdapter {
     try {
       localStorage.setItem(this.METADATA_KEY_PREFIX + key, value)
     } catch (error) {
-      console.error('[LocalStorageAdapter] setMetadata failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'setting metadata',
+        extra: { key, value }
+      })
       throw error
     }
   }
@@ -405,7 +479,10 @@ class LocalStorageAdapter implements BoardStorageAdapter {
         }
       })
     } catch (error) {
-      console.error('[LocalStorageAdapter] clear failed:', error)
+      reportError(error, {
+        source: 'LocalStorageAdapter',
+        operation: 'clearing storage'
+      })
       throw error
     }
   }

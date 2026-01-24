@@ -10,6 +10,7 @@ import { ref, computed } from 'vue'
 import { createBoardStorage, type BoardStorageAdapter } from '../utils/boardStorage'
 import { useEditorStore, type Stroke, type Icon, type BrushType } from './useEditorStore'
 import { debounce, loadStateFromStorage, clearStateFromStorage } from '../utils/persistence'
+import { reportError } from '../utils/errorHandler'
 
 // Constants
 export const BOARD_SCHEMA_VERSION = 1
@@ -334,7 +335,14 @@ export const useBoardsStore = defineStore('boards', () => {
         }
       }
     } catch (err) {
-      console.error('[BoardsStore] persistCurrentBoard failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'persisting current board',
+        boardId: currentBoardId.value,
+        extra: {
+          isSaved: currentBoard.value?.isSaved
+        }
+      })
     } finally {
       isSaving.value = false
     }
@@ -494,7 +502,14 @@ export const useBoardsStore = defineStore('boards', () => {
 
       console.log('[BoardsStore] Initialized with', savedBoards.value.length, 'saved boards')
     } catch (err) {
-      console.error('[BoardsStore] Init failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'initializing boards',
+        extra: {
+          hasIndexedDB: !!window.indexedDB,
+          savedBoardsCount: savedBoards.value.length
+        }
+      })
       lastError.value = {
         code: 'STORAGE_ERROR',
         message: 'Failed to initialize boards',
@@ -554,7 +569,11 @@ export const useBoardsStore = defineStore('boards', () => {
       console.log('[BoardsStore] Switched to board:', id)
       return { success: true, data: undefined }
     } catch (err) {
-      console.error('[BoardsStore] setCurrentBoard failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'switching to board',
+        boardId: id
+      })
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to switch board', details: err }
@@ -637,7 +656,11 @@ export const useBoardsStore = defineStore('boards', () => {
       console.log('[BoardsStore] Pinned board to slot', slotNumber)
       return { success: true, data: newBoard }
     } catch (err) {
-      console.error('[BoardsStore] pinCurrentBoardToSaved failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'pinning board to saved slot',
+        extra: { slotNumber }
+      })
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to save board', details: err }
@@ -674,7 +697,10 @@ export const useBoardsStore = defineStore('boards', () => {
 
       console.log('[BoardsStore] Created new draft')
     } catch (err) {
-      console.error('[BoardsStore] createNewDraft failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'creating new draft'
+      })
     }
   }
 
@@ -712,7 +738,12 @@ export const useBoardsStore = defineStore('boards', () => {
       console.log('[BoardsStore] Renamed board:', id, 'to', trimmedName)
       return { success: true, data: board }
     } catch (err) {
-      console.error('[BoardsStore] renameBoard failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'renaming board',
+        boardId: id,
+        extra: { newName: name }
+      })
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to rename board', details: err }
@@ -751,7 +782,11 @@ export const useBoardsStore = defineStore('boards', () => {
       console.log('[BoardsStore] Deleted board:', id)
       return { success: true, data: undefined }
     } catch (err) {
-      console.error('[BoardsStore] deleteSavedBoard failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'deleting board',
+        boardId: id
+      })
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to delete board', details: err }
@@ -828,7 +863,11 @@ export const useBoardsStore = defineStore('boards', () => {
       console.log('[BoardsStore] Duplicated current board to slot', slotNumber)
       return { success: true, data: newBoard }
     } catch (err) {
-      console.error('[BoardsStore] duplicateCurrentBoardToSlot failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'duplicating board to slot',
+        extra: { slotNumber }
+      })
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to duplicate board', details: err }
@@ -890,7 +929,11 @@ export const useBoardsStore = defineStore('boards', () => {
       console.log('[BoardsStore] Created fresh board in slot', slotNumber)
       return { success: true, data: freshBoard }
     } catch (err) {
-      console.error('[BoardsStore] createFreshBoardInSlot failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'creating fresh board in slot',
+        extra: { slotNumber }
+      })
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to create new board', details: err }
@@ -959,7 +1002,13 @@ export const useBoardsStore = defineStore('boards', () => {
       const boardToSave = JSON.parse(JSON.stringify(board))
       await storageAdapter.saveBoard(boardToSave)
     } catch (err) {
-      console.error('[BoardsStore] updateBoardThumbnail failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'updating board thumbnail',
+        boardId,
+        level: 'warning',
+        extra: { thumbnailSize: thumbnail.length }
+      })
     }
   }
 
@@ -978,7 +1027,12 @@ export const useBoardsStore = defineStore('boards', () => {
 
       console.log('[BoardsStore] Captured thumbnail for current board')
     } catch (err) {
-      console.error('[BoardsStore] captureAllThumbnails failed:', err)
+      reportError(err, {
+        source: 'BoardsStore',
+        operation: 'capturing all thumbnails',
+        level: 'warning',
+        boardId: currentBoard.value?.id
+      })
     }
   }
 

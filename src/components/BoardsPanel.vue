@@ -2,6 +2,7 @@
 import { onMounted, computed, ref, nextTick } from 'vue'
 import { useBoardsStore, DRAFT_BOARD_ID } from '../stores/useBoardsStore'
 import BoardSlot from './BoardSlot.vue'
+import { reportError } from '../utils/errorHandler'
 
 const props = defineProps<{
   mapCanvasRef?: any
@@ -72,6 +73,13 @@ async function captureThumbnails() {
   try {
     isCapturingThumbnails.value = true
     await boardsStore.captureAllThumbnails(props.mapCanvasRef)
+  } catch (err) {
+    reportError(err, {
+      source: 'BoardsPanel',
+      operation: 'capturing thumbnails',
+      level: 'warning',
+      extra: { currentBoardId: boardsStore.currentBoardId }
+    })
   } finally {
     isCapturingThumbnails.value = false
   }
