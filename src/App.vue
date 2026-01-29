@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
             <SocialLinks />
           </div>
           <div class="right-panel-section hero-section p-2 flex-1 overflow-y-auto">
-            <div class="pt-2 border-t border-gray-700">
+            <div class="border-t border-gray-700">
               <HeroPalette />
             </div>
           </div>
