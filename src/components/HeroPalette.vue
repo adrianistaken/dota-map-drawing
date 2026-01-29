@@ -83,11 +83,11 @@ onMounted(() => {
       itemSelector: '.hero-item',
       speed: 180,
       easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      useTransforms: false, // Use top/left for crisp rendering
+      useTransforms: false,
       staggerAmount: 12,
       staggerAmountMax: 150,
-      columnWidth: 0, // TWEAK THIS: 32px icon + 4px margin = 36px per column
-      gutterWidth: 3,  // Margin is on the item itself, not between items
+      columnWidth: 0,
+      gutterWidth: 3,
       isCentered: true
     })
   }
@@ -175,40 +175,33 @@ watch(activeFilter, (newFilter) => {
   position: relative;
   width: 100%;
   max-height: 100%;
-  /* overflow-y: auto; */
   overflow: visible !important;
   padding-right: 0.1rem;
 }
 
-/* Hero items - fixed width */
 .hero-item {
   width: 32px;
   height: 32px;
-  margin: 0 4px 4px 0; /* gap-0.25rem = 4px */
+  margin: 0 4px 4px 0;
 }
 
-/* Inner button for hover/selection effects */
 .hero-button {
   transition: transform 0.18s ease-out, opacity 0.18s ease-out, box-shadow 0.18s ease-out;
   transform-origin: center;
 }
 
-/* Force crisp image rendering */
 .hero-button img {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   transform: translateZ(0);
-  will-change: auto;
 }
 
-/* Shuffle.js classes - NO BLUR */
 .hero-grid .shuffle-item {
   position: absolute;
   transition: top 180ms cubic-bezier(0.4, 0, 0.2, 1),
               left 180ms cubic-bezier(0.4, 0, 0.2, 1),
               opacity 180ms cubic-bezier(0.4, 0, 0.2, 1),
               transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
-  /* Force pixel-perfect rendering */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
