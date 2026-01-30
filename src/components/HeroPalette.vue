@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import Shuffle from 'shufflejs'
+import posthog from 'posthog-js'
 import { useEditorStore, type HeroSelection } from '../stores/useEditorStore'
 import { heroAttributes, type HeroAttribute } from '../data/heroAttributes'
 
@@ -64,11 +65,19 @@ const getHeroAttribute = (heroId: string): HeroAttribute => {
 
 // Toggle attribute filter
 const toggleFilter = (attribute: HeroAttribute) => {
+  const isActivating = activeFilter.value !== attribute
+
   if (activeFilter.value === attribute) {
     activeFilter.value = null
   } else {
     activeFilter.value = attribute
   }
+
+  // Track filter usage
+  posthog.capture('hero_filter_clicked', {
+    filter: attribute,
+    action: isActivating ? 'activate' : 'deactivate'
+  })
 }
 
 // Select hero icon - also switches to icon placement mode

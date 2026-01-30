@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import posthog from 'posthog-js'
 import { useBoardsStore, type Board } from '../stores/useBoardsStore'
 
 const props = defineProps<{
@@ -35,6 +36,9 @@ function cancelEditing() {
 async function saveName() {
   const trimmed = editedName.value.trim()
   if (trimmed && trimmed !== props.board.name) {
+    posthog.capture('board_renamed', {
+      slot_number: props.slotNumber
+    })
     await boardsStore.renameBoard(props.board.id, trimmed)
   }
   isEditing.value = false
@@ -45,7 +49,14 @@ async function handleOpen() {
 
   const result = await boardsStore.setCurrentBoard(props.board.id)
   if (!result.success) {
+    posthog.capture('board_open_failed', {
+      slot_number: props.slotNumber
+    })
     alert(`Failed to open board: ${result.error.message}`)
+  } else {
+    posthog.capture('board_opened', {
+      slot_number: props.slotNumber
+    })
   }
 }
 
@@ -53,11 +64,23 @@ async function handleClear() {
   const confirmed = confirm(
     `Delete "${props.board.name}"? This cannot be undone.`
   )
-  if (confirmed) {
-    const result = await boardsStore.deleteSavedBoard(props.board.id)
-    if (!result.success) {
-      alert(`Failed to delete board: ${result.error.message}`)
-    }
+  if (!confirmed) {
+    posthog.capture('board_delete_cancelled', {
+      slot_number: props.slotNumber
+    })
+    return
+  }
+
+  const result = await boardsStore.deleteSavedBoard(props.board.id)
+  if (!result.success) {
+    posthog.capture('board_delete_failed', {
+      slot_number: props.slotNumber
+    })
+    alert(`Failed to delete board: ${result.error.message}`)
+  } else {
+    posthog.capture('board_deleted', {
+      slot_number: props.slotNumber
+    })
   }
 }
 </script>
