@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, computed, ref, nextTick } from 'vue'
+import posthog from 'posthog-js'
 import { useBoardsStore, DRAFT_BOARD_ID } from '../stores/useBoardsStore'
 import BoardSlot from './BoardSlot.vue'
 import { reportError } from '../utils/errorHandler'
@@ -35,6 +36,10 @@ async function handleSaveCurrent(slotNumber: number) {
   const result = await boardsStore.duplicateCurrentBoardToSlot(slotNumber)
 
   if (!result.success) {
+    posthog.capture('board_save_failed', {
+      slot_number: slotNumber,
+      error: result.error.code || 'unknown'
+    })
     if (result.error.code === 'LIMIT_REACHED') {
       alert(result.error.message)
     } else if (result.error.message.includes('occupied')) {
@@ -43,6 +48,9 @@ async function handleSaveCurrent(slotNumber: number) {
       alert('Failed to save board. Please try again.')
     }
   } else {
+    posthog.capture('board_saved', {
+      slot_number: slotNumber
+    })
     // Capture thumbnail immediately for the newly duplicated board
     if (props.mapCanvasRef && result.data) {
       const thumbnail = boardsStore.captureThumbnail(props.mapCanvasRef)
@@ -61,7 +69,16 @@ async function handleCreateNew() {
 
   const confirmed = confirm(message)
 
-  if (!confirmed) return
+  if (!confirmed) {
+    posthog.capture('board_create_cancelled', {
+      was_on_draft: isOnDraft
+    })
+    return
+  }
+
+  posthog.capture('board_created', {
+    was_on_draft: isOnDraft
+  })
 
   // Create a fresh draft workspace (this function handles saving current board automatically)
   await boardsStore.createNewDraft()
