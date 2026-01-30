@@ -65,7 +65,7 @@ const getHeroAttribute = (heroId: string): HeroAttribute => {
 // Toggle attribute filter
 const toggleFilter = (attribute: HeroAttribute) => {
   if (activeFilter.value === attribute) {
-    activeFilter.value = null // Reset to show all heroes
+    activeFilter.value = null
   } else {
     activeFilter.value = attribute
   }
@@ -121,8 +121,8 @@ watch(activeFilter, (newFilter) => {
     <!-- Attribute Filters -->
     <div class="attribute-filters mb-3 flex gap-2 justify-center pt-2 py-3 border-b border-gray-700">
       <button v-for="filter in attributeFilters" :key="filter.type" @click="toggleFilter(filter.type)"
-        :aria-label="`Filter by ${filter.label}`" :class="[
-          'w-7 h-7 relative transition-all duration-300 cursor-pointer focus-visible:outline-none flex items-center justify-center',
+        :aria-label="`Filter by ${filter.label}`" :aria-pressed="activeFilter === filter.type" :class="[
+          'attribute-filter-btn w-7 h-7 relative transition-all duration-300 cursor-pointer flex items-center justify-center',
           activeFilter === filter.type
             ? 'ring-2 ring-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.8)] scale-105 opacity-100'
             : 'opacity-60 hover:opacity-90 hover:scale-105'
@@ -164,11 +164,16 @@ watch(activeFilter, (newFilter) => {
   margin: 0;
 }
 
-/* Remove persistent browser focus outline specifically for attribute filter buttons */
-.attribute-filters button:focus,
-.attribute-filters button:focus-visible {
+/* Remove all focus states on attribute filter buttons */
+.attribute-filter-btn:focus,
+.attribute-filter-btn:focus-visible,
+.attribute-filter-btn:active {
   outline: none !important;
-  box-shadow: none;
+}
+
+/* Remove default focus ring - active state is controlled by Vue */
+.attribute-filter-btn:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .hero-grid {
