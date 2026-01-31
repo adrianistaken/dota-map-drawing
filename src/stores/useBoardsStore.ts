@@ -293,6 +293,7 @@ export const useBoardsStore = defineStore('boards', () => {
       editorStore.autoPlaceStructures = payload.preferences.autoPlaceStructures
       editorStore.autoPlaceNeutralCamps = payload.preferences.autoPlaceNeutralCamps
       editorStore.autoPlaceRunes = payload.preferences.autoPlaceRunes
+      editorStore.lockIcons = payload.preferences.lockIcons
 
       // Ensure auto-placed icons are synced
       editorStore.ensureAutoPlacedIcons()
