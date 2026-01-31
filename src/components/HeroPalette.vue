@@ -188,7 +188,7 @@ watch(activeFilter, (newFilter) => {
 .hero-grid {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: visible !important;
   padding-right: 0.1rem;
 }
 
