@@ -761,7 +761,8 @@ const createArrowConfig = (x: number, y: number, angle: number, color: string, s
             ctx.moveTo(tipX, tipY)
             ctx.lineTo(rightX, rightY)
             ctx.stroke()
-        }
+        },
+        listening: false
     }
 }
 
@@ -904,7 +905,8 @@ defineExpose({
                         lineJoin: 'round',
                         tension: 0.5,
                         globalCompositeOperation: 'source-over',
-                        dash: stroke.brushType === 'dotted' ? [3, 10] : undefined
+                        dash: stroke.brushType === 'dotted' ? [3, 10] : undefined,
+                        listening: false
                     }" />
                     <!-- Render arrowhead for arrow strokes -->
                     <v-shape
