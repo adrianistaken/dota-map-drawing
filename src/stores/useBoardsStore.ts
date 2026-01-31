@@ -53,6 +53,7 @@ export interface BoardPreferences {
   autoPlaceStructures: boolean
   autoPlaceNeutralCamps: boolean
   autoPlaceRunes: boolean
+  lockIcons: boolean
 }
 
 export interface BoardError {
@@ -138,7 +139,8 @@ export const useBoardsStore = defineStore('boards', () => {
             autoPlaceWatchers: false,
             autoPlaceStructures: false,
             autoPlaceNeutralCamps: false,
-            autoPlaceRunes: false
+            autoPlaceRunes: false,
+            lockIcons: false
           }
         }
       }
@@ -235,7 +237,8 @@ export const useBoardsStore = defineStore('boards', () => {
         autoPlaceWatchers: editorStore.autoPlaceWatchers,
         autoPlaceStructures: editorStore.autoPlaceStructures,
         autoPlaceNeutralCamps: editorStore.autoPlaceNeutralCamps,
-        autoPlaceRunes: editorStore.autoPlaceRunes
+        autoPlaceRunes: editorStore.autoPlaceRunes,
+        lockIcons: editorStore.lockIcons
       }
     }
   }
@@ -451,7 +454,8 @@ export const useBoardsStore = defineStore('boards', () => {
                   autoPlaceWatchers: legacyState.preferences.autoPlaceWatchers ?? false,
                   autoPlaceStructures: legacyState.preferences.autoPlaceStructures ?? false,
                   autoPlaceNeutralCamps: legacyState.preferences.autoPlaceNeutralCamps ?? false,
-                  autoPlaceRunes: legacyState.preferences.autoPlaceRunes ?? false
+                  autoPlaceRunes: legacyState.preferences.autoPlaceRunes ?? false,
+                  lockIcons: legacyState.preferences.lockIcons ?? false
                 }
               }
             }

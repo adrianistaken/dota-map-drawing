@@ -31,6 +31,7 @@ export interface PersistedState {
         autoPlaceStructures?: boolean
         autoPlaceNeutralCamps?: boolean
         autoPlaceRunes?: boolean
+        lockIcons?: boolean
     }
     version: string
 }
