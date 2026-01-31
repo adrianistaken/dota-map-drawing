@@ -122,6 +122,9 @@ watch(activeFilter, (newFilter) => {
       return attribute === newFilter
     })
   }
+
+  // Force layout update to recalculate container height
+  shuffleInstance.update()
 })
 </script>
 
@@ -188,7 +191,7 @@ watch(activeFilter, (newFilter) => {
 .hero-grid {
   position: relative;
   width: 100%;
-  overflow: visible !important;
+  overflow: hidden;
   padding-right: 0.1rem;
 }
 
