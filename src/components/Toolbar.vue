@@ -620,30 +620,6 @@ const handleHeroIconSizeMouseUp = () => {
             @mousedown="handleHeroIconSizeMouseDown" @mouseup="handleHeroIconSizeMouseUp"
             @touchstart="handleHeroIconSizeMouseDown" @touchend="handleHeroIconSizeMouseUp" class="hero-slider"
             aria-label="Adjust hero icon size" />
-          <div class="toggle-row" style="padding-top: 0.5rem; border-top: none;">
-            <div class="flex items-center gap-2 flex-1">
-              <svg class="toggle-category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-              <span class="text-sm font-semibold text-white">Lock Icons</span>
-            </div>
-            <button class="toggle-switch" :class="{ on: store.lockIcons }" :aria-pressed="store.lockIcons"
-              @click="store.toggleLockIcons()">
-              <span class="toggle-thumb">
-                <svg v-if="!store.lockIcons" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-                <svg v-else class="toggle-icon toggle-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              </span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
