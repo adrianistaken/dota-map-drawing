@@ -697,7 +697,7 @@ const createDragEndHandler = (iconId: string, e: KonvaEventObject<MouseEvent>) =
     store.updateIconPosition(iconId, mapX, mapY)
     // Persist state after icon position is updated
     store.persistState()
-    console.log('Icon moved (map coords)', { x: mapX, y: mapY })
+    // console.log('Icon moved (map coords)', { x: mapX, y: mapY })
     logAllIconPositions()
 }
 
@@ -810,8 +810,8 @@ const createIconHitFunc = (context: any, shape: any) => {
     const height = shape.height()
 
     // Reduce hit area to 60% of visual size
-    const hitWidth = width * 0.6
-    const hitHeight = height * 0.6
+    const hitWidth = width * .8
+    const hitHeight = height * .8
     const offsetX = (width - hitWidth) / 2
     const offsetY = (height - hitHeight) / 2
 

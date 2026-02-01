@@ -629,7 +629,7 @@ const handleHeroIconSizeMouseUp = () => {
               </svg>
               <span class="text-sm font-semibold text-white">Lock Icons</span>
             </div>
-            <button class="toggle-switch" :class="{ on: store.lockIcons }" :aria-pressed="store.lockIcons"
+            <button class="toggle-switch toggle-switch-lock" :class="{ on: store.lockIcons }" :aria-pressed="store.lockIcons"
               @click="store.toggleLockIcons()">
               <span class="toggle-thumb">
                 <svg v-if="!store.lockIcons" class="toggle-icon toggle-icon-x" viewBox="0 0 24 24" fill="none"
@@ -760,6 +760,10 @@ const handleHeroIconSizeMouseUp = () => {
 .toggle-switch:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
+}
+
+.toggle-switch-lock.on {
+  background: #c75450;
 }
 
 .hero-slider {
