@@ -96,7 +96,7 @@ onMounted(() => {
       staggerAmount: 12,
       staggerAmountMax: 150,
       columnWidth: 0,
-      gutterWidth: 3,
+      gutterWidth: 2,
       isCentered: true
     })
   }
@@ -150,7 +150,7 @@ watch(activeFilter, (newFilter) => {
         <button @click="selectHero(hero)" :aria-label="`Select ${hero.name}`" :class="[
           'hero-button w-8 h-8 relative cursor-pointer focus-visible:outline-none flex items-center justify-center',
           store.selectedHero?.id === hero.id
-            ? 'ring-2 ring-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.65)] scale-110'
+            ? 'selected-hero'
             : 'hover:opacity-80 hover:scale-105'
         ]">
           <img :src="hero.image" :alt="`${hero.name} icon`" class="w-7 absolute object-contain" />
@@ -191,19 +191,28 @@ watch(activeFilter, (newFilter) => {
 .hero-grid {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
+  padding-top: 4px;
   padding-right: 0.1rem;
 }
 
 .hero-item {
-  width: 32px;
-  height: 32px;
-  margin: 0 4px 4px 0;
+  width: 36px;
+  height: 38px;
+  margin: 0 2px 0 0;
+  padding: 4px 2px 2px 2px;
 }
 
 .hero-button {
   transition: transform 0.18s ease-out, opacity 0.18s ease-out, box-shadow 0.18s ease-out;
   transform-origin: center;
+}
+
+.hero-button.selected-hero {
+  outline: 2px solid rgb(96, 165, 250);
+  outline-offset: -1px;
+  box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.65);
+  transform: scale(1.1);
 }
 
 .hero-button img {
