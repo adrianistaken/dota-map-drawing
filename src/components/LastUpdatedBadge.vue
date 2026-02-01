@@ -1,6 +1,6 @@
 <template>
     <div class="last-updated" aria-label="Last updated timestamp">
-        Last updated: Jan 30, 2026
+        Last updated: Jan 31, 2026
     </div>
 </template>
 
