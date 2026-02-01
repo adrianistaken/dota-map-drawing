@@ -467,7 +467,6 @@ export const useEditorStore = defineStore('editor', () => {
   const autoPlaceStructures = ref(false)
   const autoPlaceNeutralCamps = ref(false)
   const autoPlaceRunes = ref(false)
-  const lockIcons = ref(false)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -522,7 +521,6 @@ export const useEditorStore = defineStore('editor', () => {
         autoPlaceStructures.value = savedState.preferences.autoPlaceStructures ?? legacyAutoPlace
         autoPlaceNeutralCamps.value = savedState.preferences.autoPlaceNeutralCamps ?? legacyAutoPlace
         autoPlaceRunes.value = savedState.preferences.autoPlaceRunes ?? legacyAutoPlace
-        lockIcons.value = savedState.preferences.lockIcons ?? false
       }
     }
   }
@@ -693,11 +691,6 @@ export const useEditorStore = defineStore('editor', () => {
     } else {
       removeAutoIconsForCategory('runes')
     }
-    persistState()
-  }
-
-  const toggleLockIcons = () => {
-    lockIcons.value = !lockIcons.value
     persistState()
   }
 
@@ -887,7 +880,6 @@ export const useEditorStore = defineStore('editor', () => {
     autoPlaceStructures,
     autoPlaceNeutralCamps,
     autoPlaceRunes,
-    lockIcons,
     strokes,
     icons,
     undoStack,
@@ -920,7 +912,6 @@ export const useEditorStore = defineStore('editor', () => {
     toggleAutoPlaceStructures,
     toggleAutoPlaceNeutralCamps,
     toggleAutoPlaceRunes,
-    toggleLockIcons,
     loadState,
     persistState
   }

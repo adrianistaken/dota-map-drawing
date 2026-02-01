@@ -761,8 +761,7 @@ const createArrowConfig = (x: number, y: number, angle: number, color: string, s
             ctx.moveTo(tipX, tipY)
             ctx.lineTo(rightX, rightY)
             ctx.stroke()
-        },
-        listening: false
+        }
     }
 }
 
@@ -860,8 +859,8 @@ defineExpose({
                     y: icon.y * currentScale,
                     width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
                     height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
-                    draggable: !store.lockIcons,
-                    listening: !store.lockIcons,
+                    draggable: true,
+                    listening: true,
                     name: 'hero-icon',
                     opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1,
                     hitFunc: createIconHitFunc
@@ -874,8 +873,8 @@ defineExpose({
                     y: icon.y * currentScale,
                     width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
                     height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
-                    draggable: !store.lockIcons,
-                    listening: !store.lockIcons,
+                    draggable: true,
+                    listening: true,
                     name: 'hero-icon',
                     opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1,
                     hitFunc: createIconHitFunc
@@ -888,8 +887,8 @@ defineExpose({
                     y: icon.y * currentScale,
                     width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
                     height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
-                    draggable: !store.lockIcons,
-                    listening: !store.lockIcons,
+                    draggable: true,
+                    listening: true,
                     name: 'hero-icon',
                     opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1,
                     hitFunc: createIconHitFunc
@@ -905,8 +904,7 @@ defineExpose({
                         lineJoin: 'round',
                         tension: 0.5,
                         globalCompositeOperation: 'source-over',
-                        dash: stroke.brushType === 'dotted' ? [3, 10] : undefined,
-                        listening: false
+                        dash: stroke.brushType === 'dotted' ? [3, 10] : undefined
                     }" />
                     <!-- Render arrowhead for arrow strokes -->
                     <v-shape
