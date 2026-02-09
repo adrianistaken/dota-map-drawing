@@ -1,8 +1,16 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import posthog from 'posthog-js';
+
+const NEW_VIDEO_KEY = 'yt_seen_v1';
+const hasNewVideo = ref(!localStorage.getItem(NEW_VIDEO_KEY));
 
 const handleYouTubeClick = () => {
     posthog.capture('youtube_link_clicked', { property: 'value' });
+    if (hasNewVideo.value) {
+        hasNewVideo.value = false;
+        localStorage.setItem(NEW_VIDEO_KEY, '1');
+    }
 };
 
 const handleDiscordClick = () => {
@@ -12,7 +20,8 @@ const handleDiscordClick = () => {
 
 <template>
     <div class="social-links">
-        <a href="https://www.youtube.com/@zzadrianzz" target="_blank" rel="noopener noreferrer" class="social-link"
+        <a href="https://www.youtube.com/watch?v=QTswoAlW9Is" target="_blank" rel="noopener noreferrer"
+            :class="['social-link', { 'new-video': hasNewVideo }]"
             aria-label="YouTube" @click="handleYouTubeClick">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="social-icon">
                 <path
@@ -56,5 +65,26 @@ const handleDiscordClick = () => {
 .social-icon {
     width: 24px;
     height: 24px;
+}
+
+.social-link.new-video {
+    opacity: 1;
+    animation: wiggle 8s ease-in-out infinite, glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+    0%, 8% { transform: rotate(0deg); }
+    1% { transform: rotate(-12deg); }
+    2% { transform: rotate(10deg); }
+    3% { transform: rotate(-8deg); }
+    4% { transform: rotate(6deg); }
+    5% { transform: rotate(-3deg); }
+    6% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes glow-pulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(255, 0, 0, 0.2)); }
+    50% { filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.7)) drop-shadow(0 0 16px rgba(255, 0, 0, 0.4)); }
 }
 </style>
