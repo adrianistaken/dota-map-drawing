@@ -822,8 +822,16 @@ const createIconHitFunc = (context: any, shape: any) => {
 }
 
 // Separate icons into toggleable icons and hero icons for proper rendering order
-const toggleableIcons = computed(() => {
-    return store.icons.filter(icon => icon.id.startsWith('auto-'))
+const fixedIcons = computed(() => {
+    return store.icons.filter(icon =>
+        icon.id.startsWith('auto-') && !icon.id.startsWith('auto-water-') && !icon.id.startsWith('auto-bounty-')
+    )
+})
+
+const runeIcons = computed(() => {
+    return store.icons.filter(icon =>
+        icon.id.startsWith('auto-water-') || icon.id.startsWith('auto-bounty-')
+    )
 })
 
 const heroIcons = computed(() => {
@@ -853,8 +861,21 @@ defineExpose({
                 <!-- Konva Image component requires the image element, not just a path -->
                 <v-image v-if="mapImage" :config="mapImageConfig" />
 
-                <!-- Render toggleable icons (bottom icon layer) -->
-                <v-image v-for="icon in toggleableIcons" :key="icon.id" :config="{
+                <!-- Render fixed icons: buildings, structures, camps, watchers (not movable) -->
+                <v-image v-for="icon in fixedIcons" :key="icon.id" :config="{
+                    image: getIconImage(icon.image),
+                    x: icon.x * currentScale,
+                    y: icon.y * currentScale,
+                    width: (icon.width ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    height: (icon.height ?? icon.size ?? ICON_BASE_SIZE) * currentScale,
+                    draggable: false,
+                    listening: false,
+                    name: 'hero-icon',
+                    opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1,
+                }" />
+
+                <!-- Render rune icons (movable) -->
+                <v-image v-for="icon in runeIcons" :key="icon.id" :config="{
                     image: getIconImage(icon.image),
                     x: icon.x * currentScale,
                     y: icon.y * currentScale,
@@ -863,7 +884,7 @@ defineExpose({
                     draggable: !store.lockIcons,
                     listening: !store.lockIcons,
                     name: 'hero-icon',
-                    opacity: icon.image.includes('Neutral_Camp') ? 0.8 : 1,
+                    opacity: 1,
                     hitFunc: createIconHitFunc
                 }" @dragstart="handleIconDragStart" @dragend="createDragEndHandler(icon.id, $event)" />
 
