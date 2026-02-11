@@ -3,13 +3,17 @@ import { ref } from 'vue';
 import posthog from 'posthog-js';
 
 const NEW_VIDEO_KEY = 'yt_seen_v1';
+const NEW_VIDEO_URL = 'https://www.youtube.com/watch?v=QTswoAlW9Is';
+const CHANNEL_URL = 'https://www.youtube.com/@zzadrianzz';
 const hasNewVideo = ref(!localStorage.getItem(NEW_VIDEO_KEY));
+const youtubeUrl = ref(hasNewVideo.value ? NEW_VIDEO_URL : CHANNEL_URL);
 
 const handleYouTubeClick = () => {
     posthog.capture('youtube_link_clicked', { property: 'value' });
     if (hasNewVideo.value) {
         hasNewVideo.value = false;
         localStorage.setItem(NEW_VIDEO_KEY, '1');
+        setTimeout(() => { youtubeUrl.value = CHANNEL_URL; }, 0);
     }
 };
 
@@ -20,7 +24,7 @@ const handleDiscordClick = () => {
 
 <template>
     <div class="social-links">
-        <a href="https://www.youtube.com/watch?v=QTswoAlW9Is" target="_blank" rel="noopener noreferrer"
+        <a :href="youtubeUrl" target="_blank" rel="noopener noreferrer"
             :class="['social-link', { 'new-video': hasNewVideo }]"
             aria-label="YouTube" @click="handleYouTubeClick">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="social-icon">
