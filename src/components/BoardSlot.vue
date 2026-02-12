@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import posthog from 'posthog-js'
 import { useBoardsStore, type Board } from '../stores/useBoardsStore'
+import ConfirmModal from './ConfirmModal.vue'
 
 const props = defineProps<{
   board: Board
@@ -12,6 +13,7 @@ const props = defineProps<{
 const boardsStore = useBoardsStore()
 const isEditing = ref(false)
 const editedName = ref(props.board.name)
+const showDeleteModal = ref(false)
 
 const formattedDate = computed(() => {
   const date = new Date(props.board.updatedAt)
@@ -60,17 +62,19 @@ async function handleOpen() {
   }
 }
 
-async function handleClear() {
-  const confirmed = confirm(
-    `Delete "${props.board.name}"? This cannot be undone.`
-  )
-  if (!confirmed) {
-    posthog.capture('board_delete_cancelled', {
-      slot_number: props.slotNumber
-    })
-    return
-  }
+function handleClear() {
+  showDeleteModal.value = true
+}
 
+function cancelDelete() {
+  showDeleteModal.value = false
+  posthog.capture('board_delete_cancelled', {
+    slot_number: props.slotNumber
+  })
+}
+
+async function confirmDelete() {
+  showDeleteModal.value = false
   const result = await boardsStore.deleteSavedBoard(props.board.id)
   if (!result.success) {
     posthog.capture('board_delete_failed', {
@@ -135,6 +139,17 @@ async function handleClear() {
         <span>Clear</span>
       </button>
     </div>
+
+    <ConfirmModal
+      :visible="showDeleteModal"
+      title="Delete Board"
+      :message="`Delete &quot;${board.name}&quot;? This cannot be undone.`"
+      confirm-label="Delete"
+      cancel-label="Cancel"
+      variant="danger"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </div>
 </template>
 

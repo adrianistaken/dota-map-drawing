@@ -3,6 +3,7 @@ import { onMounted, computed, ref, nextTick } from 'vue'
 import posthog from 'posthog-js'
 import { useBoardsStore, DRAFT_BOARD_ID } from '../stores/useBoardsStore'
 import BoardSlot from './BoardSlot.vue'
+import ConfirmModal from './ConfirmModal.vue'
 import { reportError } from '../utils/errorHandler'
 
 const props = defineProps<{
@@ -11,6 +12,8 @@ const props = defineProps<{
 
 const boardsStore = useBoardsStore()
 const isCapturingThumbnails = ref(false)
+const showCreateModal = ref(false)
+const createModalMessage = ref('')
 
 // Track current board ID reactively
 const currentBoardId = computed(() => boardsStore.currentBoardId)
@@ -61,26 +64,28 @@ async function handleSaveCurrent(slotNumber: number) {
   }
 }
 
-async function handleCreateNew() {
+function handleCreateNew() {
   const isOnDraft = boardsStore.currentBoardId === DRAFT_BOARD_ID
-  const message = isOnDraft
-    ? 'Create a new blank workspace? Your current workspace will be replaced with an empty canvas.'
-    : 'Create a new blank workspace? Your current board will be saved, then you\'ll switch to a fresh workspace.'
+  createModalMessage.value = isOnDraft
+    ? 'Your current workspace will be replaced with an empty canvas.'
+    : 'Your current board will be saved, then you\'ll switch to a fresh workspace.'
+  showCreateModal.value = true
+}
 
-  const confirmed = confirm(message)
+function cancelCreate() {
+  showCreateModal.value = false
+  const isOnDraft = boardsStore.currentBoardId === DRAFT_BOARD_ID
+  posthog.capture('board_create_cancelled', {
+    was_on_draft: isOnDraft
+  })
+}
 
-  if (!confirmed) {
-    posthog.capture('board_create_cancelled', {
-      was_on_draft: isOnDraft
-    })
-    return
-  }
-
+async function confirmCreate() {
+  showCreateModal.value = false
+  const isOnDraft = boardsStore.currentBoardId === DRAFT_BOARD_ID
   posthog.capture('board_created', {
     was_on_draft: isOnDraft
   })
-
-  // Create a fresh draft workspace (this function handles saving current board automatically)
   await boardsStore.createNewDraft()
 }
 
@@ -150,6 +155,16 @@ defineExpose({
         </div>
       </template>
     </div>
+
+    <ConfirmModal
+      :visible="showCreateModal"
+      title="New Workspace"
+      :message="createModalMessage"
+      confirm-label="Create"
+      cancel-label="Cancel"
+      @confirm="confirmCreate"
+      @cancel="cancelCreate"
+    />
 
     <!-- Loading overlay -->
     <div v-if="boardsStore.isLoading" class="loading-overlay">
