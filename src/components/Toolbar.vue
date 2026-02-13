@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, computed } from 'vue'
 import { useEditorStore, type Tool, type BrushType } from '../stores/useEditorStore'
 import LastUpdatedBadge from './LastUpdatedBadge.vue';
 import posthog from 'posthog-js';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
   mapCanvasRef?: { getStage: () => any } | null
@@ -157,18 +158,25 @@ const downloadPNG = async () => {
     link.download = 'dota-map-drawing.png'
     link.href = watermarkedDataURL
     link.click()
+    toast.success('Map downloaded!')
   } catch (error) {
     console.error('Failed to add watermark:', error)
-    // Fallback: download without watermark
-    const dataURL = stage.toDataURL({
-      pixelRatio: 2,
-      mimeType: 'image/png',
-      quality: 1
-    })
-    const link = document.createElement('a')
-    link.download = 'dota-map-drawing.png'
-    link.href = dataURL
-    link.click()
+    try {
+      // Fallback: download without watermark
+      const dataURL = stage.toDataURL({
+        pixelRatio: 2,
+        mimeType: 'image/png',
+        quality: 1
+      })
+      const link = document.createElement('a')
+      link.download = 'dota-map-drawing.png'
+      link.href = dataURL
+      link.click()
+      toast.success('Map downloaded!')
+    } catch (fallbackError) {
+      console.error('Failed to download:', fallbackError)
+      toast.error('Failed to download map')
+    }
   }
 }
 
@@ -209,17 +217,22 @@ const copyToClipboard = async () => {
           'image/png': blob
         })
       ])
-      alert('Map copied to clipboard!')
+      toast.success('Map copied to clipboard!')
       posthog.capture('map_copied_to_clipboard', { property: 'value' })
     } catch (err) {
       console.error('Failed to copy to clipboard:', err)
-      // Fallback: copy data URL as text
-      await navigator.clipboard.writeText(watermarkedDataURL)
-      alert('Image data URL copied to clipboard (fallback)')
+      try {
+        // Fallback: copy data URL as text
+        await navigator.clipboard.writeText(watermarkedDataURL)
+        toast.success('Image data URL copied to clipboard!')
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed:', fallbackErr)
+        toast.error('Failed to copy to clipboard')
+      }
     }
   } catch (err) {
     console.error('Failed to copy:', err)
-    alert('Failed to copy to clipboard')
+    toast.error('Failed to copy to clipboard')
   }
 }
 

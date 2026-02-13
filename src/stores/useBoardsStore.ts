@@ -11,6 +11,7 @@ import { createBoardStorage, type BoardStorageAdapter } from '../utils/boardStor
 import { useEditorStore, type Stroke, type Icon, type BrushType } from './useEditorStore'
 import { debounce, loadStateFromStorage, clearStateFromStorage } from '../utils/persistence'
 import { reportError } from '../utils/errorHandler'
+import { toast } from 'vue-sonner'
 
 // Constants
 export const BOARD_SCHEMA_VERSION = 1
@@ -599,6 +600,7 @@ export const useBoardsStore = defineStore('boards', () => {
     try {
       // Check limit
       if (savedBoards.value.length >= MAX_SAVED_BOARDS) {
+        toast.error(`Maximum ${MAX_SAVED_BOARDS} boards reached. Delete a board first.`)
         return {
           success: false,
           error: {
@@ -658,6 +660,7 @@ export const useBoardsStore = defineStore('boards', () => {
       await storageAdapter.setMetadata(METADATA_KEY_LAST_OPENED, newBoard.id)
 
       console.log('[BoardsStore] Pinned board to slot', slotNumber)
+      toast.success(`Board saved: ${newBoard.name}`)
       return { success: true, data: newBoard }
     } catch (err) {
       reportError(err, {
@@ -665,6 +668,7 @@ export const useBoardsStore = defineStore('boards', () => {
         operation: 'pinning board to saved slot',
         extra: { slotNumber }
       })
+      toast.error('Failed to save board')
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to save board', details: err }
@@ -700,6 +704,7 @@ export const useBoardsStore = defineStore('boards', () => {
       editorStore.clearMap()
 
       console.log('[BoardsStore] Created new draft')
+      toast.success('New draft created')
     } catch (err) {
       reportError(err, {
         source: 'BoardsStore',
@@ -740,6 +745,7 @@ export const useBoardsStore = defineStore('boards', () => {
       await storageAdapter.saveBoard(boardToSave)
 
       console.log('[BoardsStore] Renamed board:', id, 'to', trimmedName)
+      toast.success(`Board renamed to "${trimmedName}"`)
       return { success: true, data: board }
     } catch (err) {
       reportError(err, {
@@ -784,6 +790,7 @@ export const useBoardsStore = defineStore('boards', () => {
       }
 
       console.log('[BoardsStore] Deleted board:', id)
+      toast.success('Board deleted')
       return { success: true, data: undefined }
     } catch (err) {
       reportError(err, {
@@ -791,6 +798,7 @@ export const useBoardsStore = defineStore('boards', () => {
         operation: 'deleting board',
         boardId: id
       })
+      toast.error('Failed to delete board')
       return {
         success: false,
         error: { code: 'STORAGE_ERROR', message: 'Failed to delete board', details: err }
@@ -813,6 +821,7 @@ export const useBoardsStore = defineStore('boards', () => {
     try {
       // Check limit
       if (savedBoards.value.length >= MAX_SAVED_BOARDS) {
+        toast.error(`Maximum ${MAX_SAVED_BOARDS} boards reached. Delete a board first.`)
         return {
           success: false,
           error: {
@@ -865,6 +874,7 @@ export const useBoardsStore = defineStore('boards', () => {
       }
 
       console.log('[BoardsStore] Duplicated current board to slot', slotNumber)
+      toast.success(`Board saved: ${newBoard.name}`)
       return { success: true, data: newBoard }
     } catch (err) {
       reportError(err, {
@@ -893,6 +903,7 @@ export const useBoardsStore = defineStore('boards', () => {
     try {
       // Check limit
       if (savedBoards.value.length >= MAX_SAVED_BOARDS) {
+        toast.error(`Maximum ${MAX_SAVED_BOARDS} boards reached. Delete a board first.`)
         return {
           success: false,
           error: {
@@ -931,6 +942,7 @@ export const useBoardsStore = defineStore('boards', () => {
       await setCurrentBoard(freshBoard.id)
 
       console.log('[BoardsStore] Created fresh board in slot', slotNumber)
+      toast.success(`New board created: ${freshBoard.name}`)
       return { success: true, data: freshBoard }
     } catch (err) {
       reportError(err, {
