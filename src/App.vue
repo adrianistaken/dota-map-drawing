@@ -10,6 +10,7 @@ import BoardsPanel from './components/BoardsPanel.vue'
 import AnnouncementBanner from './components/AnnouncementBanner.vue'
 import { useEditorStore } from './stores/useEditorStore'
 import { useBoardsStore } from './stores/useBoardsStore'
+import { Toaster } from 'vue-sonner'
 
 const store = useEditorStore()
 const boardsStore = useBoardsStore()
@@ -71,6 +72,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-container" :class="{ 'mobile-layout': isMobileLayout }">
+    <Toaster
+      position="bottom-right"
+      richColors
+      :duration="3000"
+      class="app-toaster"
+    />
     <div class="layout-grid">
       <aside class="side-panel left-panel">
         <div class="panel-surface tools-surface fill-vertical">
@@ -283,6 +290,68 @@ onBeforeUnmount(() => {
   .map-frame {
     width: 100%;
     padding: 0;
+  }
+}
+
+/* Toast positioning - fixed in bottom-right of map area */
+:deep(.app-toaster) {
+  position: fixed !important;
+  bottom: 2rem !important;
+  right: calc(var(--side-panel-width) + var(--grid-gap) + .55rem) !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+}
+
+:deep(.app-toaster > *) {
+  pointer-events: auto !important;
+}
+
+/* Toast styling to match app theme */
+:deep([data-sonner-toast]) {
+  background: rgba(12, 24, 48, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 0.5rem !important;
+  padding: 1rem !important;
+}
+
+/* Success toast - subtle green accent */
+:deep([data-sonner-toast][data-type="success"]) {
+  border-left: 3px solid #10b981 !important;
+}
+
+/* Error toast - subtle red accent */
+:deep([data-sonner-toast][data-type="error"]) {
+  border-left: 3px solid #ef4444 !important;
+}
+
+/* Info toast - subtle blue accent */
+:deep([data-sonner-toast][data-type="info"]) {
+  border-left: 3px solid #3b82f6 !important;
+}
+
+/* Warning toast - subtle yellow accent */
+:deep([data-sonner-toast][data-type="warning"]) {
+  border-left: 3px solid #f59e0b !important;
+}
+
+/* Toast icon styling */
+:deep([data-sonner-toast] [data-icon]) {
+  opacity: 0.9;
+}
+
+/* Toast title/description */
+:deep([data-sonner-toast] [data-title]) {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 900px) {
+  :deep(.app-toaster) {
+    right: 1rem !important;
   }
 }
 </style>
