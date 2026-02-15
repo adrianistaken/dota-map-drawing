@@ -1,0 +1,59 @@
+TI1
+
+chen, beastmaster, slardar, weaver, puck
+
+natures prophet, doom, storm spirit, sand king, lich
+
+TI2
+
+rubick, leshrac, juggernaut, lone druid, nyx
+
+dark seer, naga siren, templar assassin, tidehunter, keeper of the light
+
+TI3
+
+io, natures prophet, crystal maiden, puck, chaos knight
+
+batrider, alchemist, rubick, enigma, templar assassin
+
+TI4
+
+shadow shaman, brewmaster, rubick, doom, ember spirit
+
+ancient apparition, nature’s prophet, weaver, sand king, venomancer
+
+TI5
+
+clockwerk, lina, winter wyvern, phantom lancer, dragon knight
+
+gyrocopter, naga siren, storm spirit, earthshaker, ancient apparition
+
+TI6
+
+elder titan, batrider, keeper of the light, antimage, axe
+
+mirana, timbersaw, vengeful, slark, nighstalker
+
+TI7
+
+venomancer, shadow shaman, sand king, centaur, death prophet
+
+earthshaker, lich, dark seer, necrophos, juggernaut
+
+TI8
+
+natures prophet, rubick, magnus, ember spirit, zeus
+
+earthshaker, terrorblade, silencer, kunkka, batrider
+
+TI9
+
+io, tiny, abaddon, timbersaw, gyrocopter
+
+chen, omniknight, bristleback, earthspirit, windranger
+
+TI10
+
+tiny, lycan, kunkka, skywrath, enchantress
+
+magnus, bane, winter wyvern, ember spirit, terrorblade

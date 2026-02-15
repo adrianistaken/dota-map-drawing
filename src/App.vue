@@ -77,6 +77,15 @@ onBeforeUnmount(() => {
       richColors
       :duration="3000"
       class="app-toaster"
+      :toastOptions="{
+        style: {
+          background: '#1a1a1a',
+          color: '#ffffff',
+          borderTop: '1px solid #2a2a2a',
+          borderRight: '1px solid #2a2a2a',
+          borderBottom: '1px solid #2a2a2a'
+        }
+      }"
     />
     <div class="layout-grid">
       <aside class="side-panel left-panel">
@@ -347,6 +356,15 @@ onBeforeUnmount(() => {
 :deep([data-sonner-toast] [data-title]) {
   font-weight: 500;
   letter-spacing: 0.01em;
+}
+
+/* Toast dark background styling */
+:deep([data-sonner-toast]) {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border-top: 1px solid #2a2a2a !important;
+  border-right: 1px solid #2a2a2a !important;
+  border-bottom: 1px solid #2a2a2a !important;
 }
 
 @media (max-width: 900px) {
