@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { loadStateFromStorage } from '../utils/persistence'
 import { mapIconFiles, mapIconPath, type MapIconFolder } from '../data/mapIcons'
 import { reportError } from '../utils/errorHandler'
+import { getTILineups, selectRandomLineup, getPositionTemplates, randomizePosition } from '../utils/tiLineups'
 
 export type Tool = 'draw' | 'erase' | 'icon'
 export type BrushType = 'standard' | 'dotted' | 'arrow'
@@ -468,6 +469,7 @@ export const useEditorStore = defineStore('editor', () => {
   const autoPlaceNeutralCamps = ref(false)
   const autoPlaceRunes = ref(false)
   const lockIcons = ref(false)
+  const lastGeneratedTournament = ref<string | null>(null)
 
   // Drawing state
   const strokes = ref<Stroke[]>([])
@@ -873,6 +875,72 @@ export const useEditorStore = defineStore('editor', () => {
     persistState()
   }
 
+  const generateRandomLaneIcons = (): string => {
+    try {
+      // 1. Get TI lineups
+      const lineups = getTILineups()
+
+      // 2. Select random lineup (exclude the last one to prevent duplicates)
+      const selectedLineup = selectRandomLineup(lineups, lastGeneratedTournament.value ?? undefined)
+
+      // 3. Store this tournament as the last generated
+      lastGeneratedTournament.value = selectedLineup.tournament
+
+      // 3. Save state for undo
+      saveState()
+
+      // 4. Clear existing hero icons
+      icons.value = icons.value.filter(icon =>
+        !icon.image.includes('/images/icons/heroes/')
+      )
+
+      // 5. Get position templates
+      const positions = getPositionTemplates()
+      const timestamp = Date.now()
+
+      // 6. Generate Radiant icons (5 heroes)
+      const radiantIcons: Icon[] = selectedLineup.radiantHeroes.map((heroName, index) => {
+        const pos = randomizePosition(positions.radiant[index])
+        return {
+          id: `random-lane-${timestamp}-radiant-${index}`,
+          x: pos.x,
+          y: pos.y,
+          image: `/images/icons/heroes/${heroName}_mapicon_dota2_gameasset.png`,
+          width: heroIconSize.value,
+          height: heroIconSize.value,
+          size: heroIconSize.value
+        }
+      })
+
+      // 7. Generate Dire icons (5 heroes)
+      const direIcons: Icon[] = selectedLineup.direHeroes.map((heroName, index) => {
+        const pos = randomizePosition(positions.dire[index])
+        return {
+          id: `random-lane-${timestamp}-dire-${index}`,
+          x: pos.x,
+          y: pos.y,
+          image: `/images/icons/heroes/${heroName}_mapicon_dota2_gameasset.png`,
+          width: heroIconSize.value,
+          height: heroIconSize.value,
+          size: heroIconSize.value
+        }
+      })
+
+      // 8. Add all icons to the canvas
+      icons.value.push(...radiantIcons, ...direIcons)
+
+      // 9. Clear redo stack and persist
+      redoStack.value = []
+      persistState()
+
+      // 10. Return tournament name for toast notification
+      return selectedLineup.tournament
+    } catch (error) {
+      console.error('Error generating random lane icons:', error)
+      throw error
+    }
+  }
+
   return {
     // State
     currentTool,
@@ -922,6 +990,7 @@ export const useEditorStore = defineStore('editor', () => {
     toggleAutoPlaceRunes,
     toggleLockIcons,
     loadState,
-    persistState
+    persistState,
+    generateRandomLaneIcons
   }
 })

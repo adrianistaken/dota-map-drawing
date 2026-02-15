@@ -236,6 +236,40 @@ const copyToClipboard = async () => {
   }
 }
 
+// Random lane generation handler
+const handleRandomLaneGeneration = () => {
+  try {
+    const tournamentName = store.generateRandomLaneIcons()
+    toast.success(`Generated ${tournamentName} Grand Finals lineup!`, {
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          store.undo()
+          posthog.capture('random_lane_undone', { tournament: tournamentName })
+        }
+      },
+      style: {
+        background: '#1a1a1a !important',
+        color: '#ffffff !important',
+        borderTop: '1px solid #2a2a2a !important',
+        borderRight: '1px solid #2a2a2a !important',
+        borderBottom: '1px solid #2a2a2a !important'
+      },
+      actionButtonStyle: {
+        background: 'transparent !important',
+        color: '#9ca3af !important',
+        textDecoration: 'underline !important',
+        fontWeight: 'normal !important',
+        padding: '0 !important'
+      }
+    })
+    posthog.capture('random_lane_generated', { tournament: tournamentName })
+  } catch (error) {
+    console.error('Failed to generate random lane lineup:', error)
+    toast.error('Failed to generate lane lineup')
+  }
+}
+
 // Tool selection handlers
 const setTool = (tool: Tool) => {
   store.setTool(tool)
@@ -416,11 +450,10 @@ const handleHeroIconSizeMouseUp = () => {
               :title="'Remove Drawings'">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                <path d="M3 3l18 18" />
-                <path d="M5 7l4-4" />
-                <path d="M9 11l4-4" />
-                <path d="M13 15l4-4" />
-                <path d="M17 19l4-4" />
+                <path d="m10 10-6.157 6.162a2 2 0 0 0-.5.833l-1.322 4.36a.5.5 0 0 0 .622.624l4.358-1.323a2 2 0 0 0 .83-.5L14 13.982"/>
+                <path d="m12.829 7.172 4.359-4.346a1 1 0 1 1 3.986 3.986l-4.353 4.353"/>
+                <path d="m15 5 4 4"/>
+                <path d="m2 2 20 20"/>
               </svg>
             </button>
             <button @click="store.removeIcons()"
@@ -428,11 +461,10 @@ const handleHeroIconSizeMouseUp = () => {
               :title="'Remove Icons'">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                <rect x="3" y="3" width="6" height="6" rx="1" />
-                <rect x="15" y="3" width="6" height="6" rx="1" />
-                <rect x="3" y="15" width="6" height="6" rx="1" />
-                <rect x="15" y="15" width="6" height="6" rx="1" />
-                <path d="M6 6l12 12" />
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <line x1="17" x2="22" y1="8" y2="13"/>
+                <line x1="22" x2="17" y1="8" y2="13"/>
               </svg>
             </button>
           </div>
@@ -456,6 +488,19 @@ const handleHeroIconSizeMouseUp = () => {
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
             </button>
+            <button @click="handleRandomLaneGeneration"
+              class="px-2 py-1.5 bg-purple-700 text-white rounded hover:bg-purple-600 transition-colors flex items-center justify-center"
+              :title="'Random lane generation'">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                <rect width="12" height="12" x="2" y="10" rx="2" ry="2"/>
+                <path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/>
+                <path d="M6 18h.01"/>
+                <path d="M10 14h.01"/>
+                <path d="M15 6h.01"/>
+                <path d="M18 9h.01"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -468,10 +513,13 @@ const handleHeroIconSizeMouseUp = () => {
           <div class="flex items-center gap-2 flex-1">
             <svg class="toggle-category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
-              <path d="M6 12h12" />
-              <path d="M6 15h12" />
-              <path d="M6 9h12" />
+              <path d="M18.2 12.27 20 6H4l1.8 6.27a1 1 0 0 0 .95.73h10.5a1 1 0 0 0 .96-.73Z"/>
+              <path d="M8 13v9"/>
+              <path d="M16 22v-9"/>
+              <path d="m9 6 1 7"/>
+              <path d="m15 6-1 7"/>
+              <path d="M12 6V2"/>
+              <path d="M13 2h-2"/>
             </svg>
             <span class="text-sm font-semibold text-white">Buildings</span>
           </div>
@@ -518,12 +566,8 @@ const handleHeroIconSizeMouseUp = () => {
           <div class="flex items-center gap-2 flex-1">
             <svg class="toggle-category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M9 9h6v6H9z" />
-              <path d="M9 3v6" />
-              <path d="M9 15v6" />
-              <path d="M15 3v6" />
-              <path d="M15 15v6" />
+              <path d="M2.5 16.88a1 1 0 0 1-.32-1.43l9-13.02a1 1 0 0 1 1.64 0l9 13.01a1 1 0 0 1-.32 1.44l-8.51 4.86a2 2 0 0 1-1.98 0Z"/>
+              <path d="M12 2v20"/>
             </svg>
             <span class="text-sm font-semibold text-white">Structures</span>
           </div>
