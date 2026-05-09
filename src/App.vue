@@ -102,6 +102,7 @@ onBeforeUnmount(() => {
 
       <main class="center-panel">
         <AnnouncementBanner
+          v-if="false"
           message="New: Save up to 3 boards! Switch between strategies instantly."
           link-text="Try it"
           :link-action="() => handleTabChange('boards')"
