@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import posthog from 'posthog-js';
 
-const NEW_VIDEO_KEY = 'yt_seen_v2';
-const NEW_VIDEO_URL = 'https://www.youtube.com/watch?v=4d4r1Vlx7mY';
+const NEW_VIDEO_KEY = 'yt_seen_v3';
+const NEW_VIDEO_URL = 'https://www.youtube.com/watch?v=HW05pM17LC8';
 const CHANNEL_URL = 'https://www.youtube.com/@zzadrianzz';
 const hasNewVideo = ref(!localStorage.getItem(NEW_VIDEO_KEY));
 const youtubeUrl = ref(hasNewVideo.value ? NEW_VIDEO_URL : CHANNEL_URL);
