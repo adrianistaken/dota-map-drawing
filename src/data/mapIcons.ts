@@ -37,10 +37,6 @@ export const mapIconFiles: MapIconFile[] = [
 
     // Map
     { folder: 'map', filename: 'Lotus_Pool_mapicon_dota2_gameasset.png', size: 54, showInPalette: false },
-    { folder: 'map', filename: 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
-    { folder: 'map', filename: 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
-    { folder: 'map', filename: 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
-    { folder: 'map', filename: 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', size: 39, showInPalette: false },
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasset green.png', width: 53, height: 43, paletteSize: 24 },
     { folder: 'map', filename: 'Roshan_symbol_dota2_gameasse redt.png', width: 53, height: 43, paletteSize: 24 },
 
@@ -51,7 +47,13 @@ export const mapIconFiles: MapIconFile[] = [
 
     { folder: 'map', filename: 'Warp_Gate_mapicon_dota2_gameasset.png', size: 45, showInPalette: false },
     { folder: 'map', filename: 'Watcher_mapicon_dota2_gameasset.png', width: 47, height: 35, showInPalette: false },
-    { folder: 'map', filename: 'tormentor minimap icon.png', size: 52, showInPalette: false }
+    { folder: 'map', filename: 'tormentor minimap icon.png', size: 52, showInPalette: false },
+
+    // Neutral camps (kept last so they appear at the bottom of the palette)
+    { folder: 'map', filename: 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', size: 39 },
+    { folder: 'map', filename: 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', size: 39 },
+    { folder: 'map', filename: 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', size: 39 },
+    { folder: 'map', filename: 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', size: 39 }
 ]
 
 export const mapIconPath = (folder: MapIconFolder, filename: string) =>

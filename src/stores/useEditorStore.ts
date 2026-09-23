@@ -241,149 +241,89 @@ const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
     }, 'structures')
   ],
   neutralCamps: [
-    // Ancient camps
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-1', x: 228.76, y: 21.63
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-1', x: 291.95, y: 71.40
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-2', x: 473.36, y: 30.96
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-3', x: 549.32, y: 18.97
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-4', x: 497.07, y: 216.41
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-1', x: 491.74, y: 296.68
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-2', x: 201.96, y: 234.68
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-3', x: 23.33, y: 444.26
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-4', x: 363.05, y: 578.76
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-5', x: 668.11, y: 595.81
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-large-6', x: 822.99, y: 418.68
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-5', x: 311.76, y: 236.44
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-6', x: 599.12, y: 484.90
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-7', x: 650.65, y: 826.60
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-8', x: 423.09, y: 784.58
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-9', x: 330.12, y: 827.01
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-10', x: 340.10, y: 648.72
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-11', x: 443.52, y: 672.23
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-12', x: 235.52, y: 370.07
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-13', x: 394.31, y: 180.55
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-2', x: 245.14, y: 187.03
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-3', x: 846.95, y: 355.01
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-4', x: 571.34, y: 827.14
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-5', x: 24.65, y: 517.13
+    }, 'neutralCamps'),
     buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-ancient-1',
-      x: 196.15,
-      y: 18.34
+      id: 'auto-neutral-ancient-1', x: 177.64, y: 443.54
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-small-6', x: 637.65, y: 671.34
+    }, 'neutralCamps'),
+    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
+      id: 'auto-neutral-medium-14', x: 529.10, y: 609.82
     }, 'neutralCamps'),
     buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-ancient-2',
-      x: 649.81,
-      y: 422.98
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-ancient-3',
-      x: 683.17,
-      y: 823.31
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-ancient-4',
-      x: 185.35,
-      y: 429.57
-    }, 'neutralCamps'),
-    // Large camps
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-1',
-      x: 533.32,
-      y: 43.15
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-2',
-      x: 827.34,
-      y: 427.54
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-3',
-      x: 487.02,
-      y: 297.97
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-4',
-      x: 602.68,
-      y: 485.97
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-5',
-      x: 239.95,
-      y: 369.83
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-6',
-      x: 13.24,
-      y: 456.59
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-7',
-      x: 320.19,
-      y: 833.34
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-8',
-      x: 366.69,
-      y: 585.97
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-9',
-      x: 667.93,
-      y: 599.83
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-large-10',
-      x: 197.38,
-      y: 237.29
-    }, 'neutralCamps'),
-    // Medium camps
-    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-medium-1',
-      x: 309.54,
-      y: 232.12
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-medium-2',
-      x: 497.22,
-      y: 218.60
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-medium-3',
-      x: 856.96,
-      y: 377.28
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-medium-4',
-      x: 531.88,
-      y: 607.69
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-medium-5',
-      x: 337.86,
-      y: 651.38
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-medium-6',
-      x: 35.84,
-      y: 519.19
-    }, 'neutralCamps'),
-    // Small camps
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-1',
-      x: 276.05,
-      y: 61.56
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-2',
-      x: 238.80,
-      y: 183.52
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-3',
-      x: 633.65,
-      y: 675.01
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-4',
-      x: 596.67,
-      y: 816.15
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-5',
-      x: 395.19,
-      y: 181.81
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-6',
-      x: 439.44,
-      y: 19.02
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-7',
-      x: 444.34,
-      y: 680.15
-    }, 'neutralCamps'),
-    buildAutoIcon('map', 'Neutral_Camp_(small)_mapicon_dota2_gameasset.png', {
-      id: 'auto-neutral-small-8',
-      x: 402.21,
-      y: 786.67
+      id: 'auto-neutral-ancient-2', x: 643.81, y: 420.41
     }, 'neutralCamps')
   ],
   runes: [
