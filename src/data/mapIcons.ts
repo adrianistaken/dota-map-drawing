@@ -49,7 +49,7 @@ export const mapIconFiles: MapIconFile[] = [
     { folder: 'map', filename: 'Watcher_mapicon_dota2_gameasset.png', width: 47, height: 35, showInPalette: false },
     { folder: 'map', filename: 'tormentor minimap icon.png', size: 52, showInPalette: false },
 
-    // Neutral camps (kept last so they appear at the bottom of the palette)
+    // Neutral camps
     { folder: 'map', filename: 'Neutral_Camp_(ancient)_mapicon_dota2_gameasset.png', size: 39 },
     { folder: 'map', filename: 'Neutral_Camp_(large)_mapicon_dota2_gameasset.png', size: 39 },
     { folder: 'map', filename: 'Neutral_Camp_(medium)_mapicon_dota2_gameasset.png', size: 39 },

@@ -195,49 +195,45 @@ const AUTO_ICON_PRESETS: Record<AutoIconCategory, Icon[]> = {
     buildAutoIcon('map', 'Watcher_mapicon_dota2_gameasset.png', { id: 'auto-watcher-10', x: 98.79, y: 134.14 }, 'watchers')
   ],
   structures: [
-    // Lotus pools
-    buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
-      id: 'auto-lotus-1',
-      x: 809.86,
-      y: 652.66
-    }, 'structures'),
-    buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
-      id: 'auto-lotus-2',
-      x: 51.99,
-      y: 200.23
-    }, 'structures'),
-    // Warp gates
-    buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
-      id: 'auto-warp-1',
-      x: 57.34,
-      y: 92.64
-    }, 'structures'),
-    buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
-      id: 'auto-warp-2',
-      x: 798.43,
-      y: 740.50
-    }, 'structures'),
-    // Tormentors
-    buildAutoIcon('map', 'tormentor minimap icon.png', {
-      id: 'auto-tormentor-1',
-      x: 799.26,
-      y: 788.57
-    }, 'structures'),
-    buildAutoIcon('map', 'tormentor minimap icon.png', {
-      id: 'auto-tormentor-2',
-      x: 73.79,
-      y: 42.80
-    }, 'structures'),
-    // Wisdom Runes
     buildAutoIcon('runes', 'Wisdom_Rune_mapicon_dota2_gameasset.png', {
       id: 'auto-wisdom-1',
-      x: 835.19,
-      y: 474.24
+      x: 38.08,
+      y: 342.99
     }, 'structures'),
     buildAutoIcon('runes', 'Wisdom_Rune_mapicon_dota2_gameasset.png', {
       id: 'auto-wisdom-2',
-      x: 33.80,
-      y: 375.06
+      x: 848.37,
+      y: 486.08
+    }, 'structures'),
+    buildAutoIcon('map', 'tormentor minimap icon.png', {
+      id: 'auto-tormentor-1',
+      x: 55.94,
+      y: 99.92
+    }, 'structures'),
+    buildAutoIcon('map', 'tormentor minimap icon.png', {
+      id: 'auto-tormentor-2',
+      x: 811.37,
+      y: 712.40
+    }, 'structures'),
+    buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
+      id: 'auto-warp-1',
+      x: 745.73,
+      y: 775.05
+    }, 'structures'),
+    buildAutoIcon('map', 'Warp_Gate_mapicon_dota2_gameasset.png', {
+      id: 'auto-warp-2',
+      x: 116.09,
+      y: 45.65
+    }, 'structures'),
+    buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
+      id: 'auto-lotus-1',
+      x: 58.49,
+      y: 206.38
+    }, 'structures'),
+    buildAutoIcon('map', 'Lotus_Pool_mapicon_dota2_gameasset.png', {
+      id: 'auto-lotus-2',
+      x: 807.26,
+      y: 628.46
     }, 'structures')
   ],
   neutralCamps: [
